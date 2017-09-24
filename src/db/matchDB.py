@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+import json
+import sqlite3
+import os
+import re
+import xml.etree.ElementTree as ET
+import collections 
+from datetime import datetime
+from datetime import timedelta
+from time import strptime
+import time
+import codecs
+import operator
+import sys
+import string
+from dateutil.parser import parse
+
+matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/items.json'
+idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
+db = '/Users/miller/Desktop/soccer.db'
+errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'
+conn = sqlite3.connect(db)
+cur = conn.cursor()
+cur.execute('''delete from TMatch''')
+
+def saveMatch(filepath, idspath):
+	data = open(filepath)
+	idsdata = codecs.open(idspath,'r+',encoding='utf-8')
+	ids = json.load(idsdata)
+	continent_id = 0
+	country_id = 0
+	league_id = 0
+	home_team_id = 0
+	away_team_id = 0
+	for row in data:
+		rowdata = json.loads(row)
+		continent = rowdata['continent']
+		country = rowdata['country']
+		league = rowdata['league']
+		season = rowdata['season']
+		stage = rowdata['stage']
+		serry = rowdata['serry']
+		date = rowdata['date']
+		home_team = rowdata['home_team']
+		away_team = rowdata['away_team']
+		home_goal= rowdata['home_goal']
+		away_goal = rowdata['away_goal']
+		if continent not in ids:
+			cur.execute('''INSERT OR IGNORE INTO Continent (name) VALUES ( ? )''', (continent, ) )
+			cur.execute('SELECT id FROM Continent WHERE name = ? ', (continent, ))
+			continent_id = cur.fetchone()[0]
+			ids[continent] = continent_id
+		else:
+			continent_id = ids[continent]
+		if country not in ids:
+			cur.execute('''INSERT OR IGNORE INTO Country (name,continent_id) VALUES ( ?, ? )''', (country,continent_id, ) )
+			cur.execute('SELECT id FROM Country WHERE name = ? ', (country, ))
+			country_id = cur.fetchone()[0]
+			ids[country] = country_id
+		else:
+			country_id = ids[country]
+		if league not in ids:
+			cur.execute('''INSERT OR IGNORE INTO League (name,country_id) VALUES ( ?, ? )''', (league,country_id, ) )
+			cur.execute('SELECT id FROM League WHERE name = ? ', (league, ))
+			league_id = cur.fetchone()[0]
+			ids[league] = league_id
+		else:
+			league_id = ids[league]
+		if home_team not in ids:
+			cur.execute('''INSERT OR IGNORE INTO Team (name) VALUES ( ? )''', (home_team, ) )
+			cur.execute('SELECT id FROM Team WHERE name = ? ', (home_team, ))
+			home_team_id = cur.fetchone()[0]
+			ids[home_team] = home_team_id
+		else:
+			home_team_id = ids[home_team]
+		if away_team not in ids:
+			cur.execute('''INSERT OR IGNORE INTO Team (name) VALUES ( ? )''', (away_team, ) )
+			cur.execute('SELECT id FROM Team WHERE name = ? ', (away_team, ))
+			away_team_id = cur.fetchone()[0]
+			ids[away_team] = away_team_id
+		else:
+			away_team_id = ids[away_team]
+		if (home_goal == -1):
+			cur.execute('''INSERT OR IGNORE INTO TMatch (continent_id,country_id,league_id,season,serry,date,stage,home_team_id,away_team_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (continent_id, country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,))
+		else:
+			cur.execute('''INSERT OR IGNORE INTO Match (continent_id,country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,home_goal,away_goal) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,home_goal,away_goal,))
+	idsdata.seek(0,os.SEEK_SET)
+	json.dump(ids,idsdata, ensure_ascii=False)
+	idsdata.close()
+	data.close()
+	conn.commit()
+	conn.close()
+
+saveMatch(matchFileDirectory,idsDirectory)

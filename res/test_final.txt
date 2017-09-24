@@ -1,0 +1,12 @@
+date: 20170729 14396 or 14442 not in team_feature
+date: 20170729 14517 or 14397 not in team_feature
+date: 20170729 14549 or 14470 not in team_feature
+date: 20170729 14551 or 14336 not in team_feature
+date: 20170729 14617 or 14557 not in team_feature
+date: 20170729 14635 or 14566 not in team_feature
+date: 20170729 14545 or 14550 not in team_feature
+date: 20170729 14552 or 14564 not in team_feature
+date: 20170729 14582 or 14556 not in team_feature
+success match: date: 20170826 team: 14336,14566
+date: 20170923 17512 or 17512 not in team_feature
+{"league_id": 485, "failure": 0, "last_date": "20170923", "experiment_id": 0, "success": 1}
