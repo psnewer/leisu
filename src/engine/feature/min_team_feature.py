@@ -69,8 +69,8 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 			for i in range(0,min_length):
 				serry = serries[len(serries)-i-1]
 				df_serry = df_league.query("serry=='%s'"%serry)
-				df_home_team = df_serry.query("home_team_id==%d | away_team_id == %d"%(home_team,home_team))
-				df_away_team = df_serry.query("home_team_id==%d | away_team_id == %d"%(away_team,away_team))	
+				df_home_team = df_serry.query("(home_team_id==%d | away_team_id == %d) & date < '%s'"%(home_team,home_team,date))
+				df_away_team = df_serry.query("(home_team_id==%d | away_team_id == %d) & date < '%s'"%(away_team,away_team,date))	
 				res_home = self.get_mayorstatus(df_home_team,home_team)
 				res_away = self.get_mayorstatus(df_away_team,away_team)
 				res_h = {}

@@ -62,9 +62,9 @@ class ONE_MAYOR_FEATURE(ABSTRACT_FEATURE):
 		
 
 	def process(self,df):
-		last_row = df.iloc[-1]
-		if last_row is None:
+		if len(df) < 2:
 			return 0
+		last_row = df.iloc[-2]
 		if (last_row['home_goal'] + last_row['away_goal'] < 3):
 			return 1
 		else:

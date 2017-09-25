@@ -48,15 +48,9 @@ class ABSTRACT_TESTER():
 			res_list.append(date_dic)
 		df_date = pd.DataFrame(res_list)
 		df_team = conciseDate(df_team)
-#		where = []
-#		for col_name in df_team.columns:
-#			if col_name.endswith('FEATURE'):
-#				where.append(col_name+'==True')
-#		where_str = ' & '.join(where)
-#		df_team_posi = df_team.query(where_str)[['date','team_id']]
 		df_team_posi = df_team[['date','team_id']]
 		df_team_posi = df_team_posi.groupby("date",as_index=False).agg({'team_id': lambda x: list(x)})
-		anadf = pd.merge(df_date,df_team_posi,how='left',on='date')
+		anadf = pd.merge(df_date,df_team_posi,how='inner',on='date')
 		succ = 0
 		fail = 0
 		for index,row in anadf.iterrows():
@@ -67,45 +61,45 @@ class ABSTRACT_TESTER():
 			posi_away_team = row['posi_away_team']
 			neg_home_team = row['neg_home_team']
 			neg_away_team = row['neg_away_team']
-			team_feature = self.get_team_feature(index,anadf)
+			team_id = row['team_id']
 			if (self.params['lateral'] == 1):
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
-					if (home_team not in team_feature or away_team not in team_feature):
-						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-						continue
-					if team_feature[home_team]:
+#					if (home_team not in team_feature or away_team not in team_feature):
+#						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
+#						continue
+					if home_team in team_id:
 						succ = succ + 1
 						f_res.write("success match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
-					elif team_feature[away_team]:
+					elif away_team in team_id:
 						succ = succ + 1
 						f_res.write("success match: " + "date: " + date + " away_team: " + str(away_team) + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
-					if (home_team not in team_feature or away_team not in team_feature):
-						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-						continue
-					if team_feature[home_team]:
+#					if (home_team not in team_feature or away_team not in team_feature):
+#						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
+#						continue
+					if home_team in team_id:
 						fail = fail + 1
 						f_res.write("failure match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
-					elif team_feature[away_team]:
+					elif away_team in team_id:
 						fail = fail + 1
 						f_res.write("failure match: " + "date: " + date + " away_team: " + str(home_team) + '\n')
 			else:
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
-					if (home_team not in team_feature or away_team not in team_feature):
-						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-						continue
-					if team_feature[home_team] and team_feature[away_team]:
+#					if (home_team not in team_feature or away_team not in team_feature):
+#						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
+#						continue
+					if home_team in team_id and away_team in team_id:
 						succ = succ + 1
 						f_res.write("success match: " + "date: " + date + " team: " + str(home_team) + "," + str(away_team) + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
-					if (home_team not in team_feature or away_team not in team_feature):
-						f_res.write('date: ' + date + ' ' +  str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-						continue
-					if team_feature[home_team] and team_feature[away_team]:
+#					if (home_team not in team_feature or away_team not in team_feature):
+#						f_res.write('date: ' + date + ' ' +  str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
+#						continue
+					if home_team in team_id and away_team in team_id:
 						fail = fail + 1
 						f_res.write("failure match: " + "date: " + date + " team: " + str(home_team) + "," + str(away_team) + '\n')
 		dic_ = {}
@@ -118,24 +112,24 @@ class ABSTRACT_TESTER():
 		f_res.write(dic_str+'\n')
 		f_res.close()
 	
-	def get_team_feature(self, index, df):
-		current_row = df.iloc[index]
-		current_teams = current_row['teams']
-		team_feature = {}
-		for i in range(index - 1, -1, -1):
-			if (len(team_feature ) == len(current_teams)):
-				break
-			current_pre = df.iloc[i]
-			current_pre_team = current_pre['teams']
-			current_team_id = current_pre['team_id']
-			for team in current_pre_team:
-				if team in team_feature or team not in current_teams:
-					continue
-				if not isinstance(current_team_id,float) and team in current_team_id:
-					team_feature[team] = True
-				else:
-					team_feature[team] = False
-		return team_feature 
+#	def get_team_feature(self, index, df):
+#		current_row = df.iloc[index]
+#		current_teams = current_row['teams']
+#		team_feature = {}
+#		for i in range(index - 1, -1, -1):
+#			if (len(team_feature ) == len(current_teams)):
+#				break
+#			current_pre = df.iloc[i]
+#			current_pre_team = current_pre['teams']
+#			current_team_id = current_pre['team_id']
+#			for team in current_pre_team:
+#				if team in team_feature or team not in current_teams:
+#					continue
+#				if not isinstance(current_team_id,float) and team in current_team_id:
+#					team_feature[team] = True
+#				else:
+#					team_feature[team] = False
+#		return team_feature 
 			
 	def get_team_tar(self,row):
 		return False

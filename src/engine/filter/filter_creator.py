@@ -3,11 +3,12 @@
 import json
 import pandas as pd
 import gflags
-from common_tester import *
 from conf import *
 from one_mayor_filter import *
 from two_mayor_filter import *
 from minor_period_filter import *
+from current_score_filter import *
+from home_win_filter import *
 from min_team_filter import *
 
 class Filter_Creator(object):
@@ -27,6 +28,7 @@ class Filter_Creator(object):
 
 	def execute(self,feature_list):
 		df = pd.DataFrame(feature_list)
+		df.to_csv('/Users/miller/Documents/workspace/leisu/src/engine/log.txt')
 		df = df.groupby(['date','team_id'],as_index=False).agg(lambda x: x[x.notnull()].tail(1))
 		for filter in self.filter_cand:
 			filter_ins = self.filters[filter]

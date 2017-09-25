@@ -61,18 +61,21 @@ class CURRENT_MATCH_FEATURE(ABSTRACT_FEATURE):
 		return team_res
 
 	def process(self,df,team):
-		df_current = df.tail(self.params['period'])
+		length = len(df)
+		last = max(-1,length - 2 - self.params['period'])
 		res = {}
-		for idx,row in df_current.iterrows():
-			res[idx] = {}
+		for idx in range(length-2,last,-1):
+			row = df.iloc[idx]
+			pre = length -1 - idx
+			res[pre] = {}
 			if (row['home_team_id'] == team):
-				res[idx]['area'] = 1
-				res[idx]['toteam'] = row['away_team_id']
-				res[idx]['home_goal'] = row['home_goal']
-				res[idx]['away_gaol'] = row['away_goal']
+				res[pre]['area'] = 1
+				res[pre]['toteam'] = row['away_team_id']
+				res[pre]['home_goal'] = row['home_goal']
+				res[pre]['away_gaol'] = row['away_goal']
 			elif (row['away_team_id'] == team):
-				res[idx]['area'] = 2
-				res[idx]['toteam'] = row['home_team_id']
-				res[idx]['home_goal'] = row['home_goal']
-				res[idx]['away_gaol'] = row['away_goal']
+				res[pre]['area'] = 2
+				res[pre]['toteam'] = row['home_team_id']
+				res[pre]['home_goal'] = row['home_goal']
+				res[pre]['away_gaol'] = row['away_goal']
 		return res

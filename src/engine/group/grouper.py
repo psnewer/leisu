@@ -3,7 +3,7 @@
 import json
 import pandas as pd
 import gflags
-from common_tester import *
+from min_goals_tester import *
 from conf import *
 
 class Grouper(object):

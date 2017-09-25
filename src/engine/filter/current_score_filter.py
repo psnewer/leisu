@@ -21,7 +21,7 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 				matches = row['CURRENT_MATCH_FEATURE']
 				score = 0
 				for i in range(0,self.params['tolast']):
-					if (matches[i]['area'] == 1:
+					if (matches[i]['area']) == 1:
 						if matches[i]['home_goal'] > matches[i]['away_goal']:
 							score += 3
 						elif matches[i]['home_goal'] < matches[i]['away_goal']:
@@ -35,9 +35,8 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 							score += 0
 						else:
 							score += 1
-				if score >= self.params['score']
+				if score >= self.params['score']:
 					continue
 			delete_row.append(idx)
 		df.drop(delete_row,inplace=True)
-		print df
 		return df

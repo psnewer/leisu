@@ -65,13 +65,13 @@ class MINOR_PERIOD_FEATURE(ABSTRACT_FEATURE):
 		return team_res
 
 	def process(self,df):
-		length = len(df)
+		length = len(df) - 1 
 		num_minor = 0
 		_length = 0
 		if length < self.params['min_length']:
 			return 0
 		if(length < self.params['period']):
-			num_minor = self.analysis(df)
+			num_minor = self.analysis(df[0:length])
 			_length = length
 		else:
 			num_minor = self.analysis(df[length-self.params['period']:length])

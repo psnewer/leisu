@@ -65,51 +65,55 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 			for i in range(0,min_length):
 				serry = serries[len(serries)-i-1]
 				df_serry = df_league.query("serry=='%s'"%serry)
-				df_vs = df_serry.query("(home_team_id==%d & away_team_id == %d) | (away_team_id==%d & home_team_id == %d)"%(home_team,away_team,home_team,away_team))
-				res_vs = self.get_vs(df_vs,home_team,away_team)
-				res_h = {}
-				res_h['pre'] = i
-				res_h['toteam'] = away_team
-				res_h['weight_goal'] = res_vs[0]['goal'] - res_vs[1]['goal'] 
-				res_h['area'] = res_vs[0]['area']
+				df_vs = df_serry.query("((home_team_id==%d & away_team_id == %d) | (away_team_id==%d & home_team_id == %d)) & date < '%s'"%(home_team,away_team,home_team,away_team,date))
+				res_vs = self.get_vs(df_vs,home_team,away_team,i)
 				res_home = {}
 				res_home['date'] = date
 				res_home['team_id'] = home_team
-				res_home[self.name] = res_h
+				res_home[self.name] = res_vs[0]
 				team_res.append(res_home)
-				res_a = {}
-				res_a['pre'] = i
-				res_a['toteam'] = home_team
-				res_a['weight_goal'] = res_vs[1]['goal'] - res_vs[0]['goal']
-				res_a['area'] = res_vs[1]['area']
 				res_away = {}
 				res_away['date'] = date
 				res_away['team_id'] = away_team
-				res_away[self.name] = res_a
+				res_away[self.name] = res_vs[1]
 				team_res.append(res_away)
 		return team_res
 
-	def get_vs(self,df_vs,home_team,away_team):
+	def get_vs(self,df_vs,home_team,away_team,pre):
 		team_res = []
+		_res_home = []
+		_res_away = []
 		for index,row in df_vs.iterrows():
-			res_home = {}
-			res_away = {}
 			row_home_team_id = row['home_team_id']
 			row_away_team_id = row['away_team_id']
+			res_home = {}
+			res_away = {}
 			if (row_home_team_id==home_team):
 				res_home['area'] = 1
+				res_home['pre'] = pre
+				res_home['date'] = row['date']
 				res_home['goal'] = row['home_goal']
 				res_home['to_team'] = row['away_team_id']
 				res_away['area'] = 2
+				res_away['pre'] = pre
+				res_away['date'] = row['date']
 				res_away['goal'] = row['away_goal']
 				res_away['to_team'] = row['home_team_id']
+				_res_home.append(res_home)
+				_res_away.append(res_away)		
 			else:
 				res_home['area'] = 2
+				res_home['pre'] = pre
+				res_home['date'] = row['date']
 				res_home['goal'] = row['away_goal']
 				res_home['to_team'] = row['home_team_id']
 				res_away['area'] = 1
+				res_away['pre'] = pre
+				res_away['date'] = row['date']
 				res_away['goal'] = row['home_goal']
 				res_away['to_team'] = row['away_team_id']
-			team_res.append(res_home)
-			team_res.append(res_away)
+				_res_home.append(res_home)
+				_res_away.append(res_away)
+		team_res.append(_res_home)
+		team_res.append(_res_away)
 		return team_res

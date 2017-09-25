@@ -61,9 +61,9 @@ class TWO_MAYOR_FEATURE(ABSTRACT_FEATURE):
 		return team_res
 
 	def process(self,df):
-		if (len(df) < 1):
+		if (len(df) < 2):
 			return 0	
-		last_rows = df.tail(2)
+		last_rows = df[:-1]
 		for index,row in last_rows.iterrows():
 			if (row['home_goal'] + row['away_goal'] < 3):
 				return 1

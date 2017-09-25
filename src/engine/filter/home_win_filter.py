@@ -20,5 +20,4 @@ class HOME_WIN_FILTER(ABSTRACT_FILTER):
 					continue
 			delete_row.append(idx)
 		df.drop(delete_row,inplace=True)
-		print df
 		return df
