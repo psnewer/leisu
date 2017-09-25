@@ -62,28 +62,33 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 			away_team = row['away_team_id']	
 			date = row['date']
 			min_length = min(self.params['to_last'],len(serries))
+			res_dic_home = {}
+			res_dic_home['team_id'] = home_team
+			res_dic_home['date'] = date
+			res_dic_home['area'] = 1
+			res_dic_home['toteam'] = away_team
+			res_dic_home[self.name] = {}
+			res_dic_away = {}
+			res_dic_away['team_id'] = away_team
+			res_dic_away['date'] = date
+			res_dic_away['area'] = 2
+			res_dic_away['toteam'] =home_team
+			res_dic_away[self.name] = {}
 			for i in range(0,min_length):
 				serry = serries[len(serries)-i-1]
 				df_serry = df_league.query("serry=='%s'"%serry)
 				df_home_team = df_serry.query("(home_team_id==%d | away_team_id == %d) & date < '%s'"%(home_team,home_team,date))
 				df_away_team = df_serry.query("(home_team_id==%d | away_team_id == %d) & date < '%s'"%(away_team,away_team,date))	
-				res_home = self.get_numandscore(df_home_team,home_team,i)
-				res_away = self.get_numandscore(df_away_team,away_team,i)
-				res_dic_home = {}
-				res_dic_home['team_id'] = home_team
-				res_dic_home['date']= date
-				res_dic_home[self.name] = res_home
-				team_res.append(res_dic_home)
-				res_dic_away = {}
-				res_dic_away['team_id'] = away_team
-				res_dic_away['date'] = date
-				res_dic_away[self.name] = res_away
-				team_res.append(res_dic_away)
+				res_home = self.get_numandscore(df_home_team,home_team)
+				res_away = self.get_numandscore(df_away_team,away_team)
+				res_dic_home[self.name][i] = res_home
+				res_dic_away[self.name][i] = res_away
+			team_res.append(res_dic_home)
+			team_res.append(res_dic_away)
 		return team_res
 
-	def get_numandscore(self,df_team,team,pre):
+	def get_numandscore(self,df_team,team):
 		res = {}
-		res['pre'] = pre
 		res['score'] = 0
 		res['number'] = len(df_team)
 		for index,row in df_team.iterrows():

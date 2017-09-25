@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import gflags
 from min_goals_tester import *
+from home_win_tester import *
 from conf import *
 
 class Tester_Creator(object):
@@ -32,7 +33,8 @@ class Tester_Creator(object):
 
 	def process(self,condition):
 		team_res = self.feature_creator.execute(condition,action='test')
-		self.test(condition,team_res)
+		if team_res != []:
+			self.test(condition,team_res)
 	
 	def test(self,condition,team_res):
 		df_filter = self.filter_creator.execute(team_res)

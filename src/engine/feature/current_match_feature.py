@@ -72,10 +72,10 @@ class CURRENT_MATCH_FEATURE(ABSTRACT_FEATURE):
 				res[pre]['area'] = 1
 				res[pre]['toteam'] = row['away_team_id']
 				res[pre]['home_goal'] = row['home_goal']
-				res[pre]['away_gaol'] = row['away_goal']
+				res[pre]['away_goal'] = row['away_goal']
 			elif (row['away_team_id'] == team):
 				res[pre]['area'] = 2
 				res[pre]['toteam'] = row['home_team_id']
 				res[pre]['home_goal'] = row['home_goal']
-				res[pre]['away_gaol'] = row['away_goal']
+				res[pre]['away_goal'] = row['away_goal']
 		return res
