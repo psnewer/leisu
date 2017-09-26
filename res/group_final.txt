@@ -1,1 +1,1 @@
-{"short_succ": 41, "short_id": 2, "league_id": 940, "short_fail": 24, "long_fail": 192, "long_succ": 364, "long_id": 2}
+{"short_succ": 94, "short_id": 2, "league_id": 485, "short_fail": 71, "long_fail": 391, "long_succ": 521, "long_id": 2}

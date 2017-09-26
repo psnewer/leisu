@@ -10,9 +10,10 @@ from abstract_feature import *
 class MINOR_PERIOD_FEATURE(ABSTRACT_FEATURE):
 	def __init__(self):
 		self.name = 'MINOR_PERIOD_FEATURE'
+		self.params = {}
 		self.params['min_length'] = 2
 		self.params['period']	= 5
-		self.params['minrt'] = 0.5
+		self.params['minrt'] = 0.6
 		self.params['mayrt'] = 0.4
 
 	def execute(self,condition,action):

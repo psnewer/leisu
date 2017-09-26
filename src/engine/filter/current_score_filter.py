@@ -11,10 +11,12 @@ from abstract_filter import *
 class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
 		self.name = 'CURRENT_SCORE_FILTER'
+		self.params = {}
 		self.params['tolast'] = 3
 		self.params['score'] = 3
 		self.params['area'] = 1
 		self.params['ignore'] = True
+		self.params['equal'] = True
 
 	def filter(self,df):
 		delete_row = []
@@ -27,8 +29,10 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 					continue
 			matches = row['CURRENT_MATCH_FEATURE']
 			score = 0
+			num = 0
 			min_length = min(self.params['tolast'],len(matches))
 			for i in range(1,min_length+1):
+				num += 1
 				if (matches[i]['area']) == 1:
 					if matches[i]['home_goal'] > matches[i]['away_goal']:
 						score += 3
@@ -38,13 +42,26 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 						score += 1
 				else:
 					if matches[i]['home_goal'] > matches[i]['away_goal']:
-						score += 3
-					elif matches[i]['home_goal'] < matches[i]['away_goal']:
 						score += 0
+					elif matches[i]['home_goal'] < matches[i]['away_goal']:
+						score += 3
 					else:
 						score += 1
-			if score >= self.params['score']:
-				continue
+			if self.params['equal']:
+				if score >= self.params['score']:
+					continue
+			else:
+				if score > self.params['score']:
+					continue
+			if num > 0:
+				mean_score = float(score)/num
+				mean_std = float(self.params['score'])/self.params['tolast']
+				if self.params['equal']:
+					if mean_score >= mean_std:
+						continue
+				else:
+					if mean_score > mean_std:
+						continue
 			delete_row.append(idx)
 		df.drop(delete_row,inplace=True)
 		return df

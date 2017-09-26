@@ -11,6 +11,7 @@ from abstract_filter import *
 class TWO_MAYOR_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
 		self.name = 'TWO_MAYOR_FILTER'
+		self.params = {}
 		self.params['tar'] = 1
 
 	def filter(self,df):

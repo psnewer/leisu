@@ -10,7 +10,8 @@ from abstract_feature import *
 class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 	def __init__(self):
 		self.name = 'PRE_RANK_FEATURE'
-		self.params['to_last'] = 1
+		self.params = {}
+		self.params['to_last'] = 3
 	
 	def execute(self,condition,action):
 		if (action == 'predict'):
@@ -24,12 +25,17 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 		df = pd.read_sql_query(sql_str,conn)
 		df = conciseDate(df)
 		df = df.sort_values(by='date')
-		serries = df['serry'].unique()
+		league_id = df.iloc[-1]['league_id']
+		last_date = df.iloc[-1]['date']
+		sql_str = "select * from Match where league_id=%d and date <= '%s'"%(league_id,last_date)
+		df_league = pd.read_sql_query(sql_str,conn)
+		df_league = conciseDate(df_league)
+		serries = df_league['serry'].unique()
 		dates = df['date'].unique()
 		f_res = open(gflags.FLAGS.res_path,'a+')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
-			res = self.process(df_date,df,serries)
+			res = self.process(df_date,df_league,serries)
 			for _res in res:
 				res_str = json.dumps(_res)
 				res_test.write(_res+'\n')
@@ -39,15 +45,22 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
+		if len(df) < 1:
+			return []
 		df = conciseDate(df)
 		df = df.sort_values(by='date')
-		serries = df['serry'].unique()
+		league_id = df.iloc[-1]['league_id']
+		last_date = df.iloc[-1]['date']
+		sql_str = "select * from Match where league_id=%d and date <= '%s'"%(league_id,last_date)
+		df_league = pd.read_sql_query(sql_str,conn)
+		df_league = conciseDate(df_league)
+		serries = df_league['serry'].unique()
 		dates = df['date'].unique()
 		team_res = []
 		res_test = open(gflags.FLAGS.res_test,'a+')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
-			res = self.process(df_date,df,serries)
+			res = self.process(df_date,df_league,serries)
 			for _res in res:
 				res_str = json.dumps(_res)
 				res_test.write(res_str+'\n')
@@ -101,9 +114,9 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 					res['score'] += 1
 			else:
 				if (row['home_goal'] > row['away_goal']):
-					res['score'] += 3
-				elif(row['home_goal'] < row['away_goal']):
 					res['score'] += 0
+				elif(row['home_goal'] < row['away_goal']):
+					res['score'] += 3
 				else:
 					res['score'] += 1
 		return res

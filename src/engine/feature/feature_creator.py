@@ -8,9 +8,6 @@ from one_mayor_feature import *
 from two_mayor_feature import *
 from pre_rank_feature import *
 from pre_vs_feature import *
-from rank_status_feature import *
-from last_win_feature import *
-from current_score_feature import *
 from min_team_feature import *
 from current_match_feature import *
 from conf import *

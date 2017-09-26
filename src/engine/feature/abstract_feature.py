@@ -5,9 +5,9 @@ import sqlite3
 import pandas as pd
 
 class ABSTRACT_FEATURE():
-	params = {}
-
+	
 	def __init__(self):
+		self.params = {}
 		self.team = 'ABSTRACT_FEATURE'
 	
 	def setParams(self,params):

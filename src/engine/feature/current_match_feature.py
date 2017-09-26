@@ -10,6 +10,7 @@ from abstract_feature import *
 class CURRENT_MATCH_FEATURE(ABSTRACT_FEATURE):
 	def __init__(self):
 		self.name = 'CURRENT_MATCH_FEATURE'
+		self.params = {}
 		self.params['period']	= 5
 
 	def execute(self,condition,action):
@@ -39,6 +40,8 @@ class CURRENT_MATCH_FEATURE(ABSTRACT_FEATURE):
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
+		if len(df) < 1:
+			return []
 		df = conciseDate(df)
 		teams = df['home_team_id'].unique()
 		team_res = []

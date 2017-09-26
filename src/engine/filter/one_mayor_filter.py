@@ -9,8 +9,10 @@ import pandas as pd
 from abstract_filter import *
 
 class ONE_MAYOR_FILTER(ABSTRACT_FILTER):
+
 	def __init__(self):
 		self.name = 'ONE_MAYOR_FILTER'
+		self.params = {}
 		self.params['tar'] = 1
 
 	def filter(self,df):

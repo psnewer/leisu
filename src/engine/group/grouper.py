@@ -30,8 +30,10 @@ class Grouper(object):
 				GlobalVar.set_experimentId(experiment_id)	
 				exp = self.experiments[experiment_id]
 				features = exp['feature']
+				filters = exp['filter']
 				testers = exp['tester']
 				self.tester_creator.feature_creator.set_features(features)
+				self.tester_creator.filter_creator.set_filters(filters)
 				self.tester_creator.set_tester(testers)
 				self.tester_creator.execute(cond)
 		f_group.close()
