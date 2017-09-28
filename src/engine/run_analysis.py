@@ -14,8 +14,9 @@ gflags.DEFINE_string('res_test', '', 'result path')
 gflags.DEFINE_string('test_final', '', 'result path')
 gflags.DEFINE_bool('test', False, 'test')
 gflags.DEFINE_bool('group', False, 'group')
-gflags.DEFINE_string('group_path', '', 'group path')
-gflags.DEFINE_string('group_final', '', 'group path')
+gflags.DEFINE_string('group_path', '', 'group cand')
+gflags.DEFINE_string('group_final', '', 'group final')
+gflags.DEFINE_string('group_detail', '', 'group detail')
 Flags = gflags.FLAGS
 
 if __name__ == "__main__":

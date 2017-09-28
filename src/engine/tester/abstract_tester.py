@@ -5,6 +5,7 @@ import sqlite3
 import gflags
 import math
 import json
+import codecs
 import pandas as pd
 
 class ABSTRACT_TESTER():
@@ -25,7 +26,7 @@ class ABSTRACT_TESTER():
 		df = pd.read_sql_query(sql_str,conn)
 		df = conciseDate(df)
 		dates = df['date'].unique()
-		f_res = open(gflags.FLAGS.test_final,'a+')
+		f_res = codecs.open(gflags.FLAGS.test_final,'a+',encoding='utf-8')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
 			date_dic = {}
@@ -54,8 +55,6 @@ class ABSTRACT_TESTER():
 		succ = 0
 		fail = 0
 		for index,row in anadf.iterrows():
-			if (index == 0):
-				continue
 			date = row['date']
 			posi_home_team = row['posi_home_team']
 			posi_away_team = row['posi_away_team']
@@ -65,9 +64,6 @@ class ABSTRACT_TESTER():
 			if (self.params['lateral'] == 1):
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
-#					if (home_team not in team_feature or away_team not in team_feature):
-#						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-#						continue
 					if home_team in team_id:
 						succ = succ + 1
 						f_res.write("success match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
@@ -76,9 +72,6 @@ class ABSTRACT_TESTER():
 						f_res.write("success match: " + "date: " + date + " away_team: " + str(away_team) + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
-#					if (home_team not in team_feature or away_team not in team_feature):
-#						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-#						continue
 					if home_team in team_id:
 						fail = fail + 1
 						f_res.write("failure match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
@@ -88,17 +81,11 @@ class ABSTRACT_TESTER():
 			else:
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
-#					if (home_team not in team_feature or away_team not in team_feature):
-#						f_res.write('date: ' + date + ' ' + str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-#						continue
 					if home_team in team_id and away_team in team_id:
 						succ = succ + 1
 						f_res.write("success match: " + "date: " + date + " team: " + str(home_team) + "," + str(away_team) + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
-#					if (home_team not in team_feature or away_team not in team_feature):
-#						f_res.write('date: ' + date + ' ' +  str(home_team) + ' or ' + str(away_team) + ' not in team_feature' + '\n')
-#						continue
 					if home_team in team_id and away_team in team_id:
 						fail = fail + 1
 						f_res.write("failure match: " + "date: " + date + " team: " + str(home_team) + "," + str(away_team) + '\n')
@@ -107,29 +94,11 @@ class ABSTRACT_TESTER():
 		dic_['failure'] = fail
 		dic_['last_date'] = df.iloc[-1]['date']
 		dic_['league_id'] = df.iloc[-1]['league_id']
+		dic_['serryname'] = df.iloc[-1]['serryname']
 		dic_['experiment_id'] = GlobalVar.get_experimentId()
-		dic_str = json.dumps(dic_)
+		dic_str = json.dumps(dic_,ensure_ascii=False)
 		f_res.write(dic_str+'\n')
 		f_res.close()
 	
-#	def get_team_feature(self, index, df):
-#		current_row = df.iloc[index]
-#		current_teams = current_row['teams']
-#		team_feature = {}
-#		for i in range(index - 1, -1, -1):
-#			if (len(team_feature ) == len(current_teams)):
-#				break
-#			current_pre = df.iloc[i]
-#			current_pre_team = current_pre['teams']
-#			current_team_id = current_pre['team_id']
-#			for team in current_pre_team:
-#				if team in team_feature or team not in current_teams:
-#					continue
-#				if not isinstance(current_team_id,float) and team in current_team_id:
-#					team_feature[team] = True
-#				else:
-#					team_feature[team] = False
-#		return team_feature 
-			
 	def get_team_tar(self,row):
 		return False

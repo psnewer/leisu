@@ -1,1 +1,3 @@
-{"short_succ": 94, "short_id": 2, "league_id": 485, "short_fail": 71, "long_fail": 391, "long_succ": 521, "long_id": 2}
+{"all_fail": 273, "all_succ": 412, "c1_id": 16, "c0_fail": 50, "league_id": 210, "c2_succ": 25, "c2_id": 16, "all_id": 3, "c1_succ": 14, "c2_fail": 13, "c1_fail": 5, "serryname": "default", "c0_id": 3, "c0_succ": 71}
+{"all_fail": 0, "all_succ": 1, "c1_id": 1, "c0_fail": 0, "league_id": 210, "c2_succ": 1, "c2_id": 1, "all_id": 1, "c1_succ": 1, "c2_fail": 0, "c1_fail": 0, "serryname": "\u5347\u73ed\u9644\u52a0\u8d5b", "c0_id": 0, "c0_succ": 0}
+{"all_fail": 0, "all_succ": 0, "c1_id": 0, "c0_fail": 0, "league_id": 210, "c2_succ": 0, "c2_id": 0, "all_id": 0, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "\u5347\u73ed\u9644\u52a0\u8d5b\u51b3\u8d5b", "c0_id": 0, "c0_succ": 0}

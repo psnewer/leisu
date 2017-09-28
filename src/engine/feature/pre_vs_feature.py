@@ -27,10 +27,11 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 		df = df.sort_values(by='date')
 		league_id = df.iloc[-1]['league_id']
 		last_date = df.iloc[-1]['date']
-		sql_str = "select * from Match where league_id=%d and date <= '%s'"%(league_id,last_date)
+		serryname = df.iloc[-1]['serryname']
+		sql_str = "select * from Match where league_id=%d and serryname='%s' and date <= '%s'"%(league_id,serryname,last_date)
 		df_league = pd.read_sql_query(sql_str,conn)
 		df_league = conciseDate(df_league)
-		serries = df_league['serry'].unique()
+		serries = df_league['serryid'].unique()
 		dates = df['date'].unique()
 		f_res = open(gflags.FLAGS.res_path,'a+')
 		for date in dates:
@@ -51,10 +52,11 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 		df = df.sort_values(by='date')
 		league_id = df.iloc[-1]['league_id']
 		last_date = df.iloc[-1]['date']
-		sql_str = "select * from Match where league_id=%d and date <= '%s'"%(league_id,last_date)
+		serryname = df.iloc[-1]['serryname']
+		sql_str = "select * from Match where league_id=%d and serryname='%s' and date <= '%s'"%(league_id,serryname,last_date)
 		df_league = pd.read_sql_query(sql_str,conn)
 		df_league = conciseDate(df_league)
-		serries = df_league['serry'].unique()
+		serries = df_league['serryid'].unique()
 		dates = df['date'].unique()
 		team_res = []
 		res_test = open(gflags.FLAGS.res_test,'a+')
@@ -88,8 +90,8 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 			res_away[self.name] = {}
 			min_length = min(self.params['to_last'],len(serries))
 			for i in range(0,min_length):
-				serry = serries[len(serries)-i-1]
-				df_serry = df_league.query("serry=='%s'"%serry)
+				serryid = serries[len(serries)-i-1]
+				df_serry = df_league.query("serryid=='%s'"%serryid)
 				df_vs = df_serry.query("((home_team_id==%d & away_team_id == %d) | (away_team_id==%d & home_team_id == %d)) & date < '%s'"%(home_team,away_team,home_team,away_team,date))
 				res_vs = self.get_vs(df_vs,home_team,away_team)
 				res_home[self.name][i] = res_vs[0]

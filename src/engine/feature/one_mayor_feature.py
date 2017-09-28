@@ -23,7 +23,9 @@ class ONE_MAYOR_FEATURE(ABSTRACT_FEATURE):
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
 		df = conciseDate(df)
-		teams = df['home_team_id'].unique()
+		home_teams = df['home_team_id']
+		away_teams = df['away_team_id']
+		teams = home_teams.append(away_teams).unique()
 		for team in teams:
 			res_dic = {}
 			res_dic['team_id'] = team
@@ -40,7 +42,9 @@ class ONE_MAYOR_FEATURE(ABSTRACT_FEATURE):
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
 		df = conciseDate(df)
-		teams = df['home_team_id'].unique()
+		home_teams = df['home_team_id']
+		away_teams = df['away_team_id']
+		teams = home_teams.append(away_teams).unique()
 		team_res = []
 		res_test = open(gflags.FLAGS.res_test,'a+')
 		for team in teams:

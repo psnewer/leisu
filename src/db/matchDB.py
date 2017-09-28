@@ -17,6 +17,7 @@ from dateutil.parser import parse
 
 matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/items.json'
 idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
+tips_file = '/Users/miller/Documents/workspace/leisu/src/db/name_tips.json'
 db = '/Users/miller/Desktop/soccer.db'
 errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'
 conn = sqlite3.connect(db)
@@ -27,6 +28,8 @@ def saveMatch(filepath, idspath):
 	data = open(filepath)
 	idsdata = codecs.open(idspath,'r+',encoding='utf-8')
 	ids = json.load(idsdata)
+	nametip = codecs.open(tips_file,'r+',encoding='utf-8')
+	name_tips = json.load(nametip)
 	continent_id = 0
 	country_id = 0
 	league_id = 0
@@ -39,12 +42,17 @@ def saveMatch(filepath, idspath):
 		league = rowdata['league']
 		season = rowdata['season']
 		stage = rowdata['stage']
-		serry = rowdata['serry']
+		serryid = rowdata['serryid']
+		serryname = rowdata['serryname']
 		date = rowdata['date']
 		home_team = rowdata['home_team']
 		away_team = rowdata['away_team']
 		home_goal= rowdata['home_goal']
 		away_goal = rowdata['away_goal']
+		if serryname is None:
+			serryname = 'default'
+		elif serryname in name_tips:
+			serryname = name_tips[serryname]
 		if continent not in ids:
 			cur.execute('''INSERT OR IGNORE INTO Continent (name) VALUES ( ? )''', (continent, ) )
 			cur.execute('SELECT id FROM Continent WHERE name = ? ', (continent, ))
@@ -81,9 +89,9 @@ def saveMatch(filepath, idspath):
 		else:
 			away_team_id = ids[away_team]
 		if (home_goal == -1):
-			cur.execute('''INSERT OR IGNORE INTO TMatch (continent_id,country_id,league_id,season,serry,date,stage,home_team_id,away_team_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (continent_id, country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,))
+			cur.execute('''INSERT OR IGNORE INTO TMatch (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,))
 		else:
-			cur.execute('''INSERT OR IGNORE INTO Match (continent_id,country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,home_goal,away_goal) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,home_goal,away_goal,))
+			cur.execute('''INSERT OR IGNORE INTO Match (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal,))
 	idsdata.seek(0,os.SEEK_SET)
 	json.dump(ids,idsdata, ensure_ascii=False)
 	idsdata.close()

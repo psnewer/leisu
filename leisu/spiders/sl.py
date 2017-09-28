@@ -60,7 +60,8 @@ class SlSpider(scrapy.Spider):
 		tomorrow = (datetime.today() + timedelta(1)).strftime('%Y%m%d')
 		sA = response.xpath(u"//div[contains(@id,'stage-content')]")
 		for _sB in sA:
-			groupname = _sB.xpath(u".//@data-id").re_first('(.+)')
+			serryid = _sB.xpath(u".//@data-id").re_first('(.+)')
+			serryname = response.xpath(u"//ol/li[contains(@data-id,'%s')]/@data-name"%serryid).re_first('(.+)')
 			sB = _sB.xpath(u".//table[contains(@class,'schedule-table')]")
 			sC = sB.xpath('.//tr')[1:]
 			date_reserve = ''
@@ -71,7 +72,11 @@ class SlSpider(scrapy.Spider):
 				if _time is None:
 					_time = sD.xpath(u".//td[contains(@class,'bd-r')]/text()").re_first('(.+)')
 				if _time is None:
-					_time = sD.xpath(u".//td[contains(@class,'text-a-l')]/text()").re_first('(.+)').strip().split(' ')[0]
+					_time = sD.xpath(u".//td[contains(@class,'text-a-l')]/text()").re_first('(.+)')
+					if _time is None:
+						continue
+					else:
+						_time = _time.split(' ')[0]
 					date_reserve = ''.join(_time.split("/"))
 					continue
 				ts = _time.strip().split("  ")
@@ -90,7 +95,7 @@ class SlSpider(scrapy.Spider):
 				scores = sD.xpath(u".//td/span/text()").extract()
 				if (len(teams) < 2 or len(scores) < 2):
 					if (date < today or len(teams) < 2):
-						clause = continent+" "+country+" "+league+" "+season+" "+groupname+" "+stage+" "+' '.join(teams)+" "+' '.join(scores)
+						clause = continent+" "+country+" "+league+" "+season+" "+serryid+" "+stage+" "+' '.join(teams)+" "+' '.join(scores)
 						self.logspider.warn(clause)
 						continue
 					else:
@@ -106,7 +111,8 @@ class SlSpider(scrapy.Spider):
 				match['season'] = season
 				match['stage'] = stage
 				match['date'] = _time
-				match['serry'] = groupname
+				match['serryid'] = serryid
+				match['serryname'] = serryname
 				match['home_team'] = home_team
 				match['away_team'] = away_team
 				match['home_goal'] = home_goal
