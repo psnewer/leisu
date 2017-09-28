@@ -15,7 +15,7 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		self.params['mid_goal'] = 2.5
 		self.params['minrt'] = 0.7
 		self.params['mayrt'] = 0.7
-		self.params['min_num'] = 5
+		self.params['min_num'] = 8
 	
 	def execute(self,condition,action):
 		if (action == 'predict'):

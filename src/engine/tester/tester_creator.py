@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import gflags
 from min_goals_tester import *
+from may_goals_tester import *
 from home_win_tester import *
 from conf import *
 

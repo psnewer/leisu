@@ -8,3 +8,4 @@
 --group_path=/Users/miller/Documents/workspace/leisu/src/engine/conf/group.txt
 --group_final=/Users/miller/Documents/workspace/leisu/res/group_final.txt
 --group_detail=/Users/miller/Documents/workspace/leisu/res/group_detail.txt
+--kind_file=/Users/miller/Documents/workspace/leisu/src/engine/conf/kinds.txt

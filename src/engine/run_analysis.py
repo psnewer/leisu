@@ -17,6 +17,7 @@ gflags.DEFINE_bool('group', False, 'group')
 gflags.DEFINE_string('group_path', '', 'group cand')
 gflags.DEFINE_string('group_final', '', 'group final')
 gflags.DEFINE_string('group_detail', '', 'group detail')
+gflags.DEFINE_string('kind_file', '', 'kind file')
 Flags = gflags.FLAGS
 
 if __name__ == "__main__":

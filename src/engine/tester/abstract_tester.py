@@ -77,7 +77,7 @@ class ABSTRACT_TESTER():
 						f_res.write("failure match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
 					elif away_team in team_id:
 						fail = fail + 1
-						f_res.write("failure match: " + "date: " + date + " away_team: " + str(home_team) + '\n')
+						f_res.write("failure match: " + "date: " + date + " away_team: " + str(away_team) + '\n')
 			else:
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]

@@ -1,8 +1,2 @@
 ["league_id=210", "serryid=13711"]
 ["league_id=210", "serryid=13712"]
-["league_id=210", "serryid=13714"]
-["league_id=210", "serryid=13715"]
-["league_id=210", "serryid=16863"]
-["league_id=210", "serryid=19081"]
-["league_id=210", "serryid=20213"]
-["league_id=210", "serryid=20242"]
