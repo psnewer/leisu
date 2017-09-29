@@ -63,5 +63,4 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 					if mean_score > mean_std:
 						continue
 			delete_row.append(idx)
-		df.drop(delete_row,inplace=True)
-		return df
+		return delete_row

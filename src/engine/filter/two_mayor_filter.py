@@ -21,5 +21,4 @@ class TWO_MAYOR_FILTER(ABSTRACT_FILTER):
 				if row['TWO_MAYOR_FEATURE'] == self.params['tar']:
 					continue
 			delete_row.append(idx)
-		df.drop(delete_row,inplace=True)
-		return df
+		return delete_row

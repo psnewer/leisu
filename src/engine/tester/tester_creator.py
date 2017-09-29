@@ -17,7 +17,8 @@ class Tester_Creator(object):
 		for tester in str_testers:
 			_testerstr = tester['name']+'()'
 			tester_ins = eval(_testerstr)
-			self.testers[tester['name']] = tester_ins
+			tester_ins.setParams(tester['params'])
+			self.testers[tester['flag']] = tester_ins
 		test_final = open(gflags.FLAGS.test_final,'w+')
 		test_final.close()
 		test_res = open(gflags.FLAGS.res_test,'w+')
@@ -25,9 +26,8 @@ class Tester_Creator(object):
 	
 	def set_tester(self,tester_list):
 		self.tester_cand = []
-		for dic in tester_list:
-			self.testers[dic['name']].setParams(dic['params'])
-			self.tester_cand.append(dic['name'])
+		for tester in tester_list:
+			self.tester_cand.append(tester)
 
 	def execute(self,condition):
 		self.process(condition)
@@ -35,10 +35,11 @@ class Tester_Creator(object):
 	def process(self,condition):
 		team_res = self.feature_creator.execute(condition,action='test')
 		if team_res != []:
-			self.test(condition,team_res)
+			self.filter_creator.execute(team_res)
 	
-	def test(self,condition,team_res):
-		df_filter = self.filter_creator.execute(team_res)
+	def test(self,filters,testers,condition):
+		self.set_tester(testers)
 		for tester in self.tester_cand:
+			df_filter = self.filter_creator.get_filtered(filters)
 			self.testers[tester].analysis(condition,df_filter)
 						

@@ -13,20 +13,17 @@ from conf import *
 class Processor(object):
 	def __init__(self):
 		global conn
-		self.algs = dict()
-		self.testers = dict()
 		self.experiments = dict()
-		f_algs = open(gflags.FLAGS.alg_path, 'r')
-		data_algs = json.load(f_algs)
-		str_algs = data_algs['feature']
-		str_testers = data_algs['tester']
-		str_filters = data_algs['filter']
-		self.feature_creator = Feature_Creator(str_algs)
-		self.filter_creator = Filter_Creator(str_filters)
-		self.tester_creator = Tester_Creator(str_testers,self.feature_creator,self.filter_creator)
-		f_experiment = open(gflags.FLAGS.experiment_path, 'r')
-		data_experiment = json.load(f_experiment)
-		for exp in data_experiment:
+		f_exp = open(gflags.FLAGS.experiment_path, 'r')
+		data_algs = json.load(f_exp)
+		features = data_algs['features']
+		filters = data_algs['filters']
+		testers = data_algs['testers']
+		experiments = data_algs['experiments']
+		self.feature_creator = Feature_Creator(features)
+		self.filter_creator = Filter_Creator(filters)
+		self.tester_creator = Tester_Creator(testers,self.feature_creator,self.filter_creator)
+		for exp in experiments:
 			experiment_id = exp['experiment_id']
 			algs = exp['algs']
 			testers = exp['testers']
@@ -41,8 +38,7 @@ class Processor(object):
 				self.experiments[experiment_id]['filter'].append(filter)
 			for tester in testers:
 				self.experiments[experiment_id]['tester'].append(tester)
-		f_algs.close()
-		f_experiment.close()
+		f_exp.close()
 
 	def process(self):
 		f_buckets = open(gflags.FLAGS.buckets_path, 'r')
@@ -66,15 +62,12 @@ class Processor(object):
 		for bucket in buckets:
 			experiment_id = bucket['experiment_id']
 			exp = self.experiments[experiment_id]
-			features = exp['feature']
 			testers = exp['tester']
 			filters = exp['filter']
 			cands = bucket['condition']
-			self.tester_creator.feature_creator.set_features(features)
-			self.tester_creator.filter_creator.set_filters(filters)
-			self.tester_creator.set_tester(testers)
  			for cand in cands:
 				self.tester_creator.execute(cand)
+				self.tester_creator.test(filters,testers,cand)
 		f_buckets.close()
 
 	def group(self):

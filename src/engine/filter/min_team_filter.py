@@ -30,5 +30,4 @@ class MIN_TEAM_FILTER(ABSTRACT_FILTER):
 			if (num_yes > 0 and num_yes > num_no):
 				continue
 			delete_row.append(idx)
-		df.drop(delete_row,inplace=True)
-		return df
+		return delete_row

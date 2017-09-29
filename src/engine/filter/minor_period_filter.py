@@ -21,5 +21,4 @@ class MINOR_PERIOD_FILTER(ABSTRACT_FILTER):
 				if row['MINOR_PERIOD_FEATURE'] == self.params['tar']:
 					continue
 			delete_row.append(idx)
-		df.drop(delete_row,inplace=True)
-		return df
+		return delete_row

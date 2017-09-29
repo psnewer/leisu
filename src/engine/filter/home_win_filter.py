@@ -44,5 +44,4 @@ class HOME_WIN_FILTER(ABSTRACT_FILTER):
 							break
 			if (not signal):
 				delete_row.append(idx)
-		df.drop(delete_row,inplace=True)
-		return df
+		return delete_row

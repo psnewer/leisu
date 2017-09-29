@@ -19,20 +19,32 @@ class Filter_Creator(object):
 		for filter in str_filters:
 			filterstr = filter['name']+'()'
 			filter_ins = eval(filterstr)
-			self.filters[filter['name']] = filter_ins
+			filter_ins.setParams(filter['params'])
+			self.filters[filter['flag']] = filter_ins
+			self.filter_cand.append(filter['flag'])
+		self.filter_res = {}
 	
 	def set_filters(self,filter_list):
 		self.filter_cand = []
 		for filter in filter_list:
-			self.filter_cand.append(filter['name'])
-			self.filters[filter['name']].setParams(filter['params'])
+			self.filter_cand.append(filter)
 
 	def execute(self,feature_list):
 		df = pd.DataFrame(feature_list)
 		df = df.groupby(['date','team_id'],as_index=False).agg(lambda x: x[x.notnull()].tail(1))
+		self.df = df
 		for filter in self.filter_cand:
 			filter_ins = self.filters[filter]
-			df = filter_ins.filter(df)
-		return df
+			df_delist = filter_ins.filter(df)
+			self.filter_res[filter] = df_delist
+
+	def get_filtered(self,filter_list):
+		if self.df is None:
+			return
+		delete_list = []
+		for filter in filter_list:
+			delete_list.extend(self.filter_res[filter])
+		delete_list = list(set(delete_list))
+		return self.df.drop(delete_list,inplace=False)
 
 						

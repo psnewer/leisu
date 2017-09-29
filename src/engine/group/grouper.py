@@ -31,16 +31,14 @@ class Grouper(object):
 		f_group = open(gflags.FLAGS.group_path, 'r')
 		for row in f_group:
 			cond = json.loads(row)
+			self.tester_creator.execute(cond)
 			for experiment_id in self.experiments:
 				GlobalVar.set_experimentId(experiment_id)	
 				exp = self.experiments[experiment_id]
 				features = exp['feature']
 				filters = exp['filter']
 				testers = exp['tester']
-				self.tester_creator.feature_creator.set_features(features)
-				self.tester_creator.filter_creator.set_filters(filters)
-				self.tester_creator.set_tester(testers)
-				self.tester_creator.execute(cond)
+				self.tester_creator.test(filters,testers,cond)
 		f_group.close()
 
 	def analysis(self):
