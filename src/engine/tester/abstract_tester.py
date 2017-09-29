@@ -9,9 +9,8 @@ import codecs
 import pandas as pd
 
 class ABSTRACT_TESTER():
-	params = {}
-
 	def __init__(self):
+		self.params = {}
 		self.name = 'ABSTRACT_TESTER'
 
 	def setParams(self,params):

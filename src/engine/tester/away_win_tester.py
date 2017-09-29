@@ -10,6 +10,8 @@ import pandas as pd
 class AWAT_WIN_TESTER(ABSTRACT_TESTER):
 	def __init__(self):
 		self.name = 'AWAY_WIN_TESTER'
+		self.params = {}
+		self.params['lateral'] = 1
 
 	def get_team_tar(self,row):
 		if row['home_goal'] < row['away_goal'] :

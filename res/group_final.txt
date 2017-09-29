@@ -1,4 +1,4 @@
-{"all_fail": 40, "kind": "min_goal", "c0_succ": 52, "c0_fail": 40, "league_id": 210, "all_succ": 52, "c2_succ": 0, "c2_id": 0, "all_id": 11, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "default", "c0_id": 11, "c1_id": 0}
-{"all_fail": 51, "kind": "may_goal", "c0_succ": 45, "c0_fail": 51, "league_id": 210, "all_succ": 45, "c2_succ": 0, "c2_id": 0, "all_id": 17, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "default", "c0_id": 17, "c1_id": 0}
+{"all_fail": 125, "kind": "min_goal", "c0_succ": 165, "c0_fail": 125, "league_id": 210, "all_succ": 165, "c2_succ": 0, "c2_id": 0, "all_id": 11, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "default", "c0_id": 11, "c1_id": 0}
+{"all_fail": 2, "kind": "may_goal", "c0_succ": 2, "c0_fail": 2, "league_id": 210, "all_succ": 2, "c2_succ": 0, "c2_id": 0, "all_id": 29, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "default", "c0_id": 29, "c1_id": 0}
 {"all_fail": 0, "kind": "min_goal", "c1_id": 0, "c0_fail": 0, "league_id": 210, "all_succ": 0, "c2_succ": 0, "c2_id": 0, "all_id": 0, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "升班附加赛", "c0_id": 0, "c0_succ": 0}
 {"all_fail": 0, "kind": "may_goal", "c1_id": 0, "c0_fail": 0, "league_id": 210, "all_succ": 0, "c2_succ": 0, "c2_id": 0, "all_id": 0, "c1_succ": 0, "c2_fail": 0, "c1_fail": 0, "serryname": "升班附加赛", "c0_id": 0, "c0_succ": 0}
