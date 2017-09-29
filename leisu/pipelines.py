@@ -34,10 +34,3 @@ class JsonPipeline(object):
 		self.exporter.export_item(item)
 		return item
 
-#    def spider_closed(self, spider):
-#        self.exporter.finish_exporting()
-#        self.file.close()
-#		today=time.strftime("%Y%m%d", time.localtime())
-#		os.system('mkdir /Users/miller/Documents/workspace/leisu/log/"%s"'%today)
-#		os.system('mv /Users/miller/Documents/workspace/leisu/log/* /Users/miller/Documents/workspace/leisu/log/"%s"'%today)
-#

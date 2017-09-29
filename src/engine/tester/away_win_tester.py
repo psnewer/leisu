@@ -6,8 +6,9 @@ import gflags
 import math
 import json
 import pandas as pd
+from abstract_tester import *
 
-class AWAT_WIN_TESTER(ABSTRACT_TESTER):
+class AWAY_WIN_TESTER(ABSTRACT_TESTER):
 	def __init__(self):
 		self.name = 'AWAY_WIN_TESTER'
 		self.params = {}
@@ -18,5 +19,5 @@ class AWAT_WIN_TESTER(ABSTRACT_TESTER):
 			return 1
 		elif row['home_goal'] > row['away_goal'] :
 			return 2
-		elif 
+		else: 
 			return 0
