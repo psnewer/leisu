@@ -20,7 +20,7 @@ NEWSPIDER_MODULE = 'leisu.spiders'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-
+#LOG_LEVEL = 'DEBUG'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -33,7 +33,6 @@ ROBOTSTXT_OBEY = False
 #CONCURRENT_REQUESTS_PER_IP = 16
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
-
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
@@ -64,7 +63,8 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'leisu.pipelines.JsonPipeline': 300,
+    'leisu.pipelines.MatchPipeline': 300,
+	'leisu.pipelines.OddsPipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

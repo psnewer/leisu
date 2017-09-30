@@ -20,7 +20,7 @@ from dateutil.parser import parse
 
 gflags.DEFINE_bool('ignore', False, 'ignore new name')
 
-matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/items.json'
+matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/matches.json'
 idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
 db = '/Users/miller/Desktop/soccer.db'
 errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'

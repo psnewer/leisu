@@ -7,7 +7,7 @@ import logging
 import logging.config
 import datetime
 from datetime import timedelta, datetime
-from leisu.items import Match
+from leisu.items import Match,Odds
 
 class SlSpider(scrapy.Spider):
 	name = 'sl'
@@ -118,9 +118,3 @@ class SlSpider(scrapy.Spider):
 				match['home_goal'] = home_goal
 				match['away_goal'] = away_goal
 				yield match
-			
-			
-			
-			 
-
-

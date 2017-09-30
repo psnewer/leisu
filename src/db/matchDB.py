@@ -15,7 +15,7 @@ import sys
 import string
 from dateutil.parser import parse
 
-matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/items.json'
+matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/matches.json'
 idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
 tips_file = '/Users/miller/Documents/workspace/leisu/src/db/name_tips.json'
 db = '/Users/miller/Desktop/soccer.db'

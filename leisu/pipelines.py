@@ -7,14 +7,15 @@ import time
 import collections
 from scrapy import signals
 from scrapy.exporters import JsonLinesItemExporter
+from leisu.items import Match,Odds
 
 class CustomJsonLinesItemExporter(JsonLinesItemExporter):  
     def __init__(self, file, **kwargs):  
         super(CustomJsonLinesItemExporter, self).__init__(file, ensure_ascii=False, **kwargs)
 
-class JsonPipeline(object):
+class MatchPipeline(object):
 	def __init__(self):
-		self.file = open('/Users/miller/Documents/workspace/leisu/leisu/items.json', 'wb')
+		self.file = open('/Users/miller/Documents/workspace/leisu/leisu/matches.json', 'wb')
 		self.exporter = CustomJsonLinesItemExporter(self.file)
 		self.exporter.fields_to_export = [
 				'continent',
@@ -31,6 +32,31 @@ class JsonPipeline(object):
 				'away_goal']
 
 	def process_item(self, item, spider):
-		self.exporter.export_item(item)
+		if spider.name == 'sl':
+			self.exporter.export_item(item)
 		return item
 
+class OddsPipeline(object):
+	def __init__(self):
+		self.file = open('/Users/miller/Documents/workspace/leisu/leisu/odds.json', 'wb')
+		self.exporter = CustomJsonLinesItemExporter(self.file)
+		self.exporter.fields_to_export = [
+				'league',
+				'season',
+				'date',
+				'home_team_id',
+				'away_team_id',
+				'rangzhu',
+				'rangpan',
+				'rangke',
+				'biaozhu',
+				'biaoping',
+				'biaoke',
+				'da',
+				'dapan',
+				'xiao']
+
+	def process_item(self, item, spider):
+		if spider.name == 'odds':
+			self.exporter.export_item(item)
+		return item
