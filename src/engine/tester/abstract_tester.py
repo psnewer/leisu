@@ -40,7 +40,7 @@ class ABSTRACT_TESTER():
 				if (res == 1):
 					date_dic['posi_home_team'].append(row['home_team_id'])
 					date_dic['posi_away_team'].append(row['away_team_id'])
-				elif (res==2):
+				elif (res==2 or res==0):
 					date_dic['neg_home_team'].append(row['home_team_id'])
 					date_dic['neg_away_team'].append(row['away_team_id'])
 				date_dic['teams'].append(row['home_team_id'])
@@ -63,31 +63,63 @@ class ABSTRACT_TESTER():
 			if (self.params['lateral'] == 1):
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
+					_res = {}
+					_res['name'] = self.name
+					_res['date'] = date
+					_res['home_team'] = home_team
+					_res['away_team'] = away_team
 					if home_team in team_id:
 						succ = succ + 1
-						f_res.write("success match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
+						_res['res'] = 1
+						_res_str = json.dumps(_res)
+						f_res.write(_res_str + '\n')
 					elif away_team in team_id:
 						succ = succ + 1
-						f_res.write("success match: " + "date: " + date + " away_team: " + str(away_team) + '\n')
+						_res['res'] = 1
+						_res_str = json.dumps(_res)
+						f_res.write(_res_str + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
+					_res = {}
+					_res['name'] = self.name
+					_res['date'] = date
+					_res['home_team'] = home_team
+					_res['away_team'] = away_team
 					if home_team in team_id:
 						fail = fail + 1
-						f_res.write("failure match: " + "date: " + date + " home_team: " + str(home_team) + '\n')
+						_res['res'] = 2
+						_res_str = json.dumps(_res)
+						f_res.write(_res_str + '\n')
 					elif away_team in team_id:
 						fail = fail + 1
-						f_res.write("failure match: " + "date: " + date + " away_team: " + str(away_team) + '\n')
+						_res['res'] = 2
+						_res_str = json.dumps(_res)
+						f_res.write(_res_str + '\n')
 			else:
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
+					_res = {}
+					_res['name'] = self.name
+					_res['date'] = date
+					_res['home_team'] = home_team
+					_res['away_team'] = away_team
 					if home_team in team_id and away_team in team_id:
 						succ = succ + 1
-						f_res.write("success match: " + "date: " + date + " team: " + str(home_team) + "," + str(away_team) + '\n')
+						_res['res'] = 1
+						_res_str = json.dumps(_res)
+						f_res.write(_res_str + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
+					_res = {}
+					_res['name'] = self.name
+					_res['date'] = date
+					_res['home_team'] = home_team
+					_res['away_team'] = away_team
 					if home_team in team_id and away_team in team_id:
 						fail = fail + 1
-						f_res.write("failure match: " + "date: " + date + " team: " + str(home_team) + "," + str(away_team) + '\n')
+						_res['res'] = 2
+						_res_str = json.dumps(_res)
+						f_res.write(_res_str + '\n')
 		dic_ = {}
 		dic_['success'] = succ
 		dic_['failure'] = fail

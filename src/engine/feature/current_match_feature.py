@@ -61,8 +61,8 @@ class CURRENT_MATCH_FEATURE(ABSTRACT_FEATURE):
 				res_dic['date'] = df_stage.iloc[-1]['date']
 				res = self.process(df_stage,team)
 				res_dic[self.name] = res
-				res_str = json.dumps(res_dic)
-				res_test.write(res_str+'\n')
+#				res_str = json.dumps(res_dic)
+#				res_test.write(res_str+'\n')
 				team_res.append(res_dic)
 		res_test.close()
 		return team_res

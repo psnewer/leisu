@@ -23,6 +23,7 @@ class Filter_Creator(object):
 			self.filters[filter['flag']] = filter_ins
 			self.filter_cand.append(filter['flag'])
 		self.filter_res = {}
+		self.df = None
 	
 	def set_filters(self,filter_list):
 		self.filter_cand = []

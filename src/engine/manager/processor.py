@@ -8,6 +8,7 @@ from feature_creator import *
 from filter_creator import *
 from tester_creator import *
 from grouper import *
+from oddsgrouper import *
 from conf import *
 
 class Processor(object):
@@ -71,7 +72,7 @@ class Processor(object):
 		f_buckets.close()
 
 	def group(self):
-		grouper = Grouper(self.feature_creator,self.tester_creator,self.experiments)
+		grouper = OddsGrouper(self.feature_creator,self.tester_creator,self.experiments)
 		grouper.execute()		
 
 	def close(self):

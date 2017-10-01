@@ -37,15 +37,15 @@ def saveOdds(filepath, idspath):
 		league_id = -1
 		home_team_id = -1
 		away_team_id = -1
-		rangzhu = -1
-		rangpan = -1
-		rangke = -1
-		biaozhu = -1
-		biaoping = -1
-		biaoke = -1
-		da = -1
-		dapan = -1
-		xiao = -1
+		rangzhu = 0
+		rangpan = 0
+		rangke = 0
+		biaozhu = 0
+		biaoping = 0
+		biaoke = 0
+		da = 0
+		dapan = 0
+		xiao = 0
 		if league in ids:
 			league_id = ids[league]
 		else:

@@ -70,8 +70,8 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 			df_date = df.query("date=='%s'"%date)
 			res = self.process(df_date,df_league,serries)
 			for _res in res:
-				res_str = json.dumps(_res)
-				res_test.write(res_str+'\n')
+#				res_str = json.dumps(_res)
+#				res_test.write(res_str+'\n')
 				team_res.append(_res)
 		res_test.close()
 		return team_res

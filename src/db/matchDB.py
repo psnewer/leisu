@@ -30,12 +30,12 @@ def saveMatch(filepath, idspath):
 	ids = json.load(idsdata)
 	nametip = codecs.open(tips_file,'r+',encoding='utf-8')
 	name_tips = json.load(nametip)
-	continent_id = 0
-	country_id = 0
-	league_id = 0
-	home_team_id = 0
-	away_team_id = 0
 	for row in data:
+		continent_id = 0
+		country_id = 0
+		league_id = 0
+		home_team_id = 0
+		away_team_id = 0
 		rowdata = json.loads(row)
 		continent = rowdata['continent']
 		country = rowdata['country']

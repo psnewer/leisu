@@ -23,7 +23,6 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from TMatch where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
-		df = conciseDate(df)
 		df = df.sort_values(by='date')
 		league_id = df.iloc[-1]['league_id']
 		last_date = df.iloc[-1]['date']
@@ -32,6 +31,7 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 		df_league = pd.read_sql_query(sql_str,conn)
 		df_league = conciseDate(df_league)
 		serries = df_league['serryid'].unique()
+		df = conciseDate(df)
 		dates = df['date'].unique()
 		f_res = open(gflags.FLAGS.res_path,'a+')
 		for date in dates:
@@ -48,7 +48,6 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 		df = pd.read_sql_query(sql_str,conn)
 		if len(df) < 1 :
 			return []
-		df = conciseDate(df)
 		df = df.sort_values(by='date')
 		league_id = df.iloc[-1]['league_id']
 		last_date = df.iloc[-1]['date']
@@ -57,6 +56,7 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 		df_league = pd.read_sql_query(sql_str,conn)
 		df_league = conciseDate(df_league)
 		serries = df_league['serryid'].unique()
+		df = conciseDate(df)
 		dates = df['date'].unique()
 		team_res = []
 		res_test = open(gflags.FLAGS.res_test,'a+')
@@ -64,8 +64,8 @@ class PRE_VS_FEATURE(ABSTRACT_FEATURE):
 			df_date = df.query("date=='%s'"%date)
 			res = self.process(df_date,df_league,serries)
 			for _res in res:
-				res_str = json.dumps(_res)
-				res_test.write(res_str+'\n')
+#				res_str = json.dumps(_res)
+#				res_test.write(res_str+'\n')
 				team_res.append(_res)
 		res_test.close()
 		return team_res

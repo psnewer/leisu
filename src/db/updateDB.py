@@ -79,12 +79,12 @@ def saveMatch(filepath, idspath):
 	data = open(filepath)
 	idsdata = codecs.open(idspath,'r+',encoding='utf-8')
 	ids = json.load(idsdata)
-	continent_id = 0
-	country_id = 0
-	league_id = 0
-	home_team_id = 0
-	away_team_id = 0
 	for row in data:
+		continent_id = 0
+		country_id = 0
+		league_id = 0
+		home_team_id = 0
+		away_team_id = 0
 		rowdata = json.loads(row)
 		continent = rowdata['continent']
 		country = rowdata['country']

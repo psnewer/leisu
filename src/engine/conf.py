@@ -13,6 +13,7 @@ sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/group/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/manager/')
 
 conn = sqlite3.connect('/Users/miller/Desktop/soccer.db')
+cur = conn.cursor()
 
 class GlobalVar:
 	id_experiment = 0

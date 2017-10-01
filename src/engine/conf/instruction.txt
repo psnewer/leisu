@@ -17,4 +17,6 @@
 tester posi:1
 tester neg:2
 tester mid:0
-
+猜对:1
+猜错:2
+退款:0

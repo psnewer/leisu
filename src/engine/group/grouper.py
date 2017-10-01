@@ -48,8 +48,8 @@ class Grouper(object):
 		f_group_final = codecs.open(gflags.FLAGS.group_final, 'a+', encoding='utf-8')
 		res_list = []
 		for row in f_exp:
-			if row.startswith('{'):
-				res_dic = json.loads(row)
+			res_dic = json.loads(row)
+			if 'experiment_id' in res_dic:
 				res_list.append(res_dic)
 		df =pd.DataFrame(res_list)[['league_id','serryname','last_date','experiment_id','success','failure']]
 		df.to_csv(gflags.FLAGS.group_detail,encoding='utf-8')
