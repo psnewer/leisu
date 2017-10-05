@@ -3,6 +3,8 @@
 
 import sys
 import os
+import json
+import numpy
 import sqlite3
 import pandas as pd
 sys.path.append(os.path.split(os.path.realpath(__file__))[0])
@@ -29,3 +31,10 @@ class GlobalVar:
 def conciseDate(df):
 	df['date']=df['date'].apply(lambda x:x[0:8])
 	return df
+
+class GenEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, numpy.int64):
+            return int(obj)
+        else:
+            return super(GenEncoder, self).default(obj)

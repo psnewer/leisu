@@ -63,7 +63,7 @@ class Grouper(object):
 			for serryname in serrynames:
 				df_serryname = df_league[df_league.serryname==serryname]
 				for kind in kinds:
- 					kind_name = kind['name']
+					kind_name = kind['name']
 					exps = kind['exps']
 					min_all = 100.0
 					min_c0 = 100.0

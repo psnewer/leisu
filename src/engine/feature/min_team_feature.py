@@ -17,13 +17,13 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		self.params['mayrt'] = 0.7
 		self.params['min_num'] = 8
 	
-	def execute(self,condition,action):
+	def execute(self,condition,action,feature_log):
 		if (action == 'predict'):
 			return self.execute_predict(condition)
 		elif (action == 'test'):
-			return self.execute_test(condition)
+			return self.execute_test(condition,feature_log)
 			
-	def execute_predict(self,condition):
+	def execute_predict(self,condition,feature_log):
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from TMatch where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
@@ -39,16 +39,14 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		df_league = conciseDate(df_league)
 		serries = df_league['serryid'].unique()
 		dates = df['date'].unique()
-		f_res = open(gflags.FLAGS.res_path,'a+')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
 			res = self.process(df_date,df_league,serries)
 			for _res in res:
 				res_str = json.dumps(_res)
-				res_test.write(_res+'\n')
-		f_res.close()
+				feature_log.write(_res+'\n')
 
-	def execute_test(self,condition):
+	def execute_test(self,condition,feature_log):
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
@@ -65,15 +63,13 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		serries = df_league['serryid'].unique()
 		dates = df['date'].unique()
 		team_res = []
-		res_test = open(gflags.FLAGS.res_test,'a+')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
 			res = self.process(df_date,df_league,serries)
 			for _res in res:
-#				res_str = json.dumps(_res)
-#				res_test.write(res_str+'\n')
+				res_str = json.dumps(_res,cls=GenEncoder)
+				feature_log.write(res_str+'\n')
 				team_res.append(_res)
-		res_test.close()
 		return team_res
 
 	def process(self,df_date,df_league,serries):

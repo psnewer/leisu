@@ -17,7 +17,7 @@ class ABSTRACT_TESTER():
 		for key in params:
 			self.params[key] = params[key]
 
-	def analysis(self,condition,df_team):
+	def analysis(self,condition,df_team,tester_log):
 		res_list = []
 		feature_list = []
 		cond_str = ' and '.join(condition)
@@ -25,7 +25,6 @@ class ABSTRACT_TESTER():
 		df = pd.read_sql_query(sql_str,conn)
 		df = conciseDate(df)
 		dates = df['date'].unique()
-		f_res = codecs.open(gflags.FLAGS.test_final,'a+',encoding='utf-8')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
 			date_dic = {}
@@ -72,12 +71,12 @@ class ABSTRACT_TESTER():
 						succ = succ + 1
 						_res['res'] = 1
 						_res_str = json.dumps(_res)
-						f_res.write(_res_str + '\n')
+						tester_log.write(_res_str + '\n')
 					elif away_team in team_id:
 						succ = succ + 1
 						_res['res'] = 1
 						_res_str = json.dumps(_res)
-						f_res.write(_res_str + '\n')
+						tester_log.write(_res_str + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
 					_res = {}
@@ -89,12 +88,12 @@ class ABSTRACT_TESTER():
 						fail = fail + 1
 						_res['res'] = 2
 						_res_str = json.dumps(_res)
-						f_res.write(_res_str + '\n')
+						tester_log.write(_res_str + '\n')
 					elif away_team in team_id:
 						fail = fail + 1
 						_res['res'] = 2
 						_res_str = json.dumps(_res)
-						f_res.write(_res_str + '\n')
+						tester_log.write(_res_str + '\n')
 			else:
 				for idx,home_team in enumerate(posi_home_team):
 					away_team = posi_away_team[idx]
@@ -107,7 +106,7 @@ class ABSTRACT_TESTER():
 						succ = succ + 1
 						_res['res'] = 1
 						_res_str = json.dumps(_res)
-						f_res.write(_res_str + '\n')
+						tester_log.write(_res_str + '\n')
 				for idx,home_team in enumerate(neg_home_team):
 					away_team = neg_away_team[idx]
 					_res = {}
@@ -119,7 +118,7 @@ class ABSTRACT_TESTER():
 						fail = fail + 1
 						_res['res'] = 2
 						_res_str = json.dumps(_res)
-						f_res.write(_res_str + '\n')
+						tester_log.write(_res_str + '\n')
 		dic_ = {}
 		dic_['success'] = succ
 		dic_['failure'] = fail
@@ -127,9 +126,8 @@ class ABSTRACT_TESTER():
 		dic_['league_id'] = df.iloc[-1]['league_id']
 		dic_['serryname'] = df.iloc[-1]['serryname']
 		dic_['experiment_id'] = GlobalVar.get_experimentId()
-		dic_str = json.dumps(dic_,ensure_ascii=False)
-		f_res.write(dic_str+'\n')
-		f_res.close()
+		dic_str = json.dumps(dic_,cls=GenEncoder,ensure_ascii=False)
+		tester_log.write(dic_str+'\n')
 	
 	def get_team_tar(self,row):
 		return False

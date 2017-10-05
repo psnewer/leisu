@@ -9,12 +9,13 @@ from filter_creator import *
 from tester_creator import *
 from grouper import *
 from oddsgrouper import *
+from groupprocessor import *
 from conf import *
 
 class Processor(object):
 	def __init__(self):
 		global conn
-		self.experiments = dict()
+		self.experiments = {}
 		f_exp = open(gflags.FLAGS.experiment_path, 'r')
 		data_algs = json.load(f_exp)
 		features = data_algs['features']
@@ -59,20 +60,20 @@ class Processor(object):
 
 	def test(self):
 		f_buckets = open(gflags.FLAGS.buckets_path, 'r')
- 		buckets = json.load(f_buckets)
+		buckets = json.load(f_buckets)
 		for bucket in buckets:
 			experiment_id = bucket['experiment_id']
 			exp = self.experiments[experiment_id]
 			testers = exp['tester']
 			filters = exp['filter']
 			cands = bucket['condition']
- 			for cand in cands:
+			for cand in cands:
 				self.tester_creator.execute(cand)
 				self.tester_creator.test(filters,testers,cand)
 		f_buckets.close()
 
 	def group(self):
-		grouper = OddsGrouper(self.feature_creator,self.tester_creator,self.experiments)
+		grouper = OddsGrouper(self.feature_creator,self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
 		grouper.execute()		
 
 	def close(self):

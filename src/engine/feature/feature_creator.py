@@ -23,19 +23,17 @@ class Feature_Creator(object):
 			self.features[_alg['flag']] = alg_ins
 			self.feature_cand.append(_alg['flag'])
 		self.feature_res = {}
-		f_res = open(gflags.FLAGS.res_path,'w+')
-		f_res.close()
 
 	def set_features(self,feature_list):
 		self.feature_cand = []
 		for feature in feature_list:
 			self.feature_cand.append(feature)
 
-	def execute(self,condition,action):
+	def execute(self,condition,action,feature_log):
 		team_res = []
 		for feature in self.feature_cand:
 			feature_ins = self.features[feature]
-			res = feature_ins.execute(condition,action)
+			res = feature_ins.execute(condition,action,feature_log)
 			team_res.extend(res)
 		return team_res
 

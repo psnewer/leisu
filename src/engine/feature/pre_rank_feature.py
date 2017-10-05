@@ -13,11 +13,11 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 		self.params = {}
 		self.params['to_last'] = 3
 	
-	def execute(self,condition,action):
+	def execute(self,condition,action,feature_log):
 		if (action == 'predict'):
 			return self.execute_predict(condition)
 		elif (action == 'test'):
-			return self.execute_test(condition)
+			return self.execute_test(condition,feature_log)
 			
 	def execute_predict(self,condition):
 		cond_str = ' and '.join(condition)
@@ -42,7 +42,7 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 				res_test.write(_res+'\n')
 		f_res.close()
 
-	def execute_test(self,condition):
+	def execute_test(self,condition,feature_log):
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
@@ -59,15 +59,13 @@ class PRE_RANK_FEATURE(ABSTRACT_FEATURE):
 		df = conciseDate(df)
 		dates = df['date'].unique()
 		team_res = []
-		res_test = open(gflags.FLAGS.res_test,'a+')
 		for date in dates:
 			df_date = df.query("date=='%s'"%date)
 			res = self.process(df_date,df_league,serries)
 			for _res in res:
-#				res_str = json.dumps(_res)
-#				res_test.write(res_str+'\n')
+				res_str = json.dumps(_res,cls=GenEncoder)
+				feature_log.write(res_str+'\n')
 				team_res.append(_res)
-		res_test.close()
 		return team_res
 
 	def process(self,df_date,df_league,serries):
