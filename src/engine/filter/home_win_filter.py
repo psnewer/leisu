@@ -14,6 +14,7 @@ class HOME_WIN_FILTER(ABSTRACT_FILTER):
 		self.params = {}
 		self.params['area'] = 1
 		self.params['ignore'] = True
+		self.params['tolast'] = 2
 		self.params['toler_delta'] = 0
 
 	def filter(self,df):
@@ -36,7 +37,7 @@ class HOME_WIN_FILTER(ABSTRACT_FILTER):
 				home_away_score0 = float(row_to['PRE_RANK_FEATURE'][0]['score'])/row_to['PRE_RANK_FEATURE'][0]['number']
 				weight_score0 = (home_mean_score0 - home_away_score0)* row_to['PRE_RANK_FEATURE'][0]['number']
 			if weight_score0 >= self.params['toler_delta']:
-				min_length = min(2,len(row['PRE_RANK_FEATURE']))
+				min_length = min(self.params['tolast'],len(row['PRE_RANK_FEATURE']))
 				for i in range(1,min_length):
 					if row['PRE_RANK_FEATURE'][i]['number']!=0 and row_to['PRE_RANK_FEATURE'][i]['number']!=0:
 						if row['PRE_RANK_FEATURE'][i]['score'] > row_to['PRE_RANK_FEATURE'][i]['score']:

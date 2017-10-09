@@ -10,7 +10,7 @@ mkfifo $tempfifo
 exec 1000<>$tempfifo
 rm -rf $tempfifo
 
-for ((i=1; i<=8; i++))
+for ((i=1; i<=30; i++))
 do
     echo >&1000
 done
@@ -19,6 +19,8 @@ ind=0
 get_jsonObj() {
 	echo `cat $group_file | jq ".[$ind]"`
 }
+
+rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
 
 cond=`get_jsonObj`
 echo $cond

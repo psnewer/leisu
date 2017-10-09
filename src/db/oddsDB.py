@@ -21,7 +21,6 @@ db = '/Users/miller/Desktop/soccer.db'
 errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
-cur.execute('''delete from TMatch''')
 
 def saveOdds(filepath, idspath):
 	data = open(filepath)
@@ -49,19 +48,20 @@ def saveOdds(filepath, idspath):
 		if league in ids:
 			league_id = ids[league]
 		else:
-			print "league not found"
+			print (league)
+			print ("league not found")
 			break
 		if home_team in ids:
 			home_team_id = ids[home_team]
 		else:
-			print home_team
-			print "home team not found"
+			print (home_team)
+			print ("home team not found")
 			break
 		if away_team in ids:
 			away_team_id = ids[away_team]
 		else:
-			print away_team
-			print "away team not found"
+			print (away_team)
+			print ("away team not found")
 			break
 		if 'rangzhu' in rowdata:
 			rangzhu = rowdata['rangzhu']

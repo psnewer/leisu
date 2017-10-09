@@ -104,7 +104,7 @@ class OddsSpider(scrapy.Spider):
 				away_team = teams[1]
 				href = sD.xpath(u".//td/a[text()='析']/@href").re_first('(.+)')
 				url = 'https:' + href
-				if date > '20170317':
+				if date > '20170317' and date <= today:
 					yield scrapy.Request(url, callback=self.parseStatistic, meta={'season':season, 'league':league, 'date':date, 'home_team':home_team, 'away_team':away_team})
 			
 	def parseStatistic(self, response):
@@ -167,7 +167,6 @@ class OddsSpider(scrapy.Spider):
 					clear3 = True
 			if clear1 and clear2 and clear3:
 				break
-		print odds
 		yield odds
 			
 			

@@ -11,6 +11,7 @@ from current_score_filter import *
 from home_win_filter import *
 from min_team_filter import *
 from vs_filter import *
+from counter_vs_filter import *
 
 class Filter_Creator(object):
 	def __init__(self,str_filters):
@@ -32,6 +33,7 @@ class Filter_Creator(object):
 
 	def execute(self,feature_list):
 		df = pd.DataFrame(feature_list)
+		df.to_csv('/Users/miller/Documents/workspace/leisu/src/engine/log.txt')
 		df = df.groupby(['date','team_id'],as_index=False).agg(lambda x: x[x.notnull()].tail(1))
 		self.df = df
 		for filter in self.filter_cand:
@@ -48,4 +50,3 @@ class Filter_Creator(object):
 		delete_list = list(set(delete_list))
 		return self.df.drop(delete_list,inplace=False)
 
-						

@@ -26,14 +26,23 @@ class Tester_Creator(object):
 		for tester in tester_list:
 			self.tester_cand.append(tester)
 
-	def execute(self,condition,feature_log):
-		self.process(condition,feature_log)
+	def setProcessor(self,features,filters):
+		self.feature_creator.set_features(features)
+		self.filter_creator.set_filters(filters)
 
-	def process(self,condition,feature_log):
-		team_res = self.feature_creator.execute(condition,'test',feature_log)
+	def group(self,condition,feature_log):
+		team_res = self.feature_creator.execute_test(condition,feature_log)
 		if team_res != []:
 			self.filter_creator.execute(team_res)
-	
+
+	def predict(self,league_id,serryid,df,feature_log):
+		team_res = self.feature_creator.execute_predict(league_id,serryid,df,feature_log)
+		if team_res != []:
+			self.filter_creator.execute(team_res)
+
+	def get_filtered(self,filter_list):
+		return self.filter_creator.get_filtered(filter_list)
+
 	def test(self,filters,testers,condition,tester_log):
 		self.set_tester(testers)
 		for tester in self.tester_cand:

@@ -1,11 +1,10 @@
+# -*- coding: utf-8 -*-
 import json
 import sqlite3
 import os
 import re 
-import time
 import logging
 import logging.config
-import xml.etree.ElementTree as ET
 import collections 
 import gflags
 from datetime import datetime
@@ -22,10 +21,12 @@ gflags.DEFINE_bool('ignore', False, 'ignore new name')
 
 matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/matches.json'
 idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
+tips_file = '/Users/miller/Documents/workspace/leisu/src/db/name_tips.json'
 db = '/Users/miller/Desktop/soccer.db'
-errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
+cur.execute('''drop Table TMatch''')
+cur.execute('''CREATE TABLE `TMatch` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname`    TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, date, home_team_id, away_team_id))''')
 
 def check(filepath, idspath):
 	logging.config.fileConfig("/Users/miller/Documents/workspace/leisu/log/logging.conf")
@@ -40,7 +41,8 @@ def check(filepath, idspath):
 		country = rowdata['country']
 		league = rowdata['league']
 		season = rowdata['season']
-		serry = rowdata['serry']
+		serryid = rowdata['serryid']
+		serryname = rowdata['serryname']
 		stage = rowdata['stage']
 		date = rowdata['date']
 		home_team = rowdata['home_team']
@@ -50,23 +52,18 @@ def check(filepath, idspath):
 		if continent not in ids:
 			logdb.error("new continent id : " + continet)
 			signal = True
-			break
 		if country not in ids:
 			logdb.error("new country id : " + country)
 			signal = True
-			break
 		if league not in ids:
 			logdb.error("new league id : " + league)
 			signal = True
-			break
 		if home_team not in ids:
 			logdb.error("new home_team id : " + home_team)
 			signal = True
-			break
 		if away_team not in ids:
 			logdb.error("new away_team id : " + away_team)
 			signal = True
-			break
 	idsdata.close()
 	data.close()
 	if(signal):
@@ -79,6 +76,8 @@ def saveMatch(filepath, idspath):
 	data = open(filepath)
 	idsdata = codecs.open(idspath,'r+',encoding='utf-8')
 	ids = json.load(idsdata)
+	nametip = codecs.open(tips_file,'r+',encoding='utf-8')
+	name_tips = json.load(nametip)
 	for row in data:
 		continent_id = 0
 		country_id = 0
@@ -90,13 +89,18 @@ def saveMatch(filepath, idspath):
 		country = rowdata['country']
 		league = rowdata['league']
 		season = rowdata['season']
-		serry = rowdata['serry']
 		stage = rowdata['stage']
+		serryid = rowdata['serryid']
+		serryname = rowdata['serryname']
 		date = rowdata['date']
 		home_team = rowdata['home_team']
 		away_team = rowdata['away_team']
 		home_goal= rowdata['home_goal']
 		away_goal = rowdata['away_goal']
+		if serryname is None:
+			serryname = 'default'
+		elif serryname in name_tips:
+			serryname = name_tips[serryname]
 		if continent not in ids and gflags.FLAGS.ignore:
 			cur.execute('''INSERT OR IGNORE INTO Continent (name) VALUES ( ? )''', (continent, ) )
 			cur.execute('SELECT id FROM Continent WHERE name = ? ', (continent, ))
@@ -132,7 +136,10 @@ def saveMatch(filepath, idspath):
 			ids[away_team] = away_team_id
 		else:
 			away_team_id = ids[away_team]
-		cur.execute('''INSERT OR IGNORE INTO Match (continent_id,country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,home_goal,away_goal) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serry,date,stage,home_team_id,away_team_id,home_goal,away_goal,))
+		if (home_goal == -1):
+			cur.execute('''INSERT OR IGNORE INTO TMatch (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,))
+		else:
+			cur.execute('''INSERT OR IGNORE INTO Match (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal,))
 	if (gflags.FLAGS.ignore):
 		idsdata.seek(0,os.SEEK_SET)
 		json.dump(ids,idsdata, ensure_ascii=False)

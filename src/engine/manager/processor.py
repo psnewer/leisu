@@ -8,6 +8,7 @@ from feature_creator import *
 from filter_creator import *
 from tester_creator import *
 from grouper import *
+from predictor import *
 from oddsgrouper import *
 from groupprocessor import *
 from conf import *
@@ -73,8 +74,15 @@ class Processor(object):
 		f_buckets.close()
 
 	def group(self):
-		grouper = OddsGrouper(self.feature_creator,self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
-		grouper.execute()		
+		grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
+		grouper.group()
+	
+	def predict(self):
+		resfiles = gflags.FLAGS.predict_path + '*'
+		os.system(r'rm -rf %s'%resfiles)
+		predictor = Predictor(self.tester_creator,self.experiments)	
+		predictor.predict()
+		predictor.pack()	
 
 	def close(self):
 		global conn

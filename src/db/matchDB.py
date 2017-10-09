@@ -19,10 +19,20 @@ matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/matches.json
 idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
 tips_file = '/Users/miller/Documents/workspace/leisu/src/db/name_tips.json'
 db = '/Users/miller/Desktop/soccer.db'
-errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
-cur.execute('''delete from TMatch''')
+cur.execute('''drop table Continent''')
+cur.execute('''drop table Team''')
+cur.execute('''drop table Country''')
+cur.execute('''drop table League''')
+cur.execute('''drop table Match''')
+cur.execute('''drop table TMatch''')
+cur.execute('''CREATE TABLE `Continent` ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' TEXT UNIQUE)''')
+cur.execute('''CREATE TABLE "Team" (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT UNIQUE)''')
+cur.execute('''CREATE TABLE `Country` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `name` TEXT UNIQUE, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`))''')
+cur.execute('''CREATE TABLE `League` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `country_id` INTEGER, `name` TEXT UNIQUE, FOREIGN KEY(`country_id`) REFERENCES `country`(`id`))''')
+cur.execute('''CREATE TABLE `Match` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname` TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, 'home_goal' INTEGER, 'away_goal' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id))''')
+cur.execute('''CREATE TABLE `TMatch` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname`    TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id))''')
 
 def saveMatch(filepath, idspath):
 	data = open(filepath)

@@ -11,8 +11,7 @@ from min_goals_tester import *
 from conf import *
 
 class OddsGrouper():
-	def __init__(self,feature_creator,tester_creator,experiments,condition):
-		self.feature_creator = feature_creator
+	def __init__(self,tester_creator,experiments,condition):
 		self.tester_creator = tester_creator
 		self.experiments = experiments
 		condition = json.loads(condition)
@@ -29,7 +28,7 @@ class OddsGrouper():
 		self.feature_res = group_directory + '/feature_res.txt'
 		self.test_res = group_directory + '/test_res.txt'
 
-	def execute(self):
+	def group(self):
 		self.process()
 		self.analysis()
 
@@ -37,7 +36,7 @@ class OddsGrouper():
 		feature_res = open(self.feature_res,'w+')
 		test_res = open(self.test_res,'w+')
 		for cond in self.conditions:
-			self.tester_creator.execute(cond,feature_log=feature_res)
+			self.tester_creator.group(cond,feature_log=feature_res)
 			for experiment_id in self.experiments:
 				GlobalVar.set_experimentId(experiment_id)
 				exp = self.experiments[experiment_id]
@@ -123,18 +122,30 @@ class OddsGrouper():
 						if (all_profit > max_allprofit):
 							dic_res['all_profit'] = all_profit
 							dic_res['all_p_id'] = exp
+							dic_res['all_p_succ'] = all_succ
+							dic_res['all_p_fail'] = all_fail
+							dic_res['all_meanPorift'] = all_profit/(all_succ+all_fail)
 							max_allprofit = all_profit
 						if (current_profit0 > max_c0profit):
 							dic_res['c0_profit'] = current_profit0
 							dic_res['c0_p_id'] = exp
+							dic_res['c0_p_succ'] = current_succ0
+							dic_res['c0_p_fail'] = current_fail0
+							dic_res['c0_meanPorift'] = current_profit0/(current_succ0+current_fail0)
 							max_c0profit = current_profit0
 						if (current_profit1 > max_c1profit):
 							dic_res['c1_profit'] = current_profit1
 							dic_res['c1_p_id'] = exp
+							dic_res['c1_p_succ'] = current_succ1
+							dic_res['c1_p_fail'] = current_fail1
+							dic_res['c1_meanPorift'] = current_profit1/(current_succ1+current_fail1)
 							max_c1profit = current_profit1
 						if (current_profit2 > max_c2profit):
 							dic_res['c2_profit'] = current_profit2
 							dic_res['c2_p_id'] = exp
+							dic_res['c2_p_succ'] = current_succ2
+							dic_res['c2_p_fail'] = current_fail2
+							dic_res['c2_meanPorift'] = current_profit2/(current_succ2+current_fail2)
 							max_c2profit = current_profit2
 					if ('all_id' not in dic_res):
 						dic_res['all_id'] = 0
@@ -155,15 +166,27 @@ class OddsGrouper():
 					if ('all_p_id' not in dic_res):
 						dic_res['all_p_id'] = 0
 						dic_res['all_profit'] = 0
+						dic_res['all_p_succ'] = 0
+						dic_res['all_p_fail'] = 0
+						dic_res['all_meanPorift'] = 0.0
 					if ('c2_p_id' not in dic_res):
 						dic_res['c2_p_id'] = 0
 						dic_res['c2_profit'] = 0
+						dic_res['c2_p_succ'] = 0
+						dic_res['c2_p_fail'] = 0
+						dic_res['c2_meanPorift'] = 0.0
 					if ('c1_p_id' not in dic_res):
 						dic_res['c1_p_id'] = 0
 						dic_res['c1_profit'] = 0
+						dic_res['c1_p_succ'] = 0
+						dic_res['c1_p_fail'] = 0
+						dic_res['c1_meanPorift'] = 0.0
 					if ('c0_p_id' not in dic_res):
 						dic_res['c0_p_id'] = 0
 						dic_res['c0_profit'] = 0
+						dic_res['c0_p_succ'] = 0
+						dic_res['c0_p_fail'] = 0
+						dic_res['c0_meanPorift'] = 0.0
 					dic_res_str = json.dumps(dic_res,cls=GenEncoder,ensure_ascii=False)
 					group_final.write(dic_res_str+'\n')
 		f_kind.close()

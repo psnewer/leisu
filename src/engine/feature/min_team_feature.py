@@ -17,34 +17,19 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		self.params['mayrt'] = 0.7
 		self.params['min_num'] = 8
 	
-	def execute(self,condition,action,feature_log):
-		if (action == 'predict'):
-			return self.execute_predict(condition)
-		elif (action == 'test'):
-			return self.execute_test(condition,feature_log)
-			
-	def execute_predict(self,condition,feature_log):
-		cond_str = ' and '.join(condition)
-		sql_str = "select * from TMatch where %s"%(cond_str)
-		df = pd.read_sql_query(sql_str,conn)
-		if len(df) < 1:
-			return
-		df = conciseDate(df)
-		df = df.sort_values(by='date')
-		league_id = df.iloc[-1]['league_id']
-		last_date = df.iloc[-1]['date']
-		serryname = df.iloc[-1]['serryname']
-		sql_str = "select * from Match where league_id=%d and serryname='%s' and date <= '%s'"%(league_id,serryname,last_date)
+	def execute_predict(self,league_id,serryid,df_serry,feature_log):
+		team_res = []
+		serryname = df_serry.iloc[-1]['serryname']
+		sql_str = "select * from Match where league_id=%d and serryname='%s'"%(league_id,serryname)
 		df_league = pd.read_sql_query(sql_str,conn)
 		df_league = conciseDate(df_league)
 		serries = df_league['serryid'].unique()
-		dates = df['date'].unique()
-		for date in dates:
-			df_date = df.query("date=='%s'"%date)
-			res = self.process(df_date,df_league,serries)
-			for _res in res:
-				res_str = json.dumps(_res)
-				feature_log.write(_res+'\n')
+		res = self.process(df_serry,df_league,serries)
+		for _res in res:
+			res_str = json.dumps(_res,cls=GenEncoder)
+			feature_log.write(res_str+'\n')
+			team_res.append(_res)
+		return team_res
 
 	def execute_test(self,condition,feature_log):
 		cond_str = ' and '.join(condition)
@@ -52,7 +37,6 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		df = pd.read_sql_query(sql_str,conn)
 		if len(df) < 1:
 			return []
-		df = conciseDate(df)
 		df = df.sort_values(by='date')
 		league_id = df.iloc[-1]['league_id']
 		last_date = df.iloc[-1]['date']
@@ -60,6 +44,7 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		sql_str = "select * from Match where league_id=%d and serryname='%s' and date <= '%s'"%(league_id,serryname,last_date)
 		df_league = pd.read_sql_query(sql_str,conn)
 		df_league = conciseDate(df_league)
+		df = conciseDate(df)
 		serries = df_league['serryid'].unique()
 		dates = df['date'].unique()
 		team_res = []
@@ -82,10 +67,14 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 			res_dic_home = {}
 			res_dic_home['team_id'] = home_team
 			res_dic_home['date']= date
+			res_dic_home['area'] = 1
+			res_dic_home['toteam'] = away_team
 			res_dic_home[self.name] = {}
 			res_dic_away = {}
 			res_dic_away['team_id'] = away_team
 			res_dic_away['date'] = date
+			res_dic_away['area'] = 2
+			res_dic_away['toteam'] = home_team
 			res_dic_away[self.name] = {}
 			for i in range(0,min_length):
 				serryid = serries[len(serries)-i-1]

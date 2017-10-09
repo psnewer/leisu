@@ -23,7 +23,7 @@ class Grouper(object):
 			self.testers[dic['name']].setParams(dic['params'])
 			self.tester_cand.append(dic['name'])
 
-	def execute(self):
+	def group(self):
 		self.process()
 		self.analysis()
 

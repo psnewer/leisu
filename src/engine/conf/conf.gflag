@@ -4,4 +4,6 @@
 --buckets_path=/Users/miller/Documents/workspace/leisu/src/engine/conf/buckets.conf
 --group_cond=/Users/miller/Documents/workspace/leisu/src/engine/conf/group.txt
 --group_path=/Users/miller/Documents/workspace/leisu/res/group/
+--predict_path=/Users/miller/Documents/workspace/leisu/res/predict/
+--predict_summary=/Users/miller/Documents/workspace/leisu/res/predict/predict_summary.txt
 --kind_file=/Users/miller/Documents/workspace/leisu/src/engine/conf/kinds.txt

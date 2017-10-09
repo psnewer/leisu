@@ -19,7 +19,6 @@ class ABSTRACT_TESTER():
 
 	def analysis(self,condition,df_team,tester_log):
 		res_list = []
-		feature_list = []
 		cond_str = ' and '.join(condition)
 		sql_str = "select * from Match where %s"%(cond_str)
 		df = pd.read_sql_query(sql_str,conn)
@@ -46,7 +45,6 @@ class ABSTRACT_TESTER():
 				date_dic['teams'].append(row['away_team_id'])
 			res_list.append(date_dic)
 		df_date = pd.DataFrame(res_list)
-		df_team = conciseDate(df_team)
 		df_team_posi = df_team[['date','team_id']]
 		df_team_posi = df_team_posi.groupby("date",as_index=False).agg({'team_id': lambda x: list(x)})
 		anadf = pd.merge(df_date,df_team_posi,how='inner',on='date')

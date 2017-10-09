@@ -29,11 +29,18 @@ class Feature_Creator(object):
 		for feature in feature_list:
 			self.feature_cand.append(feature)
 
-	def execute(self,condition,action,feature_log):
+	def execute_test(self,condition,feature_log):
 		team_res = []
 		for feature in self.feature_cand:
 			feature_ins = self.features[feature]
-			res = feature_ins.execute(condition,action,feature_log)
+			res = feature_ins.execute_test(condition,feature_log)
 			team_res.extend(res)
 		return team_res
 
+	def execute_predict(self,league_id,serryid,df,feature_log):
+		team_res = []
+		for feature in self.feature_cand:
+			feature_ins = self.features[feature]
+			res = feature_ins.execute_predict(league_id,serryid,df,feature_log)
+			team_res.extend(res)
+		return team_res

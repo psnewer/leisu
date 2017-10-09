@@ -12,6 +12,7 @@ sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/feature/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/filter/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/tester/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/group/')
+sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/predictor/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/manager/')
 
 conn = sqlite3.connect('/Users/miller/Desktop/soccer.db')
