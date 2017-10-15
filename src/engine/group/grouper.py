@@ -12,9 +12,9 @@ class Grouper(object):
 		self.feature_creator = feature_creator
 		self.tester_creator = tester_creator
 		self.experiments = experiments	
-		group_final = open(gflags.FLAGS.group_final,'w+')
+		group_final = codecs.open(gflags.FLAGS.group_final,'w+',encoding='utf-8')
 		group_final.close()
-		group_detail = open(gflags.FLAGS.group_detail,'w+')
+		group_detail = codecs.open(gflags.FLAGS.group_detail,'w+',encoding='utf-8')
 		group_detail.close()
 
 	def set_tester(self,tester_list):
@@ -28,7 +28,7 @@ class Grouper(object):
 		self.analysis()
 
 	def process(self):
-		f_group = open(gflags.FLAGS.group_path, 'r')
+		f_group = codecs.open(gflags.FLAGS.group_path, 'r', encoding='utf-8')
 		for row in f_group:
 			cond = json.loads(row)
 			self.tester_creator.execute(cond)
@@ -42,8 +42,8 @@ class Grouper(object):
 		f_group.close()
 
 	def analysis(self):
-		f_exp = open(gflags.FLAGS.test_final,'r')
-		f_kind = open(gflags.FLAGS.kind_file,'r')
+		f_exp = codecs.open(gflags.FLAGS.test_final,'r',encoding='utf-8')
+		f_kind = codecs.open(gflags.FLAGS.kind_file,'r',encoding='utf-8')
 		kinds = json.load(f_kind)
 		f_group_final = codecs.open(gflags.FLAGS.group_final, 'a+', encoding='utf-8')
 		res_list = []

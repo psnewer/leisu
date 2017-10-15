@@ -63,6 +63,8 @@ def saveMatch(filepath, idspath):
 			serryname = 'default'
 		elif serryname in name_tips:
 			serryname = name_tips[serryname]
+		if league in name_tips:
+			league = name_tips[league]
 		if continent not in ids:
 			cur.execute('''INSERT OR IGNORE INTO Continent (name) VALUES ( ? )''', (continent, ) )
 			cur.execute('SELECT id FROM Continent WHERE name = ? ', (continent, ))

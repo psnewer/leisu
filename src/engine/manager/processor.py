@@ -3,6 +3,7 @@
 import json
 import sqlite3
 import gflags
+import codecs
 import pandas as pd
 from feature_creator import *
 from filter_creator import *
@@ -17,7 +18,7 @@ class Processor(object):
 	def __init__(self):
 		global conn
 		self.experiments = {}
-		f_exp = open(gflags.FLAGS.experiment_path, 'r')
+		f_exp = codecs.open(gflags.FLAGS.experiment_path, 'r', encoding='utf-8')
 		data_algs = json.load(f_exp)
 		features = data_algs['features']
 		filters = data_algs['filters']
@@ -44,7 +45,7 @@ class Processor(object):
 		f_exp.close()
 
 	def process(self):
-		f_buckets = open(gflags.FLAGS.buckets_path, 'r')
+		f_buckets = codecs.open(gflags.FLAGS.buckets_path, 'r', encoding='utf-8')
 		buckets = json.load(f_buckets)
 		for bucket in buckets:
 			experiment_id = bucket['experiment_id']
@@ -60,7 +61,7 @@ class Processor(object):
 		f_buckets.close()
 
 	def test(self):
-		f_buckets = open(gflags.FLAGS.buckets_path, 'r')
+		f_buckets = codecs.open(gflags.FLAGS.buckets_path, 'r', encoding='utf-8')
 		buckets = json.load(f_buckets)
 		for bucket in buckets:
 			experiment_id = bucket['experiment_id']

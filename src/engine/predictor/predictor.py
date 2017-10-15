@@ -25,8 +25,8 @@ class Predictor():
 			os.system(r'mkdir %s'%predict_directory)
 			feature_res = predict_directory + '/feature_res.txt'
 			predict_res = predict_directory + '/predict_res.txt'
-			feature_log = open(feature_res,'w+')
-			predict_log = open(predict_res,'w+')
+			feature_log = codecs.open(feature_res,'w+',encoding='utf-8')
+			predict_log = codecs.open(predict_res,'w+',encoding='utf-8')
 			df_league = df.query("league_id==%d"%league)
 			serries = df_league['serryid'].unique()
 			for serry in serries:
@@ -36,8 +36,9 @@ class Predictor():
 			predict_log.close()
 
 	def pack(self):
-		predict_summary = codecs.open(gflags.FLAGS.predict_summary,'w+')
+		predict_summary = codecs.open(gflags.FLAGS.predict_summary,'w+',encoding='utf-8')
 		walks = os.walk(gflags.FLAGS.predict_path,topdown=False)
+		team_res = []
 		for root,dirs,files in walks:
 			if 'predict_res.txt' in files:
 				absfile = os.path.join(root,'predict_res.txt')
@@ -65,8 +66,8 @@ class Predictor():
 						res['limi'] = limi
 						res['home_team'] = home_team
 						res['away_team'] = away_team
-						res_str = json.dumps(res,cls=GenEncoder,ensure_ascii=False)
-						predict_summary.write(res_str+'\n')
+						team_res.append(res)
+		json.dump(team_res, predict_summary, ensure_ascii=False)
 		predict_summary.close()	
 
 	def process(self,league_id,serryid,df,feature_log,predict_log):

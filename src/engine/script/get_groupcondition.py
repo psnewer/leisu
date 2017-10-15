@@ -12,13 +12,14 @@ from conf import *
 conn = sqlite3.connect('/Users/miller/Desktop/soccer.db')
 
 if __name__ == "__main__":
-	sql_str = "select id from League"
+	sql_str = "select * from TMatch"
 	df = pd.read_sql_query(sql_str,conn)
+	df = conciseDate(df)
+	leagues = df['league_id'].unique()
 	f_group = open('../conf/group.txt','w+')
 	res_list = []
-	for index,row in df.iterrows():
+	for league_id in leagues:
 		cond_res = {}
-		league_id = row['id']
 		cond_res['league_id'] = league_id
 		cond_res['serryid'] = []
 		where = "league_id=%s"%league_id
@@ -30,4 +31,3 @@ if __name__ == "__main__":
 		res_list.append(cond_res)
 	json.dump(res_list,f_group,cls=GenEncoder)
 	f_group.close()
-	
