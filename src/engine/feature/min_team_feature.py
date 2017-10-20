@@ -13,8 +13,8 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		self.params = {}
 		self.params['to_last'] = 2
 		self.params['mid_goal'] = 2.5
-		self.params['minrt'] = 0.7
-		self.params['mayrt'] = 0.7
+		self.params['minrt'] = 0.6
+		self.params['mayrt'] = 0.6
 		self.params['min_num'] = 8
 	
 	def execute_predict(self,league_id,serryid,df_serry,feature_log):

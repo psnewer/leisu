@@ -10,6 +10,17 @@ mkfifo $tempfifo
 exec 1000<>$tempfifo
 rm -rf $tempfifo
 
+function checkError()
+{
+    if [ $? -eq 0 ]
+    then
+        echo "$1 success"
+    else
+        echo "$1 failed"
+        exit 0
+    fi
+}
+
 for ((i=1; i<=30; i++))
 do
     echo >&1000
@@ -30,6 +41,7 @@ do
     {
 		echo $cond
         python run_analysis.py --flagfile=./conf/conf.gflag --group --league_cond="$cond"
+		checkError "run_group $cond"
         echo >&1000
     } & 
 	ind=$(($ind+1))

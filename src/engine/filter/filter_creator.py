@@ -33,7 +33,6 @@ class Filter_Creator(object):
 
 	def execute(self,feature_list):
 		df = pd.DataFrame(feature_list)
-		df.to_csv('/Users/miller/Documents/workspace/leisu/src/engine/log.txt')
 		df = df.groupby(['date','team_id'],as_index=False).agg(lambda x: x[x.notnull()].tail(1))
 		self.df = df
 		for filter in self.filter_cand:
