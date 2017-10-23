@@ -36,7 +36,6 @@ class Predictor():
 			predict_log.close()
 
 	def pack(self):
-		predict_summary = codecs.open(gflags.FLAGS.predict_summary,'w+',encoding='utf-8')
 		walks = os.walk(gflags.FLAGS.predict_path,topdown=False)
 		team_res = []
 		for root,dirs,files in walks:
@@ -59,16 +58,19 @@ class Predictor():
 						home_team = cur.fetchone()[0]
 						cur.execute('SELECT name FROM Team WHERE id = ? ', (away_team_id, ))
 						away_team = cur.fetchone()[0]
+						cur.execute('SELECT date FROM TMatch WHERE away_team_id = ? ', (away_team_id, ))
+						date = cur.fetchone()[0]
 						res['league'] = league
 						res['serryname'] = serryname
 						res['tester'] = tester
-						res['date'] = match_res['date']
+						res['date'] = date
 						res['limi'] = limi
 						res['home_team'] = home_team
 						res['away_team'] = away_team
 						team_res.append(res)
-		json.dump(team_res, predict_summary, ensure_ascii=False)
-		predict_summary.close()	
+		df = pd.DataFrame(team_res)
+		df = df.groupby('league').apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
+		df.to_csv(gflags.FLAGS.predict_summary)
 
 	def process(self,league_id,serryid,df,feature_log,predict_log):
 		exp_ids = self.get_experiment(league_id,serryid)
@@ -134,32 +136,9 @@ class Predictor():
 				all_profit = group_dic['all_profit']
 				all_p_id = group_dic['all_p_id']
 				if (c0_profit > 0):
-					if (c0_p_total > 0.1*match_now):
-						exp_dic['exp_id'] = c0_p_id
-						exp_dic['limi'] = float(c0_p_total)/float(group_dic['c0_p_succ'])
-						exp_cand.append(exp_dic)
-					elif ((c0_p_id==c1_p_id and c1_profit>0) or (c0_p_id==c2_p_id and c2_profit>0) or (c0_p_id==all_p_id and all_profit>0)):
-						exp_dic['exp_id'] = c0_p_id
-						exp_dic['limi'] = float(c0_p_total)/float(group_dic['c0_p_succ'])
-						exp_cand.append(exp_dic)
-					elif (c1_profit > 0):
-						if (c1_p_total > 0.1 * match_pre1):
-							exp_dic['exp_id'] = c1_p_id
-							exp_dic['limi'] = float(c1_p_total)/float(group_dic['c1_p_succ'])
-							exp_cand.append(exp_dic)
-						elif ((c1_p_id==c2_p_id and c2_profit>0) or (c1_p_id==all_p_id and all_profit>0)):
-							exp_dic['exp_id'] = c1_p_id
-							exp_dic['limi'] = float(c1_p_total)/float(group_dic['c1_p_succ'])
-							exp_cand.append(exp_dic)
-						elif (c2_profit > 0):
-							if (c2_p_total > 0.1 * match_pre2):
-								exp_dic['exp_id'] = c2_p_id
-								exp_dic['limi'] = float(c2_p_total)/float(group_dic['c2_p_succ'])
-								exp_cand.append(exp_dic)
-							elif (c2_p_id==all_p_id and all_profit>0):
-								exp_dic['exp_id'] = c2_p_id
-								exp_dic['limi'] = float(c2_p_total)/float(group_dic['c2_p_succ'])
-								exp_cand.append(exp_dic)
+					exp_dic['exp_id'] = c0_p_id
+					exp_dic['limi'] = float(c0_p_total)/float(group_dic['c0_p_succ'])
+					exp_cand.append(exp_dic)
 				else:
 					c0_id = group_dic['c0_id']
 					c1_id = group_dic['c1_id']
@@ -168,17 +147,9 @@ class Predictor():
 					c0_total = group_dic['c0_succ'] + group_dic['c0_fail']
 					c1_total = group_dic['c1_succ'] + group_dic['c1_fail']
 					c2_total = group_dic['c2_succ'] + group_dic['c2_fail']
-					if (c0_total > 0.1*match_now or (c0_id>0 and (c0_id==c1_id or c0_id==c2_id or c0_id==all_id))):
+					if (c0_id>0):
 						exp_dic['exp_id'] = c0_id
 						exp_dic['limi'] = float(c0_total)/float(group_dic['c0_succ'])
-						exp_cand.append(exp_dic)
-					elif (c1_total > 0.1*match_pre1 or (c1_id>0 and (c1_id==c2_id or c1_id==all_id))):
-						exp_dic['exp_id'] = c1_id
-						exp_dic['limi'] = float(c1_total)/float(group_dic['c1_succ'])
-						exp_cand.append(exp_dic)
-					elif (c2_total > 0.1*match_pre2 or (c2_id>0 and c2_id==all_id)):
-						exp_dic['exp_id'] = c2_id
-						exp_dic['limi'] = float(c2_total)/float(group_dic['c2_succ'])
 						exp_cand.append(exp_dic)
 		return exp_cand
 
