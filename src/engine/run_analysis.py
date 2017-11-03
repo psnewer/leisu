@@ -8,13 +8,15 @@ from processor import *
 gflags.DEFINE_string('db_path', '', 'db path')
 gflags.DEFINE_string('alg_path', '', 'server.cfg')  
 gflags.DEFINE_string('experiment_path', '', 'experiment.conf')
+gflags.DEFINE_string('extract_conf', '', 'extract.conf')
 gflags.DEFINE_string('buckets_path', '', 'bucket.conf')
 gflags.DEFINE_bool('predict', False, 'predict')
 gflags.DEFINE_bool('group', False, 'group')
+gflags.DEFINE_bool('extract', False, 'extract')
 gflags.DEFINE_string('group_path', '', 'group path')
+gflags.DEFINE_string('extract_path', '', 'extract path')
 gflags.DEFINE_string('predict_path', '', 'predict path')
 gflags.DEFINE_string('predict_summary', '', 'predict summary')
-gflags.DEFINE_string('group_cond', '', 'group cond')
 gflags.DEFINE_string('league_cond', '', 'league cond')
 gflags.DEFINE_string('kind_file', '', 'kind file')
 Flags = gflags.FLAGS
@@ -26,6 +28,8 @@ if __name__ == "__main__":
 		pro.predict()
 	elif (gflags.FLAGS.group):
 		pro.group()
+	elif (gflags.FLAGS.extract):
+		pro.extract()
 	else:
 		pro.process()
 	pro.close()

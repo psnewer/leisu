@@ -58,7 +58,7 @@ class Predictor():
 						home_team = cur.fetchone()[0]
 						cur.execute('SELECT name FROM Team WHERE id = ? ', (away_team_id, ))
 						away_team = cur.fetchone()[0]
-						cur.execute('SELECT date FROM TMatch WHERE away_team_id = ? ', (away_team_id, ))
+						cur.execute('SELECT date FROM TMatch WHERE home_team_id = ? and away_team_id = ? ', (home_team_id, away_team_id, ))
 						date = cur.fetchone()[0]
 						res['league'] = league
 						res['serryname'] = serryname
@@ -139,6 +139,14 @@ class Predictor():
 					exp_dic['exp_id'] = c0_p_id
 					exp_dic['limi'] = float(c0_p_total)/float(group_dic['c0_p_succ'])
 					exp_cand.append(exp_dic)
+#				elif (c1_profit > 0):
+#					exp_dic['exp_id'] = c1_p_id
+#					exp_dic['limi'] = float(c1_p_total)/float(group_dic['c1_p_succ'])
+#					exp_cand.append(exp_dic)
+#				elif (c2_profit > 0):
+#					exp_dic['exp_id'] = c2_p_id
+#					exp_dic['limi'] = float(c2_p_total)/float(group_dic['c2_p_succ'])
+#					exp_cand.append(exp_dic)
 				else:
 					c0_id = group_dic['c0_id']
 					c1_id = group_dic['c1_id']
@@ -151,6 +159,14 @@ class Predictor():
 						exp_dic['exp_id'] = c0_id
 						exp_dic['limi'] = float(c0_total)/float(group_dic['c0_succ'])
 						exp_cand.append(exp_dic)
+#					elif (c1_id>0):
+#						exp_dic['exp_id'] = c1_id
+#						exp_dic['limi'] = float(c1_total)/float(group_dic['c1_succ'])
+#						exp_cand.append(exp_dic)
+#					elif (c2_id>0):
+#						exp_dic['exp_id'] = c2_id
+#						exp_dic['limi'] = float(c2_total)/float(group_dic['c2_succ'])
+#						exp_cand.append(exp_dic)
 		return exp_cand
 
 	def analysis(self,df,df_team,tester,limi,predict_log):

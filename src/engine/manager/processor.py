@@ -8,6 +8,7 @@ import pandas as pd
 from feature_creator import *
 from filter_creator import *
 from tester_creator import *
+from extractor_creator import *
 from grouper import *
 from predictor import *
 from oddsgrouper import *
@@ -75,8 +76,12 @@ class Processor(object):
 		f_buckets.close()
 
 	def group(self):
-		grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
-		grouper.group()
+			grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
+			grouper.group()
+
+	def extract(self):
+		extractor = Extractor_Creator()
+		extractor.extract(gflags.FLAGS.league_cond)
 	
 	def predict(self):
 		resfiles = gflags.FLAGS.predict_path + '*'

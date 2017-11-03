@@ -116,17 +116,17 @@ class OddsGrouper():
 							dic_res['all_fail'] = all_fail
 							dic_res['all_succ'] = all_succ
 							min_all = all_limi
-						if (c2_limi != 0 and (c2_limi + 0.1 > c0_limi and c0_limi > 0) and c2_limi < min_c2):
+						if (c2_limi != 0 and (c2_limi + 0.0 > c0_limi and c0_limi > 0) and c2_limi < min_c2):
 							dic_res['c2_id'] = exp
 							dic_res['c2_fail'] = current_fail2
 							dic_res['c2_succ'] = current_succ2
 							min_c2 = c2_limi
-						if (c1_limi != 0 and (c1_limi + 0.1 > c0_limi and c0_limi > 0) and c1_limi < min_c1):
+						if (c1_limi != 0 and (c1_limi + 0.0 > c0_limi and c0_limi > 0) and c1_limi < min_c1):
 							dic_res['c1_id'] = exp
 							dic_res['c1_fail'] = current_fail1
 							dic_res['c1_succ'] = current_succ1
 							min_c1 = c1_limi
-						if (c0_limi != 0 and (c0_limi + 0.1 > c1_limi and c1_limi > 0) and c0_limi < min_c0):
+						if (c0_limi != 0 and (c0_limi + 0.0 > c1_limi and c1_limi > 0) and c0_limi < min_c0):
 							dic_res['c0_id'] = exp
 							dic_res['c0_fail'] = current_fail0
 							dic_res['c0_succ'] = current_succ0
@@ -138,21 +138,21 @@ class OddsGrouper():
 							dic_res['all_p_fail'] = all_fail
 							dic_res['all_meanPorift'] = all_profit/(all_succ+all_fail)
 							max_allprofit = all_profit
-						if (current_profit0 > max_c0profit and (c0_limi + 0.1 > c1_limi and c1_limi > 0)):
+						if (current_profit0 > max_c0profit and (c0_limi + 0.0 > c1_limi and c1_limi > 0)):
 							dic_res['c0_profit'] = current_profit0
 							dic_res['c0_p_id'] = exp
 							dic_res['c0_p_succ'] = current_succ0
 							dic_res['c0_p_fail'] = current_fail0
 							dic_res['c0_meanPorift'] = current_profit0/(current_succ0+current_fail0)
 							max_c0profit = current_profit0
-						if (current_profit1 > max_c1profit and (c1_limi + 0.1 > c0_limi and c0_limi > 0)):
+						if (current_profit1 > max_c1profit and (c1_limi + 0.0 > c0_limi and c0_limi > 0)):
 							dic_res['c1_profit'] = current_profit1
 							dic_res['c1_p_id'] = exp
 							dic_res['c1_p_succ'] = current_succ1
 							dic_res['c1_p_fail'] = current_fail1
 							dic_res['c1_meanPorift'] = current_profit1/(current_succ1+current_fail1)
 							max_c1profit = current_profit1
-						if (current_profit2 > max_c2profit and (c2_limi + 0.1 > c0_limi and c0_limi > 0)):
+						if (current_profit2 > max_c2profit and (c2_limi + 0.0 > c0_limi and c0_limi > 0)):
 							dic_res['c2_profit'] = current_profit2
 							dic_res['c2_p_id'] = exp
 							dic_res['c2_p_succ'] = current_succ2

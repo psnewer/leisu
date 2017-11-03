@@ -8,7 +8,7 @@ class ABSTRACT_FEATURE():
 	
 	def __init__(self):
 		self.params = {}
-		self.team = 'ABSTRACT_FEATURE'
+		self.name = 'ABSTRACT_FEATURE'
 	
 	def setParams(self,params):
 		for key in params:
