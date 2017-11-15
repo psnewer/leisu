@@ -6,9 +6,14 @@ import json
 import pandas as pd
 import gflags
 import codecs
-import threading
 from conf import *
-from vs_plain_extractor import *
+from vs_plainself_extractor import *
+from vs_plainto_extractor import *
+from vs_plainall_extractor import *
+from vs_rawself_extractor import *
+from draw_plainself_extractor import *
+from draw_plainself_1_extractor import *
+from draw_plainself_2_extractor import *
 
 class Extractor_Creator(object):
 	def __init__(self):
@@ -33,7 +38,7 @@ class Extractor_Creator(object):
 		self.extract_directory = gflags.FLAGS.extract_path + league_str
 		os.system(r'mkdir %s'%self.extract_directory)
 		for serryname in condition['serryname']:
-			os.system(r"mkdir '%s'"%(self.extract_directory+ '/' + serryname))
+			os.system(r"mkdir '%s'"%(self.extract_directory+'/'+serryname))
 			serry_cond = "serryname='%s'"%serryname
 			cond = [league_cond,serry_cond]
 			for extractor in self.extractor_cand:

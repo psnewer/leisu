@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+sys.path.append('/Users/miller/Documents/workspace/caffe/python')
+import caffe
 import gflags
 from conf import *
 from processor import *
@@ -19,6 +23,8 @@ gflags.DEFINE_string('predict_path', '', 'predict path')
 gflags.DEFINE_string('predict_summary', '', 'predict summary')
 gflags.DEFINE_string('league_cond', '', 'league cond')
 gflags.DEFINE_string('kind_file', '', 'kind file')
+gflags.DEFINE_string('prototxt', '', 'caffe proto')
+gflags.DEFINE_string('weights', '', 'caffe weights')
 Flags = gflags.FLAGS
 
 if __name__ == "__main__":

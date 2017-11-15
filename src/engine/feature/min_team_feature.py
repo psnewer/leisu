@@ -32,29 +32,36 @@ class MIN_TEAM_FEATURE(ABSTRACT_FEATURE):
 		return team_res
 
 	def execute_test(self,condition,feature_log):
-		cond_str = ' and '.join(condition)
-		sql_str = "select * from Match where %s"%(cond_str)
-		df = pd.read_sql_query(sql_str,conn)
-		if len(df) < 1:
-			return []
-		df = df.sort_values(by='date')
-		league_id = df.iloc[-1]['league_id']
-		last_date = df.iloc[-1]['date']
-		serryname = df.iloc[-1]['serryname']
-		sql_str = "select * from Match where league_id=%d and serryname='%s' and date <= '%s'"%(league_id,serryname,last_date)
-		df_league = pd.read_sql_query(sql_str,conn)
-		df_league = conciseDate(df_league)
-		df = conciseDate(df)
-		serries = df_league['serryid'].unique()
-		dates = df['date'].unique()
+		cond = list(condition)
+		cond_str = ' and '.join(cond)
+		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
+		df_serry = pd.read_sql_query(sql_str,conn)
 		team_res = []
-		for date in dates:
-			df_date = df.query("date=='%s'"%date)
-			res = self.process(df_date,df_league,serries)
-			for _res in res:
-				res_str = json.dumps(_res,cls=GenEncoder)
-				feature_log.write(res_str+'\n')
-				team_res.append(_res)
+		for idx,serry in df_serry.iterrows():
+			serryid = serry['serryid']
+			cond[1] = "serryid='%s'"%serryid
+			cond_str = ' and '.join(cond)
+			sql_str = "select * from Match where %s"%(cond_str)
+			df = pd.read_sql_query(sql_str,conn)
+			if len(df) < 1:
+				return []
+			df = df.sort_values(by='date')
+			league_id = df.iloc[-1]['league_id']
+			last_date = df.iloc[-1]['date']
+			serryname = df.iloc[-1]['serryname']
+			sql_str = "select * from Match where league_id=%d and serryname='%s' and date <= '%s'"%(league_id,serryname,last_date)
+			df_league = pd.read_sql_query(sql_str,conn)
+			df_league = conciseDate(df_league)
+			df = conciseDate(df)
+			serries = df_league['serryid'].unique()
+			dates = df['date'].unique()
+			for date in dates:
+				df_date = df.query("date=='%s'"%date)
+				res = self.process(df_date,df_league,serries)
+				for _res in res:
+					res_str = json.dumps(_res,cls=GenEncoder)
+					feature_log.write(res_str+'\n')
+					team_res.append(_res)
 		return team_res
 
 	def process(self,df_date,df_league,serries):

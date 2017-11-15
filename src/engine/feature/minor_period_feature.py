@@ -42,28 +42,35 @@ class MINOR_PERIOD_FEATURE(ABSTRACT_FEATURE):
 		return team_res
 
 	def execute_test(self,condition,feature_log):
-		cond_str = ' and '.join(condition)
-		sql_str = "select * from Match where %s"%(cond_str)
-		df = pd.read_sql_query(sql_str,conn)
-		df = conciseDate(df)
-		home_teams = df['home_team_id']
-		away_teams = df['away_team_id']
-		teams = home_teams.append(away_teams).unique()
+		cond = list(condition)
+		cond_str = ' and '.join(cond)
+		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
+		df_serry = pd.read_sql_query(sql_str,conn)
 		team_res = []
-		for team in teams:
-			df_team = df.query("home_team_id==%d | away_team_id==%d"%(team,team))
-			df_team = df_team.sort_values(by='date')
-			length = len(df_team)
-			for i in range(0,length):
-				res_dic = {}
-				res_dic['team_id'] = team
-				res_dic['date'] = df_team.iloc[i]['date']
-				df_stage = df_team[0:i]
-				res = self.process(df_stage)
-				res_dic[self.name] = res
-				res_str = json.dumps(res_dic,cls=GenEncoder)
-				feature_log.write(res_str+'\n')
-				team_res.append(res_dic)
+		for idx,serry in df_serry.iterrows():
+			serryid = serry['serryid']
+			cond[1] = "serryid='%s'"%serryid
+			cond_str = ' and '.join(cond)
+			sql_str = "select * from Match where %s"%(cond_str)
+			df = pd.read_sql_query(sql_str,conn)
+			df = conciseDate(df)
+			home_teams = df['home_team_id']
+			away_teams = df['away_team_id']
+			teams = home_teams.append(away_teams).unique()
+			for team in teams:
+				df_team = df.query("home_team_id==%d | away_team_id==%d"%(team,team))
+				df_team = df_team.sort_values(by='date')
+				length = len(df_team)
+				for i in range(0,length):
+					res_dic = {}
+					res_dic['team_id'] = team
+					res_dic['date'] = df_team.iloc[i]['date']
+					df_stage = df_team[0:i]
+					res = self.process(df_stage)
+					res_dic[self.name] = res
+					res_str = json.dumps(res_dic,cls=GenEncoder)
+					feature_log.write(res_str+'\n')
+					team_res.append(res_dic)
 		return team_res
 
 	def process(self,df):

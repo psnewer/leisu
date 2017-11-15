@@ -4,6 +4,7 @@ import sys
 import os
 import json
 import pandas as pd
+import numpy as np
 import gflags
 import codecs
 import threading
@@ -50,6 +51,7 @@ class Predictor():
 					serryname = predict_dic['serryname']
 					tester = predict_dic['tester']
 					limi = predict_dic['limi']
+					limi_with_neu = predict_dic['limi_with_neu']
 					for match_res in predict_dic['res']:
 						res = {}
 						home_team_id = match_res['home_team']
@@ -65,12 +67,14 @@ class Predictor():
 						res['tester'] = tester
 						res['date'] = date
 						res['limi'] = limi
+						res['limi_with_neu'] = limi_with_neu
 						res['home_team'] = home_team
 						res['away_team'] = away_team
 						team_res.append(res)
 		df = pd.DataFrame(team_res)
-		df = df.groupby('league').apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
-		df.to_csv(gflags.FLAGS.predict_summary)
+		if len(df) > 0:
+			df = df.groupby('league').apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
+		df.to_csv(gflags.FLAGS.predict_summary,encoding="utf_8_sig")
 
 	def process(self,league_id,serryid,df,feature_log,predict_log):
 		exp_ids = self.get_experiment(league_id,serryid)
@@ -88,10 +92,11 @@ class Predictor():
 		for _exp in exp_ids:
 			exp = self.experiments[_exp['exp_id']]
 			limi = _exp['limi']
+			limi_with_neu = _exp['limi_with_neu']
 			filters = exp['filter']
 			tester = exp['tester'][0]
-			df_filter = self.tester_creator.get_filtered(filters)	
-			self.analysis(df,df_filter,self.tester_creator.testers[tester],limi,predict_log)
+			df_filter = self.tester_creator.get_filtered(filters)
+			self.analysis(df,df_filter,self.tester_creator.testers[tester],limi,limi_with_neu,predict_log)
 	
 	def get_experiment(self,league_id,serryid):
 		cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,serryid))
@@ -124,20 +129,21 @@ class Predictor():
 			group_dic = json.loads(row,encoding='utf-8')
 			_serryname = group_dic['serryname']
 			if (_serryname == serryname):
-				c0_profit = group_dic['c0_profit']
-				c0_p_total = group_dic['c0_p_succ'] + group_dic['c0_p_fail']
+#				c0_profit = group_dic['c0_profit']
+#				c0_p_total = group_dic['c0_p_succ'] + group_dic['c0_p_fail']
 				c0_p_id = group_dic['c0_p_id']
-				c1_profit = group_dic['c1_profit']
-				c1_p_total = group_dic['c1_p_succ'] + group_dic['c1_p_fail']
+#				c1_profit = group_dic['c1_profit']
+#				c1_p_total = group_dic['c1_p_succ'] + group_dic['c1_p_fail']
 				c1_p_id = group_dic['c1_p_id']
-				c2_profit = group_dic['c2_profit']
-				c2_p_total = group_dic['c2_p_succ'] + group_dic['c2_p_fail']
+#				c2_profit = group_dic['c2_profit']
+#				c2_p_total = group_dic['c2_p_succ'] + group_dic['c2_p_fail']
 				c2_p_id = group_dic['c2_p_id']
-				all_profit = group_dic['all_profit']
+#				all_profit = group_dic['all_profit']
 				all_p_id = group_dic['all_p_id']
-				if (c0_profit > 0):
+				if (c0_p_id > 0):
 					exp_dic['exp_id'] = c0_p_id
-					exp_dic['limi'] = float(c0_p_total)/float(group_dic['c0_p_succ'])
+					exp_dic['limi'] = group_dic['c0_p_limi']
+					exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu']
 					exp_cand.append(exp_dic)
 #				elif (c1_profit > 0):
 #					exp_dic['exp_id'] = c1_p_id
@@ -148,16 +154,17 @@ class Predictor():
 #					exp_dic['limi'] = float(c2_p_total)/float(group_dic['c2_p_succ'])
 #					exp_cand.append(exp_dic)
 				else:
-					c0_id = group_dic['c0_id']
-					c1_id = group_dic['c1_id']
-					c2_id = group_dic['c2_id']
-					all_id = group_dic['all_id']
-					c0_total = group_dic['c0_succ'] + group_dic['c0_fail']
-					c1_total = group_dic['c1_succ'] + group_dic['c1_fail']
-					c2_total = group_dic['c2_succ'] + group_dic['c2_fail']
-					if (c0_id>0):
-						exp_dic['exp_id'] = c0_id
-						exp_dic['limi'] = float(c0_total)/float(group_dic['c0_succ'])
+					c0_id_with_neu = group_dic['c0_id_with_neu']
+					c1_id_with_neu = group_dic['c1_id_with_neu']
+					c2_id_with_neu = group_dic['c2_id_with_neu']
+					all_id_with_neu = group_dic['all_id_with_neu']
+#					c0_total = group_dic['c0_succ'] + group_dic['c0_fail']
+#					c1_total = group_dic['c1_succ'] + group_dic['c1_fail']
+#					c2_total = group_dic['c2_succ'] + group_dic['c2_fail']
+					if (c0_id_with_neu>0):
+						exp_dic['exp_id'] = c0_id_with_neu
+						exp_dic['limi'] = group_dic['c0_limi']
+						exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
 						exp_cand.append(exp_dic)
 #					elif (c1_id>0):
 #						exp_dic['exp_id'] = c1_id
@@ -169,7 +176,7 @@ class Predictor():
 #						exp_cand.append(exp_dic)
 		return exp_cand
 
-	def analysis(self,df,df_team,tester,limi,predict_log):
+	def analysis(self,df,df_team,tester,limi,limi_with_neu,predict_log):
 		if len(df) < 1:
 			return
 		league_id = df.iloc[-1]['league_id']
@@ -179,6 +186,7 @@ class Predictor():
 		team_res['serryname'] = serryname
 		team_res['tester'] = tester.name
 		team_res['limi'] = limi
+		team_res['limi_with_neu'] = limi_with_neu
 		team_res['res'] = []
 		res_list = []
 		dates = df['date'].unique()
@@ -193,20 +201,23 @@ class Predictor():
 				date_dic['away_teams'].append(row['away_team_id'])
 			res_list.append(date_dic)
 		df_date = pd.DataFrame(res_list)
-		df_team = df_team[['date','team_id']]
-		df_team = df_team.groupby("date",as_index=False).agg({'team_id': lambda x: list(x)})
+		df_team = df_team[['date','team_id','area']]
+		df_team = df_team.groupby(['date','area']).apply(lambda x: list(x['team_id'])).unstack('area').reset_index(0)
 		anadf = pd.merge(df_date,df_team,how='inner',on='date')
-		succ = 0
-		fail = 0
 		for index,row in anadf.iterrows():
 			date = row['date']
-			team_id = row['team_id']
+			home_teams_posi = None
+			away_teams_posi = None
+			if 1 in row:
+				home_teams_posi = row[1]
+			if 2 in row:
+				away_teams_posi = row[2]
 			home_teams = row['home_teams']
 			away_teams = row['away_teams']
 			if (tester.params['lateral'] == 1):
 				for idx,home_team in enumerate(home_teams):
 					away_team = away_teams[idx]
-					if home_team in team_id or away_team in team_id:
+					if (home_teams_posi is not None and away_teams_posi is not None) and (home_team in home_teams_posi or away_team in away_teams_posi):
 						_res = {}
 						_res['date'] = date
 						_res['home_team'] = home_team
@@ -215,7 +226,7 @@ class Predictor():
 			else:
 				for idx,home_team in enumerate(home_teams):
 					away_team = away_teams[idx]
-					if home_team in team_id and away_team in team_id:
+					if (home_teams_posi is not None and away_teams_posi is not None) and (home_team in home_teams_posi and away_team in away_teams_posi):
 						_res = {}
 						_res['date'] = date
 						_res['home_team'] = home_team
