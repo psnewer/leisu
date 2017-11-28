@@ -1,0 +1,410 @@
+name: "leisu"
+
+layer {  
+  name: "home_res"  
+  type: "Input"  
+  top: "home_res"  
+  input_param { shape: { dim: 1 dim: 2 dim: 5 dim: 5 } }  
+}
+
+layer {
+  name: "away_res"
+  type: "Input"
+  top: "away_res"
+  input_param { shape: { dim: 1 dim: 2 dim: 5 dim: 5 } }
+}
+
+layer {
+    name: "Dense_home1"
+    type: "InnerProduct"
+    bottom: "home_res"
+    top: "Dense_home1"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 128
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "home_relu1"
+  bottom: "Dense_home1"
+  top: "home_relu1"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_home2"
+    type: "InnerProduct"
+    bottom: "home_relu1"
+    top: "Dense_home2"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 64
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "home_relu2"
+  bottom: "Dense_home2"
+  top: "home_relu2"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_home3"
+    type: "InnerProduct"
+    bottom: "home_relu2"
+    top: "Dense_home3"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 32
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "home_relu3"
+  bottom: "Dense_home3"
+  top: "home_relu3"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_home4"
+    type: "InnerProduct"
+    bottom: "home_relu3"
+    top: "Dense_home4"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 16
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "home_relu4"
+  bottom: "Dense_home4"
+  top: "home_relu4"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_away1"
+    type: "InnerProduct"
+    bottom: "away_res"
+    top: "Dense_away1"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 128
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "away_relu1"
+  bottom: "Dense_away1"
+  top: "away_relu1"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_away2"
+    type: "InnerProduct"
+    bottom: "away_relu1"
+    top: "Dense_away2"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 64
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "away_relu2"
+  bottom: "Dense_away2"
+  top: "away_relu2"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_away3"
+    type: "InnerProduct"
+    bottom: "away_relu2"
+    top: "Dense_away3"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 32
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "away_relu3"
+  bottom: "Dense_away3"
+  top: "away_relu3"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+    name: "Dense_away4"
+    type: "InnerProduct"
+    bottom: "away_relu3"
+    top: "Dense_away4"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 16
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+  name: "away_relu4"
+  bottom: "Dense_away4"
+  top: "away_relu4"
+  type: "ReLU"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+################################################################################
+
+layer {
+  name: "concate_feature"
+  type: "Concat"
+  bottom: "home_relu4"
+  bottom: "away_relu4"
+  top: "concate_feature"
+  concat_param {
+    axis: 1
+  }
+}
+
+layer {
+  name: "ip1_cls"
+  type: "InnerProduct"
+  bottom: "concate_feature"
+  top: "ip1_cls"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  } 
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  } 
+  inner_product_param {
+    num_output: 128
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    } 
+    bias_filler {
+      type: "constant"
+      value: 0
+    } 
+  } 
+} 
+
+
+layer {
+  name: "relu_ip1_cls"
+  type: "ReLU"
+  bottom: "ip1_cls"
+  top: "ActivationRelu_ip1_cls"
+}
+
+layer {
+  name: "ip2_cls"
+  type: "InnerProduct"
+  bottom: "ActivationRelu_ip1_cls"
+  top: "ip2_cls"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  } 
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  } 
+  inner_product_param {
+    num_output: 64
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    } 
+    bias_filler {
+      type: "constant"
+      value: 0
+    } 
+  } 
+} 
+
+layer {
+   name: "relu_ip2_cls"
+   type: "ReLU"
+   bottom: "ip2_cls"
+   top: "ActivationRelu_ip2_cls"
+}
+
+layer {
+   name: "ip3f_cls"
+   type: "InnerProduct"
+   bottom: "ActivationRelu_ip2_cls"
+   top: "ip3f_cls"
+   param {
+     lr_mult: 1
+     decay_mult: 1
+   } 
+   param {
+     lr_mult: 2
+     decay_mult: 0
+   } 
+   inner_product_param {
+     num_output: 2
+     weight_filler {
+       type: "gaussian"
+       std: 0.001
+     } 
+     bias_filler {
+       type: "constant"
+       value: 0
+     } 
+   } 
+}
+
+layer {
+   name: "softmax"
+   type: "Softmax"
+   bottom: "ip3f_cls"
+   top: "softmax"
+}
+
+

@@ -1,0 +1,3 @@
+./leisu_vs_rawall_solver.prototxt
+./leisu_vs_rawall_no_pre_solver.prototxt
+./leisu_goal_rawall_solver.prototxt
