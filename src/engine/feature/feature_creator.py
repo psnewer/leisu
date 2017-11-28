@@ -11,6 +11,10 @@ from pre_vs_feature import *
 from min_team_feature import *
 from current_match_feature import *
 from vs_plainself_feature import *
+from vs_plainself_no_pre_feature import *
+from vs_rawall_feature import *
+from vs_rawall_no_pre_feature import *
+from goal_rawall_feature import *
 from conf import *
 
 class Feature_Creator(object):

@@ -66,7 +66,7 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					level_dic = date_dic['to_feature']
 					if -1 not in level_dic:
 						continue
-					level = level_dic[-1]
+					level = level_dic[-1]['mom']
 					level_res[level]['num'] += 1
 					level_res[level]['score'] += date_dic['score']
 				num = home_num + away_num
@@ -137,7 +137,7 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 						away_score += date_dic['score']
 					if -1 not in level_dic:
 						continue
-					level = level_dic[-1]
+					level = level_dic[-1]['mom']
 					level_res[level]['num'] += 1
 					level_res[level]['score'] += date_dic['score']
 					num = home_num + away_num
@@ -189,7 +189,6 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					home_score = 0
 					away_num = 0
 					away_score = 0
-					signal = False
 					for i in range(0,self.params['length']):
 						torow = df_team.iloc[idx - i -1]
 						todate = torow['date']
@@ -202,14 +201,11 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 							toteam = torow['home_team_id']
 							away_num += 1
 							away_score += toscore
-						if i not in serry_dic[toteam][todate]['to_feature']:
-							signal = True
-							break
-						tomom = serry_dic[toteam][todate]['to_feature'][i]
+						if i not in serry_dic[toteam][todate]['to_feature'] or serry_dic[toteam][todate]['to_feature'][i]['todate'] >= date:
+							continue
+						tomom = serry_dic[toteam][todate]['to_feature'][i]['mom']
 						level_res[tomom]['num'] += 1
 						level_res[tomom]['score'] += toscore
-					if signal:
-						continue
 					num = home_num + away_num
 					num_score = home_score + away_score
 					if num > 0:
@@ -276,12 +272,15 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 				if end > len(df_team):
 					continue
 				mom_score = 0
+				todate = df_team.iloc[-1]['date']
 				for j in range(first,end):
 					torow = df_team.iloc[j]
 					mom_score += torow['score']
 				for level in range(0,self.params['levels']):
 					if mom_score <= float(3*self.params['length'])/self.params['levels']*(level+1):
-						res[date]['to_feature'][i] = level
+						res[date]['to_feature'][i] = {}
+						res[date]['to_feature'][i]['mom'] = level
+						res[date]['to_feature'][i]['todate'] = todate
 						break
 		return res
 
@@ -316,8 +315,8 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					continue
 				if 'level' not in serry_match_feature[home_team_id][date] or 'level' not in serry_match_feature[away_team_id][date]:
 					continue
-				if home_team_id not in pre_serry_feature or away_team_id not in pre_serry_feature:
-					continue
+			#	if home_team_id not in pre_serry_feature or away_team_id not in pre_serry_feature:
+			#		continue
 				home_match_score = []
 				home_match_num = []
 				for i in range(0,self.params['levels']):
@@ -336,44 +335,44 @@ class VS_RAWSELF_EXTRACTOR(ABSTRACT_EXTRACTOR):
 				away_match_num.append(serry_match_feature[away_team_id][date]['home_num'])
 				away_match_score.append(serry_match_feature[away_team_id][date]['away_score'])
 				away_match_num.append(serry_match_feature[away_team_id][date]['away_num'])
-				home_current_serryscore = []
-				home_current_serrynum = []
-				for i in range(0,self.params['levels']):
-					home_current_serryscore.append(serry_current_serryfeature[home_team_id][date]['level'][i]['score'])
-					home_current_serrynum.append(serry_current_serryfeature[home_team_id][date]['level'][i]['num'])
-				home_current_serryscore.append(serry_current_serryfeature[home_team_id][date]['home_score'])
-				home_current_serrynum.append(serry_current_serryfeature[home_team_id][date]['home_num'])
-				home_current_serryscore.append(serry_current_serryfeature[home_team_id][date]['away_score'])
-				home_current_serrynum.append(serry_current_serryfeature[home_team_id][date]['away_num'])
-				away_current_serryscore = []
-				away_current_serrynum = []
-				for i in range(0,self.params['levels']):
-					away_current_serryscore.append(serry_current_serryfeature[away_team_id][date]['level'][i]['score'])
-					away_current_serrynum.append(serry_current_serryfeature[away_team_id][date]['level'][i]['num'])
-				away_current_serryscore.append(serry_current_serryfeature[away_team_id][date]['home_score'])
-				away_current_serrynum.append(serry_current_serryfeature[away_team_id][date]['home_num'])
-				away_current_serryscore.append(serry_current_serryfeature[away_team_id][date]['away_score'])
-				away_current_serrynum.append(serry_current_serryfeature[away_team_id][date]['away_num'])
-				home_pre_score = []
-				home_pre_num = []
-				for i in range(0,self.params['levels']):
-					home_pre_score.append(pre_serry_feature[home_team_id]['level'][i]['score'])
-					home_pre_num.append(pre_serry_feature[home_team_id]['level'][i]['num'])
-				home_pre_score.append(pre_serry_feature[home_team_id]['home_score'])
-				home_pre_num.append(pre_serry_feature[home_team_id]['home_num'])
-				home_pre_score.append(pre_serry_feature[home_team_id]['away_score'])
-				home_pre_num.append(pre_serry_feature[home_team_id]['away_num'])
-				away_pre_score = []
-				away_pre_num = []
-				for i in range(0,self.params['levels']):
-					away_pre_score.append(pre_serry_feature[away_team_id]['level'][i]['score'])
-					away_pre_num.append(pre_serry_feature[away_team_id]['level'][i]['num'])
-				away_pre_score.append(pre_serry_feature[away_team_id]['home_score'])
-				away_pre_num.append(pre_serry_feature[away_team_id]['home_num'])
-				away_pre_score.append(pre_serry_feature[away_team_id]['away_score'])
-				away_pre_num.append(pre_serry_feature[away_team_id]['away_num'])
-				home_res.append([[home_match_score,home_current_serryscore,home_pre_score],[home_match_num,home_current_serrynum,home_pre_num]])
-				away_res.append([[away_match_score,away_current_serryscore,away_pre_score],[away_match_num,away_current_serrynum,away_pre_num]])
+#				home_current_serryscore = []
+#				home_current_serrynum = []
+#				for i in range(0,self.params['levels']):
+#					home_current_serryscore.append(serry_current_serryfeature[home_team_id][date]['level'][i]['score'])
+#					home_current_serrynum.append(serry_current_serryfeature[home_team_id][date]['level'][i]['num'])
+#				home_current_serryscore.append(serry_current_serryfeature[home_team_id][date]['home_score'])
+#				home_current_serrynum.append(serry_current_serryfeature[home_team_id][date]['home_num'])
+#				home_current_serryscore.append(serry_current_serryfeature[home_team_id][date]['away_score'])
+#				home_current_serrynum.append(serry_current_serryfeature[home_team_id][date]['away_num'])
+#				away_current_serryscore = []
+#				away_current_serrynum = []
+#				for i in range(0,self.params['levels']):
+#					away_current_serryscore.append(serry_current_serryfeature[away_team_id][date]['level'][i]['score'])
+#					away_current_serrynum.append(serry_current_serryfeature[away_team_id][date]['level'][i]['num'])
+#				away_current_serryscore.append(serry_current_serryfeature[away_team_id][date]['home_score'])
+#				away_current_serrynum.append(serry_current_serryfeature[away_team_id][date]['home_num'])
+#				away_current_serryscore.append(serry_current_serryfeature[away_team_id][date]['away_score'])
+#				away_current_serrynum.append(serry_current_serryfeature[away_team_id][date]['away_num'])
+#				home_pre_score = []
+#				home_pre_num = []
+#				for i in range(0,self.params['levels']):
+#					home_pre_score.append(pre_serry_feature[home_team_id]['level'][i]['score'])
+#					home_pre_num.append(pre_serry_feature[home_team_id]['level'][i]['num'])
+#				home_pre_score.append(pre_serry_feature[home_team_id]['home_score'])
+#				home_pre_num.append(pre_serry_feature[home_team_id]['home_num'])
+#				home_pre_score.append(pre_serry_feature[home_team_id]['away_score'])
+#				home_pre_num.append(pre_serry_feature[home_team_id]['away_num'])
+#				away_pre_score = []
+#				away_pre_num = []
+#				for i in range(0,self.params['levels']):
+#					away_pre_score.append(pre_serry_feature[away_team_id]['level'][i]['score'])
+#					away_pre_num.append(pre_serry_feature[away_team_id]['level'][i]['num'])
+#				away_pre_score.append(pre_serry_feature[away_team_id]['home_score'])
+#				away_pre_num.append(pre_serry_feature[away_team_id]['home_num'])
+#				away_pre_score.append(pre_serry_feature[away_team_id]['away_score'])
+#				away_pre_num.append(pre_serry_feature[away_team_id]['away_num'])
+				home_res.append([home_match_score,home_match_num])
+				away_res.append([away_match_score,away_match_num])
 				label_res.append(row['res'])
 		home_res = np.array(home_res)
 		away_res = np.array(away_res)

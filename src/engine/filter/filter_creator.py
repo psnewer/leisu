@@ -11,7 +11,8 @@ from current_score_filter import *
 from home_win_filter import *
 from min_team_filter import *
 from vs_filter import *
-from vs_plainself_filter import *
+from vs_model_filter import *
+from goal_model_filter import *
 from counter_vs_filter import *
 
 class Filter_Creator(object):
@@ -39,7 +40,7 @@ class Filter_Creator(object):
 				self.filter_res[filter] = []
 			return
 		df = pd.DataFrame(feature_list)
-		df = df.groupby(['date','team_id','area'],as_index=False).agg(lambda x: x[x.notnull()].tail(1))
+		df = df.groupby(['date','team_id','area'],as_index=False).agg(lambda x: tuple(x[x.notnull()])).applymap(lambda x: x[0] if type(x) is tuple and len(x)>0 else [] if x is () else x)
 		self.df = df
 		for filter in self.filter_cand:
 			filter_ins = self.filters[filter]

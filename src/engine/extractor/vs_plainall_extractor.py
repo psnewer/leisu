@@ -70,13 +70,13 @@ class VS_PLAINALL_EXTRACTOR(ABSTRACT_EXTRACTOR):
 						away_score += date_dic['score']
 					level_dic = date_dic['to_feature']
 					if -1 in level_dic:
-						level = level_dic[-1]
+						level = level_dic[-1]['mom']
 						level_res['self'][level]['num'] += 1
 						level_res['self'][level]['score'] += date_dic['score']
 					to_team = date_dic['toteam']
 					level_dic = serry_res[serryid][to_team][date]['to_feature']
 					if -1 in level_dic:
-						level = level_dic[-1]
+						level = level_dic[-1]['mom']
 						level_res['to'][level]['num'] += 1
 						level_res['to'][level]['score'] += date_dic['score']
 				num = home_num + away_num
@@ -153,13 +153,13 @@ class VS_PLAINALL_EXTRACTOR(ABSTRACT_EXTRACTOR):
 						away_score += date_dic['score']
 					level_dic = date_dic['to_feature']
 					if -1 in level_dic:
-						level = level_dic[-1]
+						level = level_dic[-1]['mom']
 						level_res['self'][level]['num'] += 1
 						level_res['self'][level]['score'] += date_dic['score']
 					to_team = date_dic['toteam']
 					level_dic = serry_res[serryid][to_team][date]['to_feature']
 					if -1 in level_dic:
-						level = level_dic[-1]
+						level = level_dic[-1]['mom']
 						level_res['to'][level]['num'] += 1
 						level_res['to'][level]['score'] += date_dic['score']
 					_level_res = copy.deepcopy(level_res)
@@ -216,7 +216,6 @@ class VS_PLAINALL_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					home_score = 0
 					away_num = 0
 					away_score = 0
-					signal = False
 					for i in range(0,self.params['length']):
 						torow = df_team.iloc[idx - i -1]
 						todate = torow['date']
@@ -229,14 +228,11 @@ class VS_PLAINALL_EXTRACTOR(ABSTRACT_EXTRACTOR):
 							toteam = torow['home_team_id']
 							away_num += 1
 							away_score += toscore
-						if i not in serry_dic[toteam][todate]['to_feature']:
-							signal = True
-							break
-						tomom = serry_dic[toteam][todate]['to_feature'][i]
+						if i not in serry_dic[toteam][todate]['to_feature'] or serry_dic[toteam][todate]['to_feature'][i]['todate'] >= date:
+							continue
+						tomom = serry_dic[toteam][todate]['to_feature'][i]['mom']
 						level_res[tomom]['num'] += 1
 						level_res[tomom]['score'] += toscore
-					if signal:
-						continue
 					num = home_num + away_num
 					num_score = home_score + away_score
 					if num > 0:
@@ -301,12 +297,15 @@ class VS_PLAINALL_EXTRACTOR(ABSTRACT_EXTRACTOR):
 				if end > len(df_team):
 					continue
 				mom_score = 0
+				todate = df_team.iloc[-1]['date']
 				for j in range(first,end):
 					torow = df_team.iloc[j]
 					mom_score += torow['score']
 				for level in range(0,self.params['levels']):
 					if mom_score <= float(3*self.params['length'])/self.params['levels']*(level+1):
-						res[date]['to_feature'][i] = level
+						res[date]['to_feature'][i] = {}
+						res[date]['to_feature'][i]['mom'] = level
+						res[date]['to_feature'][i]['todate'] = todate
 						break
 		return res
 

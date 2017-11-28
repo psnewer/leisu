@@ -8,12 +8,13 @@ import gflags
 import codecs
 from conf import *
 from vs_plainself_extractor import *
+from vs_plainself_no_pre_extractor import *
 from vs_plainto_extractor import *
 from vs_plainall_extractor import *
 from vs_rawself_extractor import *
-from draw_plainself_extractor import *
-from draw_plainself_1_extractor import *
-from draw_plainself_2_extractor import *
+from vs_rawall_extractor import *
+from goal_rawall_extractor import *
+from vs_rawall_no_pre_extractor import *
 
 class Extractor_Creator(object):
 	def __init__(self):

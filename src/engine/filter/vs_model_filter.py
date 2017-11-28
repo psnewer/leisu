@@ -19,7 +19,7 @@ class VS_MODEL_FILTER(ABSTRACT_FILTER):
 		self.params['area'] = 1
 		self.params['ignore'] = True
 		self.params['tar'] = 0
-		self.params['proto'] = '/Users/miller/Documents/workspace/leisu/ZOO/leisu_vs_deploy.prototxt'
+		self.params['proto'] = ''
 		self.params['weights'] = ''
 		self.params['feature'] = ''
 		caffe.set_mode_cpu()

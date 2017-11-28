@@ -23,6 +23,7 @@ gflags.DEFINE_string('predict_path', '', 'predict path')
 gflags.DEFINE_string('predict_summary', '', 'predict summary')
 gflags.DEFINE_string('league_cond', '', 'league cond')
 gflags.DEFINE_string('kind_file', '', 'kind file')
+gflags.DEFINE_string('rt_path', '', 'rt file')
 gflags.DEFINE_string('prototxt', '', 'caffe proto')
 gflags.DEFINE_string('weights', '', 'caffe weights')
 Flags = gflags.FLAGS

@@ -8,5 +8,6 @@
 --predict_path=/Users/miller/Documents/workspace/leisu/res/predict/
 --predict_summary=/Users/miller/Documents/workspace/leisu/res/predict/predict_summary.csv
 --kind_file=/Users/miller/Documents/workspace/leisu/src/engine/conf/kinds.txt
+--rt_path=/Users/miller/Documents/workspace/leisu/ZOO/goal_rt.json
 --prototxt=/Users/miller/Documents/workspace/leisu/ZOO/leisu_vs_deploy.prototxt
 --weights=/Users/miller/Documents/workspace/leisu/ZOO/snap/vs_plainself/_iter_1000000.caffemodel

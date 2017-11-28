@@ -95,8 +95,9 @@ class Predictor():
 			limi_with_neu = _exp['limi_with_neu']
 			filters = exp['filter']
 			tester = exp['tester'][0]
+			tester_kind = _exp['kind']
 			df_filter = self.tester_creator.get_filtered(filters)
-			self.analysis(df,df_filter,self.tester_creator.testers[tester],limi,limi_with_neu,predict_log)
+			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,limi,limi_with_neu,predict_log)
 	
 	def get_experiment(self,league_id,serryid):
 		cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,serryid))
@@ -123,68 +124,47 @@ class Predictor():
 		if (not os.path.isfile(group_path)):
 			return []
 		groupdata = codecs.open(group_path,'r',encoding='utf-8')
+		rt_data = codecs.open(gflags.FLAGS.rt_path,'r',encoding='utf-8')
+		rt = json.load(rt_data)
 		exp_cand = []
 		for row in groupdata:
 			exp_dic = {}
 			group_dic = json.loads(row,encoding='utf-8')
 			_serryname = group_dic['serryname']
+			kind = group_dic['kind']
 			if (_serryname == serryname):
-#				c0_profit = group_dic['c0_profit']
-#				c0_p_total = group_dic['c0_p_succ'] + group_dic['c0_p_fail']
 				c0_p_id = group_dic['c0_p_id']
-#				c1_profit = group_dic['c1_profit']
-#				c1_p_total = group_dic['c1_p_succ'] + group_dic['c1_p_fail']
-				c1_p_id = group_dic['c1_p_id']
-#				c2_profit = group_dic['c2_profit']
-#				c2_p_total = group_dic['c2_p_succ'] + group_dic['c2_p_fail']
-				c2_p_id = group_dic['c2_p_id']
-#				all_profit = group_dic['all_profit']
-				all_p_id = group_dic['all_p_id']
-				if (c0_p_id > 0):
+				c0_id_with_neu = group_dic['c0_id_with_neu']
+				if c0_p_id > 0 and not (kind.startswith('min') or kind.startswith('may')):
+					exp_dic['kind'] = group_dic['kind']
 					exp_dic['exp_id'] = c0_p_id
 					exp_dic['limi'] = group_dic['c0_p_limi']
 					exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu']
 					exp_cand.append(exp_dic)
-#				elif (c1_profit > 0):
-#					exp_dic['exp_id'] = c1_p_id
-#					exp_dic['limi'] = float(c1_p_total)/float(group_dic['c1_p_succ'])
-#					exp_cand.append(exp_dic)
-#				elif (c2_profit > 0):
-#					exp_dic['exp_id'] = c2_p_id
-#					exp_dic['limi'] = float(c2_p_total)/float(group_dic['c2_p_succ'])
-#					exp_cand.append(exp_dic)
-				else:
-					c0_id_with_neu = group_dic['c0_id_with_neu']
-					c1_id_with_neu = group_dic['c1_id_with_neu']
-					c2_id_with_neu = group_dic['c2_id_with_neu']
-					all_id_with_neu = group_dic['all_id_with_neu']
-#					c0_total = group_dic['c0_succ'] + group_dic['c0_fail']
-#					c1_total = group_dic['c1_succ'] + group_dic['c1_fail']
-#					c2_total = group_dic['c2_succ'] + group_dic['c2_fail']
-					if (c0_id_with_neu>0):
-						exp_dic['exp_id'] = c0_id_with_neu
-						exp_dic['limi'] = group_dic['c0_limi']
-						exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
-						exp_cand.append(exp_dic)
-#					elif (c1_id>0):
-#						exp_dic['exp_id'] = c1_id
-#						exp_dic['limi'] = float(c1_total)/float(group_dic['c1_succ'])
-#						exp_cand.append(exp_dic)
-#					elif (c2_id>0):
-#						exp_dic['exp_id'] = c2_id
-#						exp_dic['limi'] = float(c2_total)/float(group_dic['c2_succ'])
-#						exp_cand.append(exp_dic)
+				elif c0_id_with_neu > 0 and (kind.startswith('min') or kind.startswith('may')):
+					exp_dic['kind'] = group_dic['kind']
+					exp_dic['exp_id'] = c0_id_with_neu
+					exp_dic['limi'] = group_dic['c0_limi']
+					exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
+					if str(league_id) in rt and serryname in rt[str(league_id)]:
+						if kind.startswith('min') and rt[str(league_id)][serryname]['min_rt'] > 0.0:
+							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['min_rt']
+						elif kind.startswith('may') and rt[str(league_id)][serryname]['may_rt'] > 0.0:
+							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['may_rt']
+					else:
+						exp_dic['limi'] = 0.0
+					exp_cand.append(exp_dic)
 		return exp_cand
 
-	def analysis(self,df,df_team,tester,limi,limi_with_neu,predict_log):
-		if len(df) < 1:
+	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,predict_log):
+		if len(df) < 1 or len(df_team) < 1:
 			return
 		league_id = df.iloc[-1]['league_id']
 		serryname = df.iloc[-1]['serryname']
 		team_res = {}
 		team_res['league_id'] = league_id
 		team_res['serryname'] = serryname
-		team_res['tester'] = tester.name
+		team_res['tester'] = tester_kind
 		team_res['limi'] = limi
 		team_res['limi_with_neu'] = limi_with_neu
 		team_res['res'] = []

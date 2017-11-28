@@ -47,6 +47,6 @@ class Tester_Creator(object):
 		self.set_tester(testers)
 		for tester in self.tester_cand:
 			df_filter = self.filter_creator.get_filtered(filters)
-			if df_filter is not None:
+			if df_filter is not None and len(df_filter) > 0:
 				self.testers[tester].analysis(condition,df_filter,tester_log)
 						
