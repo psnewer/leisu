@@ -8,7 +8,7 @@ from conf import *
 import pandas as pd
 import sqlite3
 import gflags
-import math
+import codecs
 import json
 from abstract_filter import *
 
@@ -22,6 +22,11 @@ class VS_MODEL_FILTER(ABSTRACT_FILTER):
 		self.params['proto'] = ''
 		self.params['weights'] = ''
 		self.params['feature'] = ''
+		self.params['x_rt'] = False
+		self.params['x_rt_feature'] = ''
+		self.params['x_rt_thresh'] = 0.5
+		rt_data = codecs.open('/Users/miller/Documents/workspace/leisu/ZOO/goal_rt.json','r+',encoding='utf-8')
+		self.rt = json.load(rt_data)
 		caffe.set_mode_cpu()
 		self.net = None
 
@@ -32,32 +37,28 @@ class VS_MODEL_FILTER(ABSTRACT_FILTER):
 
 	def filter(self,df):
 		delete_row = []
-#		if len(df) > 0:
-#			rowlast = df.iloc[-1]
-#			date = rowlast['date']
-#			team_id = rowlast['team_id']
-#			area = rowlast['area']
-#			sql_str = ''
-#			match = ''
-#			if gflags.FLAGS.predict:
-#				match = 'TMatch'
-#			else:
-#				match = 'Match'
-#			if area == 1:
-#				sql_str = "select league_id,serryname from %s where home_team_id=%d and date like '%s'"%(match,team_id,date+'%')
-#			else:
-#				sql_str = "select league_id,serryname from %s where away_team_id=%d and date like '%s'"%(match,team_id,date+'%')
-#			df_serry = pd.read_sql_query(sql_str,conn)
-#			league_id = df_serry.iloc[-1]['league_id']
-#			serryname = df_serry.iloc[-1]['serryname']
-#			proto = gflags.FLAGS.extract_path + str(league_id) + '/' + serryname + '/leisu_vs_fine_deploy.prototxt'
-#			weights = gflags.FLAGS.extract_path + str(league_id) + '/' + serryname + '/snap/vs_plainself/_iter_100000.caffemodel'
-#			if os.path.exists(proto) and os.path.exists(weights):
-#				self.net = caffe.Net(str(proto), str(weights), caffe.TEST)
-#			else:
-#				for i in range(0,len(df)):
-#					delete_row.append(i)
-#				return delete_row
+		if len(df) > 0 and self.params['x_rt']:
+			rowlast = df.iloc[-1]
+			date = rowlast['date']
+			team_id = rowlast['team_id']
+			area = rowlast['area']
+			sql_str = ''
+			match = ''
+			if gflags.FLAGS.predict:
+				match = 'TMatch'
+			else:
+				match = 'Match'
+			if area == 1:
+				sql_str = "select league_id,serryname from %s where home_team_id=%d and date like '%s'"%(match,team_id,date+'%')
+			else:
+				sql_str = "select league_id,serryname from %s where away_team_id=%d and date like '%s'"%(match,team_id,date+'%')
+			df_serry = pd.read_sql_query(sql_str,conn)
+			league_id = df_serry.iloc[-1]['league_id']
+			serryname = df_serry.iloc[-1]['serryname']
+			if not (str(league_id) in self.rt and serryname in self.rt[str(league_id)] and  self.params['x_rt_feature'] in self.rt[str(league_id)][serryname] and self.rt[str(league_id)][serryname][self.params['x_rt_feature']] > self.params['x_rt_thresh']):
+				for i in range(0,len(df)):
+					delete_row.append(i)
+				return delete_row
 		for idx,row in df.iterrows():
 			if row['area'] != self.params['area'] and self.params['area'] > 0:
 				if self.params['ignore']:

@@ -135,24 +135,24 @@ class Predictor():
 			if (_serryname == serryname):
 				c0_p_id = group_dic['c0_p_id']
 				c0_id_with_neu = group_dic['c0_id_with_neu']
-				if c0_p_id > 0 and not (kind.startswith('min') or kind.startswith('may')):
-					exp_dic['kind'] = group_dic['kind']
-					exp_dic['exp_id'] = c0_p_id
-					exp_dic['limi'] = group_dic['c0_p_limi']
-					exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu']
-					exp_cand.append(exp_dic)
-				elif c0_id_with_neu > 0 and (kind.startswith('min') or kind.startswith('may')):
+#				if c0_p_id > 0:
+#					exp_dic['kind'] = group_dic['kind']
+#					exp_dic['exp_id'] = c0_p_id
+#					exp_dic['limi'] = group_dic['c0_p_limi']
+#					exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu']
+#					exp_cand.append(exp_dic)
+				if c0_id_with_neu > 0:
 					exp_dic['kind'] = group_dic['kind']
 					exp_dic['exp_id'] = c0_id_with_neu
 					exp_dic['limi'] = group_dic['c0_limi']
 					exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
-					if str(league_id) in rt and serryname in rt[str(league_id)]:
-						if kind.startswith('min') and rt[str(league_id)][serryname]['min_rt'] > 0.0:
-							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['min_rt']
-						elif kind.startswith('may') and rt[str(league_id)][serryname]['may_rt'] > 0.0:
-							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['may_rt']
-					else:
-						exp_dic['limi'] = 0.0
+#					if str(league_id) in rt and serryname in rt[str(league_id)]:
+#						if kind.startswith('min') and 'min_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['min_rt'] > 0.0:
+#							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['min_rt']
+#						elif kind.startswith('may') and 'may_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['may_rt'] > 0.0:
+#							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['may_rt']
+#					else:
+#						exp_dic['limi'] = 0.0
 					exp_cand.append(exp_dic)
 		return exp_cand
 
