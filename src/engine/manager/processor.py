@@ -12,6 +12,7 @@ from extractor_creator import *
 from grouper import *
 from predictor import *
 from oddsgrouper import *
+from plain_plot import *
 from groupprocessor import *
 from conf import *
 
@@ -76,9 +77,13 @@ class Processor(object):
 		f_buckets.close()
 
 	def group(self):
-			grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
-			grouper.group()
+		grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
+		grouper.group()
 
+	def plot(self):
+		plain_plot = Plain_Plot()
+		plain_plot.plot()
+	
 	def extract(self):
 		extractor = Extractor_Creator()
 		extractor.extract(gflags.FLAGS.league_cond)

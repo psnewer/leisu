@@ -14,6 +14,7 @@ from vs_filter import *
 from vs_model_filter import *
 from goal_model_filter import *
 from counter_vs_filter import *
+from rank_win_filter import *
 
 class Filter_Creator(object):
 	def __init__(self,str_filters):

@@ -57,7 +57,7 @@ class SlSpider(scrapy.Spider):
 		league = response.meta['league']
 		season = response.meta['season']
 		today=time.strftime("%Y%m%d", time.localtime())
-		tomorrow = (datetime.today() + timedelta(7)).strftime('%Y%m%d')
+		tomorrow = (datetime.today() + timedelta(3)).strftime('%Y%m%d')
 		sA = response.xpath(u"//div[contains(@id,'stage-content')]")
 		for _sB in sA:
 			serryid = _sB.xpath(u".//@data-id").re_first('(.+)')

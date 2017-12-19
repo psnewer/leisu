@@ -29,6 +29,12 @@ class TWO_MAYOR_FEATURE(ABSTRACT_FEATURE):
 				res_dic = {}
 				res_dic['team_id'] = team
 				res_dic['date'] = date
+				if team == row['home_team_id']:
+					res_dic['area'] = 1
+					res_dic['toteam'] = row['away_team_id']
+				else:
+					res_dic['area'] = 2
+					res_dic['toteam'] = row['home_team_id']
 				res = self.process(df_team)
 				res_dic[self.name] = res
 				res_str = json.dumps(res_dic)
@@ -57,9 +63,16 @@ class TWO_MAYOR_FEATURE(ABSTRACT_FEATURE):
 				df_team = df_team.sort_values(by='date')
 				length = len(df_team)
 				for i in range(0,length):
+					row = df_team.iloc[i]
 					res_dic = {}
 					res_dic['team_id'] = team
-					res_dic['date'] = df_team.iloc[i]['date']
+					res_dic['date'] = row['date']
+					if team == row['home_team_id']:
+						res_dic['area'] = 1
+						res_dic['toteam'] = row['away_team_id']
+					else:
+						res_dic['area'] = 2
+						res_dic['toteam'] = row['home_team_id']
 					df_stage = df_team[0:i]
 					res = self.process(df_stage)
 					res_dic[self.name] = res

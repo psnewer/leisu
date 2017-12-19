@@ -52,6 +52,9 @@ class Predictor():
 					tester = predict_dic['tester']
 					limi = predict_dic['limi']
 					limi_with_neu = predict_dic['limi_with_neu']
+					profit = predict_dic['profit']
+					mean_profit = predict_dic['mean_profit']
+					index = predict_dic['index']
 					for match_res in predict_dic['res']:
 						res = {}
 						home_team_id = match_res['home_team']
@@ -68,6 +71,9 @@ class Predictor():
 						res['date'] = date
 						res['limi'] = limi
 						res['limi_with_neu'] = limi_with_neu
+						res['profit'] = profit
+						res['mean_profit'] = mean_profit
+						res['index'] = index
 						res['home_team'] = home_team
 						res['away_team'] = away_team
 						team_res.append(res)
@@ -93,11 +99,14 @@ class Predictor():
 			exp = self.experiments[_exp['exp_id']]
 			limi = _exp['limi']
 			limi_with_neu = _exp['limi_with_neu']
+			profit = _exp['profit']
+			mean_profit = _exp['mean_profit']
+			index = _exp['index']
 			filters = exp['filter']
 			tester = exp['tester'][0]
 			tester_kind = _exp['kind']
 			df_filter = self.tester_creator.get_filtered(filters)
-			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,limi,limi_with_neu,predict_log)
+			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,limi,limi_with_neu,profit,mean_profit,index,predict_log)
 	
 	def get_experiment(self,league_id,serryid):
 		cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,serryid))
@@ -128,24 +137,34 @@ class Predictor():
 		rt = json.load(rt_data)
 		exp_cand = []
 		for row in groupdata:
-			exp_dic = {}
 			group_dic = json.loads(row,encoding='utf-8')
 			_serryname = group_dic['serryname']
 			kind = group_dic['kind']
 			if (_serryname == serryname):
-				c0_p_id = group_dic['c0_p_id']
+				c0_profit = group_dic['c0_profit']
 				c0_id_with_neu = group_dic['c0_id_with_neu']
-#				if c0_p_id > 0:
-#					exp_dic['kind'] = group_dic['kind']
-#					exp_dic['exp_id'] = c0_p_id
-#					exp_dic['limi'] = group_dic['c0_p_limi']
-#					exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu']
-#					exp_cand.append(exp_dic)
+				if len(c0_profit) > 0:
+					sorted_ind = np.argsort(c0_profit).tolist()
+					sorted_ind.reverse()
+					for idx,ind in enumerate(sorted_ind):
+						exp_dic = {}
+						exp_dic['kind'] = group_dic['kind']
+						exp_dic['exp_id'] = group_dic['c0_p_id'][ind]
+						exp_dic['limi'] = group_dic['c0_p_limi'][ind]
+						exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu'][ind]
+						exp_dic['profit'] = group_dic['c0_profit'][ind]
+						exp_dic['mean_profit'] = group_dic['c0_meanProfit'][ind]
+						exp_dic['index'] = idx
+						exp_cand.append(exp_dic)
 				if c0_id_with_neu > 0:
+					exp_dic = {}
 					exp_dic['kind'] = group_dic['kind']
 					exp_dic['exp_id'] = c0_id_with_neu
 					exp_dic['limi'] = group_dic['c0_limi']
 					exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
+					exp_dic['profit'] = group_dic['c0_limi_profit']
+					exp_dic['mean_profit'] = group_dic['c0_limi_meanProfit']
+					exp_dic['index'] = -1
 #					if str(league_id) in rt and serryname in rt[str(league_id)]:
 #						if kind.startswith('min') and 'min_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['min_rt'] > 0.0:
 #							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['min_rt']
@@ -156,7 +175,7 @@ class Predictor():
 					exp_cand.append(exp_dic)
 		return exp_cand
 
-	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,predict_log):
+	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,profit,mean_profit,index,predict_log):
 		if len(df) < 1 or len(df_team) < 1:
 			return
 		league_id = df.iloc[-1]['league_id']
@@ -167,6 +186,9 @@ class Predictor():
 		team_res['tester'] = tester_kind
 		team_res['limi'] = limi
 		team_res['limi_with_neu'] = limi_with_neu
+		team_res['profit'] = profit
+		team_res['mean_profit'] = mean_profit
+		team_res['index'] = index
 		team_res['res'] = []
 		res_list = []
 		dates = df['date'].unique()
@@ -176,7 +198,7 @@ class Predictor():
 			date_dic['date'] = date
 			date_dic['home_teams'] = []
 			date_dic['away_teams'] = []
-			for index,row in df_date.iterrows():
+			for idx,row in df_date.iterrows():
 				date_dic['home_teams'].append(row['home_team_id'])
 				date_dic['away_teams'].append(row['away_team_id'])
 			res_list.append(date_dic)
@@ -184,7 +206,7 @@ class Predictor():
 		df_team = df_team[['date','team_id','area']]
 		df_team = df_team.groupby(['date','area']).apply(lambda x: list(x['team_id'])).unstack('area').reset_index(0)
 		anadf = pd.merge(df_date,df_team,how='inner',on='date')
-		for index,row in anadf.iterrows():
+		for idx,row in anadf.iterrows():
 			date = row['date']
 			home_teams_posi = None
 			away_teams_posi = None

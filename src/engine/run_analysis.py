@@ -16,6 +16,8 @@ gflags.DEFINE_string('extract_conf', '', 'extract.conf')
 gflags.DEFINE_string('buckets_path', '', 'bucket.conf')
 gflags.DEFINE_bool('predict', False, 'predict')
 gflags.DEFINE_bool('group', False, 'group')
+gflags.DEFINE_bool('plot', False, 'plot')
+gflags.DEFINE_bool('with_neu', False, 'with neutral')
 gflags.DEFINE_bool('extract', False, 'extract')
 gflags.DEFINE_string('group_path', '', 'group path')
 gflags.DEFINE_string('extract_path', '', 'extract path')
@@ -37,6 +39,8 @@ if __name__ == "__main__":
 		pro.group()
 	elif (gflags.FLAGS.extract):
 		pro.extract()
+	elif (gflags.FLAGS.plot):
+		pro.plot()
 	else:
 		pro.process()
 	pro.close()

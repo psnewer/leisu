@@ -10,6 +10,7 @@ from pre_rank_feature import *
 from pre_vs_feature import *
 from min_team_feature import *
 from current_match_feature import *
+from win_score_feature import *
 from vs_plainself_feature import *
 from vs_plainself_no_pre_feature import *
 from vs_rawall_feature import *

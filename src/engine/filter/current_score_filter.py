@@ -16,6 +16,7 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 		self.params['score'] = 3
 		self.params['area'] = 1
 		self.params['ignore'] = True
+		self.params['GE'] = True
 		self.params['equal'] = True
 
 	def filter(self,df):
@@ -47,20 +48,29 @@ class CURRENT_SCORE_FILTER(ABSTRACT_FILTER):
 						score += 3
 					else:
 						score += 1
-			if self.params['equal']:
-				if score >= self.params['score']:
-					continue
-			else:
-				if score > self.params['score']:
-					continue
+			if self.params['GE']:
+				if self.params['equal']:
+					if score >= self.params['score']:
+						continue
+				else:
+					if score > self.params['score']:
+						continue
+			elif not self.params['GE'] and num == self.params['tolast']:
+				if self.params['equal']:
+					if score <= self.params['score']:
+						continue
+				else:
+					if score < self.params['score']:
+						continue
 			if num > 0:
 				mean_score = float(score)/num
 				mean_std = float(self.params['score'])/self.params['tolast']
-				if self.params['equal']:
-					if mean_score >= mean_std:
-						continue
-				else:
-					if mean_score > mean_std:
-						continue
+				if self.params['GE']:
+					if self.params['equal']:
+						if mean_score >= mean_std:
+							continue
+					else:
+						if mean_score > mean_std:
+							continue
 			delete_row.append(idx)
 		return delete_row
