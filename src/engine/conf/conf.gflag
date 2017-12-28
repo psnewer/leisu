@@ -1,6 +1,7 @@
 --db_path=/Users/miller/Desktop/soccer.db
 --alg_path=/Users/miller/Documents/workspace/leisu/src/engine/conf/server.cfg
 --experiment_path=/Users/miller/Documents/workspace/leisu/src/engine/conf/experiment.conf
+--trend_path=/Users/miller/Documents/workspace/leisu/src/engine/conf/trend.conf
 --extract_conf=/Users/miller/Documents/workspace/leisu/src/engine/conf/extract.conf
 --buckets_path=/Users/miller/Documents/workspace/leisu/src/engine/conf/buckets.conf
 --group_path=/Users/miller/Documents/workspace/leisu/res/group/

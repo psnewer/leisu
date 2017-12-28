@@ -7,13 +7,37 @@ import pandas as pd
 import gflags
 import codecs
 import threading
-from min_goals_tester import *
+from trend_creator import *
+from trenf_creator import *
+from trent_creator import *
 from conf import *
 
 class OddsGrouper():
 	def __init__(self,tester_creator,experiments,condition):
 		self.tester_creator = tester_creator
 		self.experiments = experiments
+		self.trend_experiments = {}
+		f_exp = codecs.open(gflags.FLAGS.trend_path, 'r', encoding='utf-8')
+		data_algs = json.load(f_exp)
+		features = data_algs['features']
+		filters = data_algs['filters']
+		self.trend_creator = Trend_Creator(features)
+		self.trenf_creator = Trenf_Creator(filters)
+		self.trent_creator = Trent_Creator(self.trend_creator,self.trenf_creator)
+		if gflags.FLAGS.test:
+			trend_experiments = data_algs['experiments']
+			for exp in trend_experiments:
+				experiment_id = exp['experiment_id']
+				algs = exp['algs']
+				filters = exp['filters']
+				self.trend_experiments[experiment_id] = {}
+				self.trend_experiments[experiment_id]['feature'] = []
+				self.trend_experiments[experiment_id]['filter'] = []
+				for alg in algs:
+					self.trend_experiments[experiment_id]['feature'].append(alg)
+				for filter in filters:
+					self.trend_experiments[experiment_id]['filter'].append(filter)
+		f_exp.close()
 		condition = json.loads(condition)
 		league_str = str(condition['league_id'])
 		self.conditions = []
@@ -21,205 +45,94 @@ class OddsGrouper():
 		for serryname in condition['serryname']:
 			serry_cond = "serryname='%s'"%serryname
 			self.conditions.append([league_cond,serry_cond])
-		group_directory = gflags.FLAGS.group_path + league_str
-		os.system(r'mkdir %s'%group_directory)
-		self.group_detail = group_directory + '/group_detail.txt'
-		self.group_final = group_directory + '/group_final.txt'
-		self.feature_res = group_directory + '/feature_res.txt'
-		self.test_res = group_directory + '/test_res.txt'
+		self.group_directory = gflags.FLAGS.group_path + league_str
+		os.system(r'mkdir %s'%self.group_directory)
 
 	def group(self):
 		self.process()
-		self.analysis()
+#		self.analysis()
 
 	def process(self):
-		feature_res = codecs.open(self.feature_res,'w+',encoding='utf-8')
-		test_res = codecs.open(self.test_res,'w+',encoding='utf-8')
 		for cond in self.conditions:
+			league_id = int(cond[0].split('=')[1])
+			serryname = cond[1].split('=')[1].strip('\'')
+			group_directory = self.group_directory + '/' + serryname
+			os.system(r'mkdir %s'%group_directory)
+			feature_res = group_directory + '/feature_res.txt'
+			test_res = group_directory + '/test_res.txt'
+			feature_res = codecs.open(feature_res,'w+',encoding='utf-8')
+			test_res = codecs.open(test_res,'w+',encoding='utf-8')
 			self.tester_creator.group(cond,feature_log=feature_res)
+			df = pd.DataFrame([])
 			for experiment_id in self.experiments:
-				GlobalVar.set_experimentId(experiment_id)
 				exp = self.experiments[experiment_id]
 				features = exp['feature']
 				filters = exp['filter']
 				testers = exp['tester']
-				self.tester_creator.test(filters,testers,cond,tester_log=test_res)
-		feature_res.close()
-		test_res.close()
+				team_res = self.tester_creator.test(filters,testers,cond)
+				df_res = pd.DataFrame(team_res)
+				df_res['experiment_id'] = experiment_id
+				df_res['league_id'] = league_id
+				df_res['serryname'] = serryname
+				df = df.append(df_res)
+			df.to_csv(test_res)
+			feature_res.close()
+			test_res.close()
 
 	def analysis(self):
-		f_kind = codecs.open(gflags.FLAGS.kind_file,'r',encoding='utf-8')
-		test_res = codecs.open(self.test_res,'r',encoding='utf-8')
-		kinds = json.load(f_kind)
-		res_list = []
-		profit = 0.0
-		for row in test_res:
-			res_dic = json.loads(row)
-			if 'experiment_id' in res_dic:
-				res_dic['profit'] = profit
-				profit = 0.0
-				res_list.append(res_dic)
-			else:
-				profit += self.getProfit(res_dic)
-		if len(res_list) > 0:
-			group_final = codecs.open(self.group_final,'w+',encoding='utf-8')
-			df = pd.DataFrame(res_list)[['league_id','serryname','last_date','experiment_id','success','failure','neutral','profit']]
-			df.to_csv(self.group_detail,encoding='utf-8')
-			leagues = df['league_id'].unique()
-			for league in leagues:
-				df_league = df.query("league_id==%d"%league)
-				serrynames = df_league['serryname'].unique()
-				for serryname in serrynames:
-					df_serryname = df_league[df_league.serryname==serryname]
-					for kind in kinds:
-						kind_name = kind['name']
-						exps = kind['exps']
-#						min_all = 100.0
-						min_c0 = 100.0
-						min_c1 = 100.0
-#						min_c2 = 100.0
-#						min_all_with_neu = 100.0
-						min_c0_with_neu = 100.0
-						min_c1_with_neu = 100.0
-#						min_c2_with_neu = 100.0
-#						max_allprofit = 0.0
-#						max_c0profit = 0.0
-#						max_c1profit = 0.0
-#						max_c2profit = 0.0
-						dic_res = {}
-						dic_res['league_id'] = league
-						dic_res['serryname'] = serryname
-						dic_res['kind'] = kind_name
-						dic_res['c0_profit'] = []
-						dic_res['c0_p_id'] = []
-						dic_res['c0_p_limi'] = []
-						dic_res['c0_p_limi_with_neu'] = []
-						dic_res['c0_meanProfit'] = []
-						for exp in exps:
-							df_exp = df_serryname.query("experiment_id==%d"%exp).sort_values(by='last_date')
-#							all_limi = 0.0
-#							all_limi_with_neu = 0.0
-							c0_limi = 0.0
-							c0_limi_with_neu = 0.0
-							c1_limi = 0.0
-							c1_limi_with_neu = 0.0
-#							c2_limi = 0.0	
-#							c2_limi_with_neu = 0.0
-#							all_succ = sum(df_exp['success'])
-#							all_fail = sum(df_exp['failure'])
-#							all_neu = sum(df_exp['neutral'])
-#							all_profit = sum(df_exp['profit'])
-							current_succ0 = sum(df_exp.tail(1)['success'])
-							current_fail0 = sum(df_exp.tail(1)['failure'])
-							current_neu0 = sum(df_exp.tail(1)['neutral'])
-							current_profit0 = sum(df_exp.tail(1)['profit'])
-							c0_meanProfit = 0.0
-							current_succ1 = sum(df_exp.tail(2)['success']) - current_succ0
-							current_fail1 = sum(df_exp.tail(2)['failure']) - current_fail0
-							current_neu1 = sum(df_exp.tail(2)['neutral']) - current_neu0
-							current_profit1 = sum(df_exp.tail(2)['profit']) - current_profit0
-							c1_meanProfit = 0.0
-#							current_succ2 = sum(df_exp.tail(3)['success']) - current_succ0 - current_succ1
-#							current_fail2 = sum(df_exp.tail(3)['failure']) - current_fail0 - current_fail1
-#							current_neu2 = sum(df_exp.tail(3)['neutral']) - current_neu0 - current_neu1
-#							current_profit2 = sum(df_exp.tail(3)['profit']) - current_profit0 - current_profit1
-#							if (all_succ != 0):
-#								all_limi = (float(all_succ) + float(all_fail))/float(all_succ)
-#								all_limi_with_neu = (float(all_succ) + float(all_fail) + float(all_neu))/float(all_succ)
-							if (current_succ0 != 0):
-								c0_limi = (float(current_succ0) + float(current_fail0))/float(current_succ0)
-								c0_limi_with_neu = (float(current_succ0) + float(current_fail0) + float(current_neu0))/float(current_succ0)
-								c0_meanProfit = current_profit0/(current_succ0+current_fail0)
-							if (current_succ1 != 0):
-								c1_limi = (float(current_succ1) + float(current_fail1))/float(current_succ1)
-								c1_limi_with_neu = (float(current_succ1) + float(current_fail1) + float(current_neu1))/float(current_succ1)
-								c1_meanProfit = current_profit1/(current_succ1+current_fail1)
-#							if (current_succ2 != 0):
-#								c2_limi = (float(current_succ2) + float(current_fail2))/float(current_succ2)
-#								c2_limi_with_neu = (float(current_succ2) + float(current_fail2) + float(current_neu2))/float(current_succ2)
-	#						if (all_limi != 0.0 and all_limi < min_all):
-	#							dic_res['all_limi_with_neu'] = all_limi_with_neu
-	#							min_all = all_limi
-#							if (all_limi_with_neu != 0.0 and all_limi_with_neu < min_all_with_neu):
-#								dic_res['all_id_with_neu'] = exp
-#								dic_res['all_limi'] = all_limi
-#								dic_res['all_limi_with_neu'] = all_limi_with_neu
-#								min_all_with_neu = all_limi_with_neu
-	#						if (c2_limi != 0 and c2_limi < min_c2):
-	#							dic_res['c2_id'] = exp
-	#							min_c2 = c2_limi
-#							if (c2_limi_with_neu != 0 and c2_limi_with_neu < min_c2_with_neu):
-#								dic_res['c2_id_with_neu'] = exp
-#								dic_res['c2_limi'] = c2_limi
-#								dic_res['c2_limi_with_neu'] = c2_limi_with_neu
-#								min_c2_with_neu = c2_limi_with_neu
-	#						if (c1_limi != 0 and c1_limi < min_c1):
-	#							dic_res['c1_id'] = exp
-	#							min_c1 = c1_limi
-#							if (c1_limi_with_neu != 0 and c1_limi_with_neu < min_c1_with_neu):
-#								dic_res['c1_id_with_neu'] = exp
-#								dic_res['c1_limi'] = c1_limi
-#								dic_res['c1_limi_with_neu'] = c1_limi_with_neu
-#								min_c1_with_neu = c1_limi_with_neu
-	#						if (c0_limi != 0 and c0_limi < min_c0):
-	#							dic_res['c0_id'] = exp
-	#							min_c0 = c0_limi
-							if (c0_limi_with_neu != 0 and c0_limi_with_neu < min_c0_with_neu):
-								dic_res['c0_id_with_neu'] = exp
-								dic_res['c0_limi'] = c0_limi
-								dic_res['c0_limi_with_neu'] = c0_limi_with_neu
-								dic_res['c0_limi_profit'] = current_profit0
-								dic_res['c0_limi_meanProfit'] = c0_meanProfit
-								min_c0_with_neu = c0_limi_with_neu
-#							if (all_profit > max_allprofit):
-#								dic_res['all_profit'] = all_profit
-#								dic_res['all_p_id'] = exp
-#								dic_res['all_p_limi'] = all_limi
-#								dic_res['all_p_limi_with_neu'] = all_limi_with_neu
-#								dic_res['all_meanProfit'] = all_profit/(all_succ+all_fail)
-#								max_allprofit = all_profit
-							if (current_profit0 > 0.0 and current_profit1 > 0.0) or c0_meanProfit > 0.3:
-								dic_res['c0_profit'].append(current_profit0)
-								dic_res['c0_p_id'].append(exp)
-								dic_res['c0_p_limi'].append(c0_limi)
-								dic_res['c0_p_limi_with_neu'].append(c0_limi_with_neu)
-								dic_res['c0_meanProfit'].append(c0_meanProfit)
-#								max_c0profit = current_profit0
-#							if (current_profit1 > max_c1profit):
-#								dic_res['c1_profit'] = current_profit1
-#								dic_res['c1_p_id'] = exp
-#								dic_res['c1_p_limi'] = c1_limi
-#								dic_res['c1_p_limi_with_neu'] = c1_limi_with_neu
-#								dic_res['c1_meanProift'] = current_profit1/(current_succ1+current_fail1)
-#								max_c1profit = current_profit1
-#							if (current_profit2 > max_c2profit):
-#								dic_res['c2_profit'] = current_profit2
-#								dic_res['c2_p_id'] = exp
-#								dic_res['c2_p_limi'] = c2_limi
-#								dic_res['c2_p_limi_with_neu'] = c2_limi_with_neu
-#								dic_res['c2_meanProfit'] = current_profit2/(current_succ2+current_fail2)
-#								max_c2profit = current_profit2
-#						ef ('all_id_with_neu' not in dic_res):
-#							dic_res['all_id_with_neu'] = 0
-#						if ('c2_id_with_neu' not in dic_res):
-#							dic_res['c2_id_with_neu'] = 0
-#						if ('c1_id_with_neu' not in dic_res):
-#							dic_res['c1_id_with_neu'] = 0
-						if ('c0_id_with_neu' not in dic_res):
-							dic_res['c0_id_with_neu'] = 0
-#						if ('all_p_id' not in dic_res):
-#							dic_res['all_p_id'] = 0
-#						if ('c2_p_id' not in dic_res):
-#							dic_res['c2_p_id'] = 0
-#						if ('c1_p_id' not in dic_res):
-#							dic_res['c1_p_id'] = 0
-						if ('c0_p_id' not in dic_res):
-							dic_res['c0_p_id'] = 0
-						dic_res_str = json.dumps(dic_res,cls=GenEncoder,ensure_ascii=False)
-						group_final.write(dic_res_str+'\n')
-			group_final.close()
-		f_kind.close()
-		test_res.close()
+		for cond in self.conditions:
+			league_id = int(cond[0].split('=')[1])
+			serryname = cond[1].split('=')[1].strip('\'')
+			group_directory = self.group_directory + '/' + serryname
+			test_res_file = group_directory + '/test_res.txt'
+			trend_res_file = group_directory + '/trend_res.txt'
+			test_final_file = group_directory + '/test_final.txt'
+			if os.path.exists(test_res_file):
+				df_test = pd.DataFrame.from_csv(test_res_file).astype({'serryid': str})
+				dic_res = {}
+				serryids = df_test['serryid'].unique()
+				sql_str = "select distinct serryid from Match where league_id=%d and serryname='%s' order by date desc"%(league_id,serryname)
+				_serryids = pd.read_sql_query(sql_str,conn)
+				started = True
+				first_serryid = _serryids.iloc[0][0]
+				if not gflags.FLAGS.test_all:
+					sql_str = "select count(*) from TMatch where league_id=%d and serryid='%s'"%(league_id,first_serryid)
+					count = pd.read_sql_query(sql_str,conn).iloc[0][0]
+					if count == 0:
+						started = False	
+				experiment_ids = df_test['experiment_id'].unique()
+				for experiment_id in experiment_ids:
+					df_experiment = df_test[df_test['experiment_id']==experiment_id]
+					dic_res[experiment_id] = {}
+					for idx,row in _serryids.iterrows():
+						_serryid = row['serryid']
+						pre = idx
+						if not started:
+							pre = pre + 1
+						if _serryid in serryids:
+							pre = idx
+							if not started:
+								pre = pre + 1
+							dic_res[experiment_id][pre] = df_experiment[df_experiment['serryid']==_serryid].to_dict('record')
+						else:
+							dic_res[experiment_id][pre] = []
+				trend_res = codecs.open(trend_res_file,'w+',encoding='utf-8')
+				test_final = codecs.open(test_final_file,'w+',encoding='utf-8')
+				self.trent_creator.execute(dic_res,trend_log=trend_res)
+				if gflags.FLAGS.test:
+					team_res = []
+					for experiment_id in self.trend_experiments:
+						exp = self.trend_experiments[experiment_id]
+						features = exp['feature']
+						filters = exp['filter']
+						team_res.extend(self.trent_creator.test(filters,dic_res,test_id=experiment_id))
+					df_res = pd.DataFrame(team_res)
+					df_res['serryname'] = serryname
+					df_res.to_csv(test_final)
+				else:
+					self.trent_creator.filter_experiment()
+				trend_res.close()
+				test_final.close()
 
 	def getProfit(self, res_dic):
 		tester = res_dic['name']

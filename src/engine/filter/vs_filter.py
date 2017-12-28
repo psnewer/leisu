@@ -30,7 +30,7 @@ class VS_FILTER(ABSTRACT_FILTER):
 			date = row['date']
 			num_win = 0
 			num_lose = 0
-			if (row['PRE_VS_FEATURE'][0])!=[]:
+			if (row['PRE_VS_FEATURE'][0]):
 				for i in range(0,len(row['PRE_VS_FEATURE'][0])):
 					_dic = row['PRE_VS_FEATURE'][0][i]
 					delta_score = _dic['home_goal'] - _dic['away_goal']

@@ -31,7 +31,7 @@ get_jsonObj() {
 	echo `cat $group_file | jq ".[$ind]"`
 }
 
-rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
+#rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
 
 cond=`get_jsonObj`
 echo $cond
@@ -40,7 +40,7 @@ do
     read -u1000
     {
 		echo $cond
-        python run_analysis.py --flagfile=./conf/conf.gflag --group --league_cond="$cond"
+        python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
 		checkError "run_group $cond"
         echo >&1000
     } & 

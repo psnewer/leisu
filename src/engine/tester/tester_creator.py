@@ -37,16 +37,17 @@ class Tester_Creator(object):
 
 	def predict(self,league_id,serryid,df,feature_log):
 		team_res = self.feature_creator.execute_predict(league_id,serryid,df,feature_log)
-		if team_res != []:
-			self.filter_creator.execute(team_res)
+		self.filter_creator.execute(team_res)
 
 	def get_filtered(self,filter_list):
 		return self.filter_creator.get_filtered(filter_list)
 
-	def test(self,filters,testers,condition,tester_log):
+	def test(self,filters,testers,condition):
 		self.set_tester(testers)
 		for tester in self.tester_cand:
 			df_filter = self.filter_creator.get_filtered(filters)
 			if df_filter is not None and len(df_filter) > 0:
-				self.testers[tester].analysis(condition,df_filter,tester_log)
+				return self.testers[tester].analysis(condition,df_filter)
+			else:
+				return []
 						

@@ -31,7 +31,7 @@ class COUNTER_VS_FILTER(ABSTRACT_FILTER):
 			num_win = 0
 			num_lose = 0
 			num = 0
-			if (row['PRE_VS_FEATURE'][0])!=[]:
+			if (row['PRE_VS_FEATURE'][0]):
 				for i in range(0,len(row['PRE_VS_FEATURE'][0])):
 					num += 1
 					_dic = row['PRE_VS_FEATURE'][0][i]

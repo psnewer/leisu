@@ -38,7 +38,7 @@ if __name__ == "__main__":
 			if mean_match > 4:
 				cond_res['serryname'].append(serryname)
 		cond_res['serryname'] = list(set(cond_res['serryname']))
-		if cond_res['serryname'] != []:
+		if cond_res['serryname']:
 			res_list.append(cond_res)
 	json.dump(res_list,f_group,cls=GenEncoder,ensure_ascii=False)
 	f_group.close()

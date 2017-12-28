@@ -18,7 +18,8 @@ class ABSTRACT_TESTER():
 		for key in params:
 			self.params[key] = params[key]
 
-	def analysis(self,condition,df_team,tester_log):
+	def analysis(self,condition,df_team):
+		team_res = []
 		cond = list(condition)
 		cond_str = ' and '.join(cond)
 		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
@@ -83,95 +84,98 @@ class ABSTRACT_TESTER():
 						away_team = posi_away_team[idx]
 						_res = {}
 						_res['name'] = self.name
+						_res['serryid'] = serryid
 						_res['date'] = date
 						_res['home_team'] = home_team
 						_res['away_team'] = away_team
 						if home_teams is not None and home_team in home_teams:
 							succ = succ + 1
 							_res['res'] = 1
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 						elif away_teams is not None and away_team in away_teams:
 							succ = succ + 1
 							_res['res'] = 1
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 					for idx,home_team in enumerate(neg_home_team):
 						away_team = neg_away_team[idx]
 						_res = {}
 						_res['name'] = self.name
+						_res['serryid'] = serryid
 						_res['date'] = date
 						_res['home_team'] = home_team
 						_res['away_team'] = away_team
 						if home_teams is not None and home_team in home_teams:
 							fail = fail + 1
 							_res['res'] = 2
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 						elif away_teams is not None and away_team in away_teams:
 							fail = fail + 1
 							_res['res'] = 2
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 					for idx,home_team in enumerate(neutral_home_team):
 						away_team = neutral_away_team[idx]
 						_res = {}
 						_res['name'] = self.name
+						_res['serryid'] = serryid
 						_res['date'] = date
 						_res['home_team'] = home_team
 						_res['away_team'] = away_team
 						if (home_teams is not None and home_team in home_teams) or (away_teams is not None and away_team in away_teams):
 							neu = neu + 1
 							_res['res'] = 0
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 				else:
 					for idx,home_team in enumerate(posi_home_team):
 						away_team = posi_away_team[idx]
 						_res = {}
 						_res['name'] = self.name
+						_res['serryid'] = serryid
 						_res['date'] = date
 						_res['home_team'] = home_team
 						_res['away_team'] = away_team
 						if home_teams is not None and away_teams is not None and home_team in home_teams and away_team in away_teams:
 							succ = succ + 1
 							_res['res'] = 1
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 					for idx,home_team in enumerate(neg_home_team):
 						away_team = neg_away_team[idx]
 						_res = {}
 						_res['name'] = self.name
+						_res['serryid'] = serryid
 						_res['date'] = date
 						_res['home_team'] = home_team
 						_res['away_team'] = away_team
 						if home_teams is not None and away_teams is not None and home_team in home_teams and away_team in away_teams:
 							fail = fail + 1
 							_res['res'] = 2
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
+							team_res.append(_res)
+#							_res_str = json.dumps(_res)
+#							tester_log.write(_res_str + '\n')
 					for idx,home_team in enumerate(neutral_home_team):
 						away_team = neutral_away_team[idx]
 						_res = {}
 						_res['name'] = self.name
+						_res['serryid'] = serryid
 						_res['date'] = date
 						_res['home_team'] = home_team
 						_res['away_team'] = away_team
 						if home_teams is not None and away_teams is not None and home_team in home_teams and away_team in away_teams:
 							neu = neu + 1
 							_res['res'] = 0
-							_res_str = json.dumps(_res)
-							tester_log.write(_res_str + '\n')
-			dic_ = {}
-			dic_['success'] = succ
-			dic_['failure'] = fail
-			dic_['neutral'] = neu
-			dic_['last_date'] = df.iloc[-1]['date']
-			dic_['league_id'] = df.iloc[-1]['league_id']
-			dic_['serryname'] = df.iloc[-1]['serryname']
-			dic_['experiment_id'] = GlobalVar.get_experimentId()
-			dic_str = json.dumps(dic_,cls=GenEncoder,ensure_ascii=False)
-			tester_log.write(dic_str+'\n')
+							team_res.append(_res)
+		return team_res
 	
 	def get_team_tar(self,row):
 		return False
