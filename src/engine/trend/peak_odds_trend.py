@@ -16,15 +16,17 @@ class PEAK_ODDS_TREND(ABSTRACT_TREND):
 		self.params['num_season'] = 3
 		self.params['peak_rt'] = 0.25
 
-	def execute_predict(self,league_id,serryid,df_serry,feature_log):
+	def execute_predict(self,dic_res,trend_log):
 		date_res = []
 		for experiment_id in dic_res:
 			experiment_dic = dic_res[experiment_id]
-			res = self.process(experiment_dic,0)
-			res['experiment_id'] = experiment_id
-			date_res.append(res)
-			res_str = json.dumps(res,cls=GenEncoder)
-			trend_log.write(res_str+'\n')
+			if 0 in experiment_dic and experiment_dic[0]:
+				res = {}
+				res['self.name'] = self.process(experiment_dic,0)
+				res['experiment_id'] = experiment_id
+				date_res.append(res)
+				res_str = json.dumps(res,cls=GenEncoder)
+				trend_log.write(res_str+'\n')
 		return date_res
 
 	def execute_test(self,dic_res,trend_log):

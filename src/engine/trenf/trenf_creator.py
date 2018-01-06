@@ -6,11 +6,10 @@ import gflags
 from conf import *
 from mean_odds_trenf import *
 from asc_time_trenf import *
-from asc_fix_trenf import *
-from level_odds_trenf import *
-from first_peak_trenf import *
-from peak_odds_trenf import *
-from peer_win_trenf import *
+from mom_trenf import *
+from first_down_trenf import *
+from mom_rush_trenf import *
+from long_mean_trenf import *
 from round_rt_trenf import *
 from abstract_trenf import *
 
@@ -39,7 +38,10 @@ class Trenf_Creator(object):
 				self.filter_res[filter] = []
 			return
 		df = pd.DataFrame(feature_list)
-		df = df.groupby(['experiment_id','date'],as_index=False).agg(lambda x: tuple(x[x.notnull()])).applymap(lambda x: x[0] if type(x) is tuple and len(x)>0 else [] if x is () else x)
+		if 'date' in df:
+			df = df.groupby(['experiment_id','date'],as_index=False).agg(lambda x: tuple(x[x.notnull()])).applymap(lambda x: x[0] if type(x) is tuple and len(x)>0 else [] if x is () else x)
+		else:
+			df = df.groupby(['experiment_id'],as_index=False).agg(lambda x: tuple(x[x.notnull()])).applymap(lambda x: x[0] if type(x) is tuple and len(x)>0 else [] if x is () else x)
 		self.df = df
 		for filter in self.filter_cand:
 			filter_ins = self.filters[filter]
@@ -53,6 +55,5 @@ class Trenf_Creator(object):
 		for filter in filter_list:
 			delete_list.extend(self.filter_res[filter])
 		delete_list = list(set(delete_list))
-		self.df.drop(delete_list,inplace=False).to_csv('./log.csv')
 		return self.df.drop(delete_list,inplace=False)
 

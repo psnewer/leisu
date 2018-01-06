@@ -16,10 +16,10 @@ class ROUND_RT_TREND(ABSTRACT_TREND):
 
 	def execute_predict(self,dic_res,trend_log):
 		date_res = []
-		res = {}
 		for experiment_id in dic_res:
 			experiment_dic = dic_res[experiment_id]
 			if 0 in experiment_dic and experiment_dic[0]:
+				res = {}
 				pre_detail = experiment_dic[0]
 				df_pre = pd.DataFrame(pre_detail)	
 				res[self.name] = self.get_rt(df_pre)
@@ -61,13 +61,15 @@ class ROUND_RT_TREND(ABSTRACT_TREND):
 		league_id = row['league_id']
 		serryname = row['serryname']
 		serryid = row['serryid']
-		cur.execute("SELECT distinct serryid FROM Match WHERE league_id = ? and serryname = ? order by date desc", (league_id,serryname, ))
-		serryids = cur.fetchall()
-		if len(serryids) > 1:
-			pre_serryid = serryids[1][0]
-			cur.execute("SELECT count(*) FROM Match WHERE league_id = ? and serryid = ? and date < ?", (league_id,serryid,date, ))	
+		cur.execute("SELECT season FROM Match WHERE league_id = %d and serryname = '%s' and serryid = %s"%(league_id,serryname,serryid))
+		season = cur.fetchone()[0]
+		cur.execute("SELECT distinct season FROM Match WHERE league_id = %d and serryname = '%s' and date <= '%s' order by date desc"%(league_id,serryname,date))
+		seasons = cur.fetchall()
+		if len(seasons) > 1:
+			pre_season = seasons[1][0]
+			cur.execute("SELECT count(*) FROM Match WHERE league_id = %d and serryname = '%s' and season = '%s' and date < '%s'"%(league_id,serryname,season,date))	
 			now_num = cur.fetchone()[0]
-			cur.execute("SELECT count(*), max(stage) FROM Match WHERE league_id = ? and serryid = ?", (league_id,pre_serryid, ))
+			cur.execute("SELECT count(*), max(stage) FROM Match WHERE league_id = %d and serryname= '%s' and season = '%s'"%(league_id,serryname,pre_season))
 			row = cur.fetchone()	
 			num = row[0]
 			rounds = row[1]

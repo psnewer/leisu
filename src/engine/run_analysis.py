@@ -19,6 +19,7 @@ gflags.DEFINE_bool('predict', False, 'predict')
 gflags.DEFINE_bool('group', False, 'group')
 gflags.DEFINE_bool('test', False, 'test')
 gflags.DEFINE_bool('test_all', False, 'test_all')
+gflags.DEFINE_bool('trend_test', False, 'trend test')
 gflags.DEFINE_bool('plot', False, 'plot')
 gflags.DEFINE_bool('with_neu', False, 'with neutral')
 gflags.DEFINE_bool('extract', False, 'extract')
@@ -28,9 +29,11 @@ gflags.DEFINE_string('predict_path', '', 'predict path')
 gflags.DEFINE_string('predict_summary', '', 'predict summary')
 gflags.DEFINE_string('league_cond', '', 'league cond')
 gflags.DEFINE_string('kind_file', '', 'kind file')
+gflags.DEFINE_string('kind_trend', '', 'kind trend')
 gflags.DEFINE_string('rt_path', '', 'rt file')
 gflags.DEFINE_string('prototxt', '', 'caffe proto')
 gflags.DEFINE_string('weights', '', 'caffe weights')
+gflags.DEFINE_string('date_thresh', '', 'date thresh')
 Flags = gflags.FLAGS
 
 if __name__ == "__main__":
@@ -44,6 +47,8 @@ if __name__ == "__main__":
 		pro.extract()
 	elif (gflags.FLAGS.plot):
 		pro.plot()
+	elif (gflags.FLAGS.trend_test):
+		pro.trend_test()
 	else:
 		pro.process()
 	pro.close()

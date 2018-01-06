@@ -9,11 +9,10 @@ from feature_creator import *
 from filter_creator import *
 from tester_creator import *
 from extractor_creator import *
-from grouper import *
 from predictor import *
 from oddsgrouper import *
+from testgrouper import TestGrouper
 from plain_plot import *
-from groupprocessor import *
 from conf import *
 
 class Processor(object):
@@ -79,6 +78,10 @@ class Processor(object):
 	def group(self):
 		grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
 		grouper.group()
+
+	def trend_test(self):
+		test_grouper = TestGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
+		test_grouper.group()
 
 	def plot(self):
 		plain_plot = Plain_Plot()

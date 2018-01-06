@@ -2,6 +2,14 @@
 
 cd `dirname $0`
 
+group_file=$1
+d1=$2
+d2=$3
+
+python test_db.py $d1 $d2
+
+rm /Users/miller/Documents/workspace/leisu/res/group/*/*/trend_final.txt
+
 tempfifo=$$.fifo        # $$表示当前执行文件的PID
 group_file=$1           # 开始时间
 
@@ -28,10 +36,8 @@ done
 
 ind=0
 get_jsonObj() {
-	echo `cat $group_file | jq ".[$ind]"`
+    echo `cat $group_file | jq ".[$ind]"`
 }
-
-rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
 
 cond=`get_jsonObj`
 echo $cond
@@ -39,14 +45,19 @@ while  test "$cond" != null
 do
     read -u1000
     {
-		echo $cond
-        python run_analysis.py --flagfile=./conf/conf.gflag --group --test --test_all --league_cond="$cond"
-		checkError "run_group $cond"
+        echo $cond
+        python run_analysis.py --flagfile=./conf/conf.gflag --trend_test --test_all --league_cond="$cond" --date_thresh="$d1"
+        checkError "run_group $cond"
         echo >&1000
-    } & 
-	ind=$(($ind+1))
-	cond=`get_jsonObj`
+    } &
+    ind=$(($ind+1))
+    cond=`get_jsonObj`
 done
 
 wait
-echo "done!!!!!!!!!!"
+echo "testgroup done!!!!!!!!!!"
+
+python run_analysis.py --flagfile=./conf/conf.gflag --predict
+
+python test_predict.py >> b.txt
+

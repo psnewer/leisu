@@ -52,13 +52,10 @@ class Predictor():
 					tester = predict_dic['tester']
 					limi = predict_dic['limi']
 					limi_with_neu = predict_dic['limi_with_neu']
-					profit = predict_dic['profit']
-					mean_profit = predict_dic['mean_profit']
-					index = predict_dic['index']
 					for match_res in predict_dic['res']:
 						res = {}
-						home_team_id = match_res['home_team']
-						away_team_id = match_res['away_team']
+						home_team_id = match_res['home_team_id']
+						away_team_id = match_res['away_team_id']
 						cur.execute('SELECT name FROM Team WHERE id = ? ', (home_team_id, ))
 						home_team = cur.fetchone()[0]
 						cur.execute('SELECT name FROM Team WHERE id = ? ', (away_team_id, ))
@@ -71,14 +68,12 @@ class Predictor():
 						res['date'] = date
 						res['limi'] = limi
 						res['limi_with_neu'] = limi_with_neu
-						res['profit'] = profit
-						res['mean_profit'] = mean_profit
-						res['index'] = index
 						res['home_team'] = home_team
 						res['away_team'] = away_team
 						team_res.append(res)
 		df = pd.DataFrame(team_res)
 		if len(df) > 0:
+			df = df.drop_duplicates(['home_team','away_team','date'])
 			df = df.groupby('league').apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
 		df.to_csv(gflags.FLAGS.predict_summary,encoding="utf_8_sig")
 
@@ -88,94 +83,111 @@ class Predictor():
 		filters = []
 		testers = []
 		for _exp in exp_ids:
-			exp = self.experiments[_exp['exp_id']]
+			exp = self.experiments[int(_exp)]
 			features.extend(exp['feature'])
 			filters.extend(exp['filter'])
 		features = list(set(features))
 		filters = list(set(filters))
 		self.tester_creator.setProcessor(features,filters)
 		self.tester_creator.predict(league_id,serryid,df,feature_log)
-		for _exp in exp_ids:
-			exp = self.experiments[_exp['exp_id']]
-			limi = _exp['limi']
-			limi_with_neu = _exp['limi_with_neu']
-			profit = _exp['profit']
-			mean_profit = _exp['mean_profit']
-			index = _exp['index']
+		for exp_id_str in exp_ids:
+			exp_id = int(exp_id_str)
+			exp_dic = exp_ids[exp_id_str]
+			exp = self.experiments[exp_id]
+			limi = exp_dic['limi']['limi']
+			limi_with_neu = exp_dic['limi']['limi_with_neu']
+			test_id = exp_dic['test_id']
 			filters = exp['filter']
 			tester = exp['tester'][0]
-			tester_kind = _exp['kind']
+			tester_kind = exp_dic['kind']
 			df_filter = self.tester_creator.get_filtered(filters)
-			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,limi,limi_with_neu,profit,mean_profit,index,predict_log)
+			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,limi,limi_with_neu,exp_id,test_id,predict_log)
 	
 	def get_experiment(self,league_id,serryid):
-		cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,serryid))
-		match_now = cur.fetchone()[0]
-		if match_now == 0:
-			return []
+#		cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,serryid))
+#		match_now = cur.fetchone()[0]
+#		if match_now == 0:
+#			return []
 		cur.execute("SELECT serryname FROM TMATCH WHERE league_id = %d and serryid = '%s'"%(league_id, serryid))
 		serryname = cur.fetchone()[0]
-		cur.execute("SELECT distinct serryid  FROM MATCH WHERE league_id = %d AND serryname = '%s' AND serryid != '%s' ORDER BY date DESC"%(league_id, serryname, serryid))
-		pre_serryids = cur.fetchall()
-		pre_serryid1 = 0
-		pre_serryid2 = 0
-		match_pre1 = 0
-		match_pre2 = 0
-		if len(pre_serryids) > 0:
-			pre_serryid1 = pre_serryids[0][0]
-			cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,pre_serryid1))	
-			match_pre1 = cur.fetchone()[0]	
-		if len(pre_serryids) > 1:
-			pre_serryid2 = pre_serryids[1][0]
-			cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,pre_serryid2))
-			match_pre2 = cur.fetchone()[0]
-		group_path=gflags.FLAGS.group_path + str(league_id) + '/group_final.txt'
-		if (not os.path.isfile(group_path)):
+#		cur.execute("SELECT distinct serryid  FROM MATCH WHERE league_id = %d AND serryname = '%s' AND serryid != '%s' ORDER BY date DESC"%(league_id, serryname, serryid))
+#		pre_serryids = cur.fetchall()
+#		pre_serryid1 = 0
+#		pre_serryid2 = 0
+#		match_pre1 = 0
+#		match_pre2 = 0
+#		if len(pre_serryids) > 0:
+#			pre_serryid1 = pre_serryids[0][0]
+#			cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,pre_serryid1))	
+#			match_pre1 = cur.fetchone()[0]	
+#		if len(pre_serryids) > 1:
+#			pre_serryid2 = pre_serryids[1][0]
+#			cur.execute("SELECT COUNT(*) FROM MATCH WHERE league_id = %d and serryid = '%s'"%(league_id,pre_serryid2))
+#			match_pre2 = cur.fetchone()[0]
+#		group_path=gflags.FLAGS.group_path + str(league_id) + '/group_final.txt'
+#		if (not os.path.isfile(group_path)):
+#			return []
+#		groupdata = codecs.open(group_path,'r',encoding='utf-8')
+#		rt_data = codecs.open(gflags.FLAGS.rt_path,'r',encoding='utf-8')
+#		rt = json.load(rt_data)
+#		exp_cand = []
+#		for row in groupdata:
+#			group_dic = json.loads(row,encoding='utf-8')
+#			_serryname = group_dic['serryname']
+#			kind = group_dic['kind']
+#			if (_serryname == serryname):
+#				c0_profit = group_dic['c0_profit']
+#				c0_id_with_neu = group_dic['c0_id_with_neu']
+#				if len(c0_profit) > 0:
+#					sorted_ind = np.argsort(c0_profit).tolist()
+#					sorted_ind.reverse()
+#					for idx,ind in enumerate(sorted_ind):
+#						exp_dic = {}
+#						exp_dic['kind'] = group_dic['kind']
+#						exp_dic['exp_id'] = group_dic['c0_p_id'][ind]
+#						exp_dic['limi'] = group_dic['c0_p_limi'][ind]
+#						exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu'][ind]
+#						exp_dic['profit'] = group_dic['c0_profit'][ind]
+#						exp_dic['mean_profit'] = group_dic['c0_meanProfit'][ind]
+#						exp_dic['index'] = idx
+#						exp_cand.append(exp_dic)
+#				if c0_id_with_neu > 0:
+#					exp_dic = {}
+#					exp_dic['kind'] = group_dic['kind']
+#					exp_dic['exp_id'] = c0_id_with_neu
+#					exp_dic['limi'] = group_dic['c0_limi']
+#					exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
+#					exp_dic['profit'] = group_dic['c0_limi_profit']
+#					exp_dic['mean_profit'] = group_dic['c0_limi_meanProfit']
+#					exp_dic['index'] = -1
+##					if str(league_id) in rt and serryname in rt[str(league_id)]:
+##						if kind.startswith('min') and 'min_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['min_rt'] > 0.0:
+##							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['min_rt']
+##						elif kind.startswith('may') and 'may_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['may_rt'] > 0.0:
+##							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['may_rt']
+##					else:
+##						exp_dic['limi'] = 0.0
+#					exp_cand.append(exp_dic)
+		trend_path=gflags.FLAGS.group_path + str(league_id) + '/' + serryname + '/trend_final.txt'
+		if (not os.path.isfile(trend_path)):
 			return []
-		groupdata = codecs.open(group_path,'r',encoding='utf-8')
-		rt_data = codecs.open(gflags.FLAGS.rt_path,'r',encoding='utf-8')
-		rt = json.load(rt_data)
-		exp_cand = []
-		for row in groupdata:
-			group_dic = json.loads(row,encoding='utf-8')
-			_serryname = group_dic['serryname']
-			kind = group_dic['kind']
-			if (_serryname == serryname):
-				c0_profit = group_dic['c0_profit']
-				c0_id_with_neu = group_dic['c0_id_with_neu']
-				if len(c0_profit) > 0:
-					sorted_ind = np.argsort(c0_profit).tolist()
-					sorted_ind.reverse()
-					for idx,ind in enumerate(sorted_ind):
-						exp_dic = {}
-						exp_dic['kind'] = group_dic['kind']
-						exp_dic['exp_id'] = group_dic['c0_p_id'][ind]
-						exp_dic['limi'] = group_dic['c0_p_limi'][ind]
-						exp_dic['limi_with_neu'] = group_dic['c0_p_limi_with_neu'][ind]
-						exp_dic['profit'] = group_dic['c0_profit'][ind]
-						exp_dic['mean_profit'] = group_dic['c0_meanProfit'][ind]
-						exp_dic['index'] = idx
-						exp_cand.append(exp_dic)
-				if c0_id_with_neu > 0:
-					exp_dic = {}
-					exp_dic['kind'] = group_dic['kind']
-					exp_dic['exp_id'] = c0_id_with_neu
-					exp_dic['limi'] = group_dic['c0_limi']
-					exp_dic['limi_with_neu'] = group_dic['c0_limi_with_neu']
-					exp_dic['profit'] = group_dic['c0_limi_profit']
-					exp_dic['mean_profit'] = group_dic['c0_limi_meanProfit']
-					exp_dic['index'] = -1
-#					if str(league_id) in rt and serryname in rt[str(league_id)]:
-#						if kind.startswith('min') and 'min_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['min_rt'] > 0.0:
-#							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['min_rt']
-#						elif kind.startswith('may') and 'may_rt' in rt[str(league_id)][serryname] and rt[str(league_id)][serryname]['may_rt'] > 0.0:
-#							exp_dic['limi'] = 1.0/rt[str(league_id)][serryname]['may_rt']
-#					else:
-#						exp_dic['limi'] = 0.0
-					exp_cand.append(exp_dic)
+		kind_path = gflags.FLAGS.kind_file
+		kind_data = codecs.open(kind_path,'r',encoding='utf-8')
+		kind_list = json.load(kind_data)
+		df_kind = pd.DataFrame(kind_list)
+		trend_data = codecs.open(trend_path,'r',encoding='utf-8')	
+		exp_cand = json.load(trend_data)
+		for exp_id in exp_cand:
+			for idx,row in df_kind.iterrows():
+				kind_name = row['name']
+				exps = row['exps']
+				if int(exp_id) in exps:
+					exp_cand[exp_id]['kind'] = kind_name
+		kind_data.close()
+		trend_data.close()	
 		return exp_cand
 
-	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,profit,mean_profit,index,predict_log):
+	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,exp_id,test_id,predict_log):
 		if len(df) < 1 or len(df_team) < 1:
 			return
 		league_id = df.iloc[-1]['league_id']
@@ -186,9 +198,8 @@ class Predictor():
 		team_res['tester'] = tester_kind
 		team_res['limi'] = limi
 		team_res['limi_with_neu'] = limi_with_neu
-		team_res['profit'] = profit
-		team_res['mean_profit'] = mean_profit
-		team_res['index'] = index
+		team_res['exp_id'] = exp_id
+		team_res['test_id'] = test_id
 		team_res['res'] = []
 		res_list = []
 		dates = df['date'].unique()
@@ -222,8 +233,8 @@ class Predictor():
 					if (home_teams_posi is not None and away_teams_posi is not None) and (home_team in home_teams_posi or away_team in away_teams_posi):
 						_res = {}
 						_res['date'] = date
-						_res['home_team'] = home_team
-						_res['away_team'] = away_team
+						_res['home_team_id'] = home_team
+						_res['away_team_id'] = away_team
 						team_res['res'].append(_res)
 			else:
 				for idx,home_team in enumerate(home_teams):
@@ -231,8 +242,8 @@ class Predictor():
 					if (home_teams_posi is not None and away_teams_posi is not None) and (home_team in home_teams_posi and away_team in away_teams_posi):
 						_res = {}
 						_res['date'] = date
-						_res['home_team'] = home_team
-						_res['away_team'] = away_team
+						_res['home_team_id'] = home_team
+						_res['away_team_id'] = away_team
 						team_res['res'].append(_res)
 		dic_str = json.dumps(team_res,cls=GenEncoder,ensure_ascii=False)
 		predict_log.write(dic_str+'\n')

@@ -8,9 +8,9 @@ import json
 import copy
 from abstract_trend import *
 
-class CURRENT_ODDS_TREND(ABSTRACT_TREND):
+class SHORT_MEAN_TREND(ABSTRACT_TREND):
 	def __init__(self):
-		self.name = 'CURRENT_ODDS_TREND'
+		self.name = 'SHORT_MEAN_TREND'
 		self.params = {}
 		self.params['with_neu'] = False
 
@@ -22,7 +22,8 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 				res = {}
 				pre_detail = experiment_dic[0]
 				df_pre = pd.DataFrame(pre_detail)	
-				res[self.name] = self.get_every_date_odds(df_pre)
+				pre_detail = self.get_every_date_odds(df_pre)
+				res[self.name] = self.process(pre_detail,len(pre_detail))
 				res['experiment_id'] = experiment_id
 				date_res.append(res)
 				res_str = json.dumps(res,cls=GenEncoder)
@@ -53,13 +54,36 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 		return date_res
 
 	def process(self,res_detail,ind):
+		mean = {}
+		mean['up'] = 0.0
+		mean['down'] = 0.0
 		length = len(res_detail)
 		res = {}
-		for i in range(0,ind):
-			res[i+1] = {}
-			res[i+1]['now'] = res_detail[length-ind+i+1]['now']
-			res[i+1]['all'] = res_detail[length-ind+i+1]['all']
-		return res
+		for i in range(1,ind + 1):
+			res[i] = res_detail[length-ind+i]
+		orient = 0
+		if 1 in res:
+			pre_odds = res[1]	
+		for i in range(2,len(res) + 1):
+			odds = res[i]
+			if odds == 100.0:
+				break
+			if odds > pre_odds:
+				if orient == 1:
+					if mean['down'] == 0.0:
+						mean['down'] = pre_odds
+					if mean['up'] > 0.0:
+						break
+				orient = 2
+			elif odds < pre_odds:
+				if orient == 2:
+					if mean['up'] == 0.0:
+						mean['up'] = pre_odds
+					if mean['down'] > 0.0:
+						break
+				orient = 1
+			pre_odds = odds
+		return mean
 		
 	def get_every_date_odds(self,df_pre):
 		dates = df_pre['date'].unique()
@@ -68,31 +92,8 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 		for i in range(length - 1, -1, -1):
 			res[length - i] = {}
 			date = dates[i]
-			df_date_now = df_pre[df_pre['date']==date]
 			df_date_all = df_pre[df_pre['date']<=date]
-			per_count_now = df_date_now['res'].value_counts()
 			per_count_all = df_date_all['res'].value_counts()
-			succ = 0
-			fail = 0
-			neu = 0
-			if 0 in per_count_now:
-				neu = per_count_now[0]
-			if 1 in per_count_now:
-				succ = per_count_now[1]
-			if 2 in per_count_now:
-				fail = per_count_now[2]
-			if self.params['with_neu']:
-				if succ > 0:
-					limi_odds_with_neu = float(succ + fail + neu) / float(succ)
-					res[length - i]['now'] = limi_odds_with_neu
-				else:
-					res[length - i]['now'] = 100.0
-			else:
-				if succ > 0:
-					limi_odds =  float(succ + fail) / float(succ)
-					res[length - i]['now'] = limi_odds
-				else:
-					res[length - i]['now'] = 100.0
 			succ = 0
 			fail = 0
 			neu = 0
@@ -105,14 +106,14 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 			if self.params['with_neu']:
 				if succ > 0:
 					limi_odds_with_neu = float(succ + fail + neu) / float(succ)
-					res[length - i]['all'] = limi_odds_with_neu
+					res[length - i] = limi_odds_with_neu
 				else:
-					res[length - i]['all'] = 100.0
+					res[length - i] = 100.0
 			else:
 				if succ > 0:
 					limi_odds =  float(succ + fail) / float(succ)
-					res[length - i]['all'] = limi_odds
+					res[length - i] = limi_odds
 				else:
-					res[length - i]['all'] = 100.0
+					res[length - i] = 100.0
 		return res
 			

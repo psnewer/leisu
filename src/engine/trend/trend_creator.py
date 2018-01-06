@@ -3,10 +3,12 @@
 import json
 import pandas as pd
 import gflags
-from mean_odds_trend import *
-from current_odds_trend import *
-from peak_odds_trend import *
+from long_mean_trend import *
+from asc_time_trend import *
+from short_mean_trend import *
 from round_rt_trend import *
+from mom_trend import *
+from current_odds_trend import *
 from conf import *
 
 class Trend_Creator(object):
@@ -34,10 +36,10 @@ class Trend_Creator(object):
 			team_res.extend(res)
 		return team_res
 
-	def execute_predict(self,league_id,serryid,df,feature_log):
+	def execute_predict(self,dic_res,feature_log):
 		team_res = []
 		for feature in self.feature_cand:
 			feature_ins = self.features[feature]
-			res = feature_ins.execute_predict(league_id,serryid,df,feature_log)
+			res = feature_ins.execute_predict(dic_res,feature_log)
 			team_res.extend(res)
 		return team_res

@@ -13,16 +13,14 @@ class ROUND_RT_TRENF(ABSTRACT_TRENF):
 	def __init__(self):
 		self.name = 'ROUND_RT_TRENF'
 		self.params = {}
-		self.params['remain_round'] = 7
-		self.params['thresh_rt'] = 0.6
+		self.params['thresh_rt'] = 0.9
 
 	def filter(self,df):
 		delete_row = []
 		for idx,row in df.iterrows():
-			if 'ROUND_RT_TREND' in row and 'rounds' in row['ROUND_RT_TREND']:
-				rounds = row['ROUND_RT_TREND']['rounds']
+			if 'ROUND_RT_TREND' in row and 'rt' in row['ROUND_RT_TREND']:
 				rt = row['ROUND_RT_TREND']['rt']
-				if rt < self.params['thresh_rt'] and rounds*(1.0-rt)>=self.params['remain_round']:
+				if rt < self.params['thresh_rt']:
 					continue
 			delete_row.append(idx)
 		return delete_row

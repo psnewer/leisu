@@ -22,7 +22,7 @@ errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 cur.execute('''drop table Odds''')
-cur.execute('''CREATE TABLE `Odds` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'league_id' INTEGER, `season` TEXT, `date` TEXT, `home_team_id`    INTEGER, `away_team_id`    INTEGER, `rangzhu` FLOAT, `rangpan`    TEXT, `rangke` FLOAT, 'biaozhu' FLOAT, 'biaoping' FLOAT, 'biaoke' FLOAT, 'da' FLOAT, 'dapan' TEXT, 'xiao' FLOAT, FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id))''')
+cur.executescript('''CREATE TABLE `Odds` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'league_id' INTEGER, `season` TEXT, `date` TEXT, `home_team_id`    INTEGER, `away_team_id`    INTEGER, `rangzhu` FLOAT, `rangpan`    TEXT, `rangke` FLOAT, 'biaozhu' FLOAT, 'biaoping' FLOAT, 'biaoke' FLOAT, 'da' FLOAT, 'dapan' TEXT, 'xiao' FLOAT, FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX odds_index on Odds(league_id, season, date, home_team_id, away_team_id)''')
 
 def saveOdds(filepath, idspath):
 	data = open(filepath)

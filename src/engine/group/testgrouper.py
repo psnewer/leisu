@@ -12,7 +12,7 @@ from trenf_creator import *
 from trent_creator import *
 from conf import *
 
-class OddsGrouper():
+class TestGrouper():
 	def __init__(self,tester_creator,experiments,condition):
 		self.tester_creator = tester_creator
 		self.experiments = experiments
@@ -48,7 +48,7 @@ class OddsGrouper():
 		os.system(r'mkdir %s'%self.group_directory)
 
 	def group(self):
-		self.process()
+#		self.process()
 		self.analysis()
 
 	def process(self):
@@ -116,7 +116,7 @@ class OddsGrouper():
 							pre = idx
 							if not started:
 								pre = pre + 1
-							dic_res[experiment_id][pre] = df_experiment[df_experiment['serryid']==_serryid].to_dict('record')
+							dic_res[experiment_id][pre] = df_experiment[df_experiment['serryid']==_serryid].query("date < '%s'"%gflags.FLAGS.date_thresh).to_dict('record')
 						else:
 							dic_res[experiment_id][pre] = []
 				if gflags.FLAGS.test:
@@ -148,6 +148,28 @@ class OddsGrouper():
 					trend_res.close()
 					test_final.close()
 					kind_trend_file.close()
+				thresh_pre = self.get_threshPre(league_id,serryname)
+				kind_trend_file = codecs.open(gflags.FLAGS.kind_trend,'r',encoding='utf-8')
+				kind_trend = json.load(kind_trend_file)
+				kind_trend_file.close()
+				kind_ids = {}
+				if os.path.exists(group_directory + '/trent_res.txt'):
+					df_trent = pd.DataFrame.from_csv(group_directory + '/trent_res.txt')
+					if len(df_trent) > 0:
+						for row in kind_trend:
+							trend_experiment = row['trend_experiment']
+							experiments = row['experiment']
+							trend_ids = []
+							exp = self.trend_experiments[trend_experiment]
+							df_te = df_trent[df_trent['test_id']==trend_experiment]
+							for experiment_id in experiments:
+								if len(df_trent) > 0 and self.filter_trend(df_te, experiment_id, thresh_pre):
+									trend_ids.append(experiment_id)
+							if trend_ids:
+								kind_ids[trend_experiment] = trend_ids
+				test_final = codecs.open(test_final_file,'w+',encoding='utf-8')
+				json.dump(kind_ids, test_final, ensure_ascii=False)
+				test_final.close()
 				trend_res = codecs.open(trend_res_file,'w+',encoding='utf-8')
 				self.trent_creator.predict(dic_res,trend_log=trend_res)
 				test_final = codecs.open(test_final_file,'r',encoding='utf-8')
@@ -178,12 +200,12 @@ class OddsGrouper():
 				test_final.close()
 				trend_final.close()
 
-	def filter_trend(self, df_trent, experiment_id):
+	def filter_trend(self, df_trent, experiment_id, thresh_pre):
 		num_posi = 0
 		num_neg = 0
 		df_experiment = df_trent[df_trent['experiment_id']==experiment_id]
 		for idx,row in df_experiment.iterrows():
-			if row['pre'] == 0:
+			if row['pre'] <= thresh_pre:
 				continue
 			limi_odds = row['limi_odds']
 			limi_odds_with_neu = row['limi_odds_with_neu']
@@ -191,9 +213,9 @@ class OddsGrouper():
 				num_neg += 1
 			else:
 				num_posi += 1
-		if num_posi + num_neg < 2:
+		if num_posi + num_neg < 4:
 			return False
-		if num_posi > 0 and float(num_posi) / float(num_posi + num_neg) >= 0.9:
+		if num_posi > 0 and float(num_posi) / float(num_posi + num_neg) >= 0.7:
 			return True
 		return False  
 
@@ -219,6 +241,17 @@ class OddsGrouper():
 				res['limi'] = 100.0
 				res['limi_with_neu'] = 100.0
 		return res
+
+	def get_threshPre(self,league_id,serryname):
+		date = gflags.FLAGS.date_thresh
+		cur.execute("select distinct serryid from Match_back where league_id=%d and serryname='%s' order by date desc"%(league_id,serryname))
+		all_serryids = cur.fetchall()
+		cur.execute("select distinct serryid from Match where league_id=%d and serryname='%s' and date < '%s' order by date desc"%(league_id,serryname,gflags.FLAGS.date_thresh))
+		serryid = cur.fetchall()[0][0]
+		for idx,ele in enumerate(all_serryids):
+			if serryid == ele[0]:
+				return idx
+		return -1	
 		
 	def getProfit(self, res_dic):
 		tester = res_dic['name']

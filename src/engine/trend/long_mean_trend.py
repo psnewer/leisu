@@ -8,25 +8,25 @@ import json
 import copy
 from abstract_trend import *
 
-class MEAN_ODDS_TREND(ABSTRACT_TREND):
+class LONG_MEAN_TREND(ABSTRACT_TREND):
 	def __init__(self):
-		self.name = 'MEAN_ODDS_TREND'
+		self.name = 'LONG_MEAN_TREND'
 		self.params = {}
 		self.params['with_neu'] = False
 		self.params['num_season'] = 3
-		self.params['max_mean'] = 2.5
-		self.params['max_rt'] = 0.5
-		self.params['mean_peak'] = 2.2
 
-	def execute_predict(self,league_id,serryid,df_serry,feature_log):
+	def execute_predict(self,dic_res,trend_log):
 		date_res = []
 		for experiment_id in dic_res:
 			experiment_dic = dic_res[experiment_id]
-			res[self.name] = self.process(experiment_dic,0)
-			res['experiment_id'] = experiment_id
-			date_res.append(res)
-			res_str = json.dumps(res,cls=GenEncoder)
-			trend_log.write(res_str+'\n')
+			if 0 in experiment_dic and experiment_dic[0]:
+				res = {}
+				experiment_dic = dic_res[experiment_id]
+				res[self.name] = self.process(experiment_dic,0)
+				res['experiment_id'] = experiment_id
+				date_res.append(res)
+				res_str = json.dumps(res,cls=GenEncoder)
+				trend_log.write(res_str+'\n')
 		return date_res
 
 	def execute_test(self,dic_res,trend_log):
@@ -49,7 +49,6 @@ class MEAN_ODDS_TREND(ABSTRACT_TREND):
 		return date_res
 
 	def process(self,experiment_dic,pre):
-		res = 100.0
 		mean_odds = {}
 		if self.params['num_season']+pre in experiment_dic:
 			for i in range(pre + 1,self.params['num_season'] + pre + 1):
@@ -76,17 +75,4 @@ class MEAN_ODDS_TREND(ABSTRACT_TREND):
 							mean_odds[i] = 	float(succ + fail) / float(succ)
 						else:
 							mean_odds[i] = 100.0
-		total_mean = 0.0
-		max_num = 0
-		mean_score = 100.0
-		for i in mean_odds:
-			total_mean += mean_odds[i]
-			if mean_odds[i] > self.params['max_mean']:
-				max_num += 1
-		if len(mean_odds) > 0:
-			mean_score = total_mean/len(mean_odds)
-		if max_num >= self.params['max_rt']*len(mean_odds) or mean_score > self.params['mean_peak']:
-			res = 100.0
-		else:
-			res = mean_score
-		return res
+		return mean_odds

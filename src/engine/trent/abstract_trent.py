@@ -29,8 +29,6 @@ class ABSTRACT_TRENT():
 					df_pre['experiment_id'] = experiment_id
 					df_pre['pre'] = i
 					anadf = pd.merge(df_pre,df_team,how='inner',on=['experiment_id','pre','date'])
-					if experiment_id==5 and i==2:
-						anadf.to_csv('./log.csv')
 					if len(anadf) == 0:
 						continue
 					per_count = anadf['res'].value_counts()
