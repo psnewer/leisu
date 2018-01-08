@@ -9,6 +9,7 @@ from short_mean_trend import *
 from round_rt_trend import *
 from mom_trend import *
 from current_odds_trend import *
+from peak_odds_trend import *
 from conf import *
 
 class Trend_Creator(object):

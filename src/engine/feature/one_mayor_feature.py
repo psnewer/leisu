@@ -80,14 +80,17 @@ class ONE_MAYOR_FEATURE(ABSTRACT_FEATURE):
 					feature_log.write(res_str+'\n')
 					team_res.append(res_dic)
 		return team_res
-		
 
 	def process(self,df):
-		if len(df) < 1:
-			return 0
-		last_row = df.iloc[-1]
-		if (last_row['home_goal'] + last_row['away_goal'] < 3):
-			return 1
-		else:
-			return 2
+		length = len(df)
+		if length < 1:
+			return -1 
+		num = 0
+		for idx in range(length - 1, -1, -1):
+			row = df.iloc[idx]
+			if (row['home_goal'] + row['away_goal'] < 2.5):
+				num += 1
+			else:
+				break
+		return num
 			

@@ -6,6 +6,9 @@ import gflags
 from conf import *
 from mean_odds_trenf import *
 from asc_time_trenf import *
+from bottom_trenf import *
+from has_bottom_trenf import *
+from bottom_rush_trenf import *
 from mom_trenf import *
 from first_down_trenf import *
 from mom_rush_trenf import *

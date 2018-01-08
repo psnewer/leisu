@@ -16,7 +16,7 @@ class Plain_Plot():
 	def plot(self):
 		walks = os.walk('/Users/miller/Documents/workspace/leisu/res/group',topdown=False)
 		for root,dirs,files in walks:
-			if 'test_res.txt' in files and root=='/Users/miller/Documents/workspace/leisu/res/group/238/default':
+			if 'test_res.txt' in files and root=='/Users/miller/Documents/workspace/leisu/res/group/168/default':
 				test_res_file = os.path.join(root,'test_res.txt')
 				df_test = pd.DataFrame.from_csv(test_res_file).astype({'serryid': str})
 				dic_res = {}

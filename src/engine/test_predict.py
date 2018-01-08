@@ -75,7 +75,7 @@ for root,dirs,files in walks:
 				res['posi'] = num_posi
 				res['neg'] = num_neg
 				res['neu'] = num_neu
-				res_str = json.dumps(res)
+				res_str = json.dumps(res,ensure_ascii=False,encoding='utf-8')
 				predict_detail.write(res_str+'\n')
 				df_predict = df_predict.append(df_ele)
 		if len(df_predict) > 0:
