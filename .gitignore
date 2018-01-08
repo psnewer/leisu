@@ -1,0 +1,10 @@
+*.pyc
+*/*.pyc
+*/*/*.pyc
+*/*/*/*.pyc
+res
+ZOO/goal_rt.json
+res
+src/db/ids.json
+leisu/matches.json
+leisu/odds.json
