@@ -1,0 +1,8 @@
+*.pyc
+*.swp
+res
+leisu/matches.json
+leisu/odds.json
+ZOO/goal_rt.json
+ZOO/snap
+src/db/ids.json
