@@ -82,10 +82,14 @@ class TWO_MAYOR_FEATURE(ABSTRACT_FEATURE):
 		return team_res
 
 	def process(self,df):
-		if (len(df) < 1):
-			return 0	
-		last_rows = df.tail(2)
-		for index,row in last_rows.iterrows():
-			if (row['home_goal'] + row['away_goal'] < 3):
-				return 1
-		return 2
+		length = len(df)
+		if length < 1:
+			return -1
+		num = 0
+		for idx in range(length - 1, -1, -1):
+			row = df.iloc[idx]
+			if (row['home_goal'] + row['away_goal'] > 2.5):
+				num += 1
+			else:
+				break
+		return num

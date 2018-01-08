@@ -7,6 +7,7 @@ from conf import *
 from one_mayor_filter import *
 from two_mayor_filter import *
 from minor_period_filter import *
+from mayor_period_filter import *
 from current_score_filter import *
 from home_win_filter import *
 from min_team_filter import *

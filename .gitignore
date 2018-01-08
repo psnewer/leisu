@@ -1,8 +1,5 @@
 *.pyc
-*/*.pyc
-*/*/*.pyc
-*/*/*/*.pyc
-res
+*.swp
 ZOO/goal_rt.json
 res
 src/db/ids.json

@@ -13,13 +13,27 @@ class ONE_MAYOR_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
 		self.name = 'ONE_MAYOR_FILTER'
 		self.params = {}
+		self.params['type'] = 'eq'
 		self.params['tar'] = 1
 
 	def filter(self,df):
 		delete_row = []
 		for idx,row in df.iterrows():
-			if 'ONE_MAYOR_FEATURE' in row:
-				if row['ONE_MAYOR_FEATURE'] == self.params['tar']:
-					continue
+			if 'ONE_MAYOR_FEATURE' in row and row['ONE_MAYOR_FEATURE'] >= 0:
+				if self.params['type'] == 'eq':
+					if row['ONE_MAYOR_FEATURE'] == self.params['tar']:
+						continue
+				elif self.params['type'] == 'l':
+					if row['ONE_MAYOR_FEATURE'] < self.params['tar']:
+						continue
+				elif self.params['type'] == 'le':
+					if row['ONE_MAYOR_FEATURE'] <= self.params['tar']:
+						continue
+				elif self.params['type'] == 'g':
+					if row['ONE_MAYOR_FEATURE'] > self.params['tar']:
+						continue
+				elif self.params['type'] == 'ge':
+					if row['ONE_MAYOR_FEATURE'] >= self.params['tar']:
+						continue
 			delete_row.append(idx)
 		return delete_row

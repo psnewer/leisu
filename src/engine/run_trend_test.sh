@@ -2,9 +2,9 @@
 
 cd `dirname $0`
 
-d1=-67
+d1=-29
 
-for ((i=2; i<=2; i++))
+for ((i=1; i<=200; i++))
 do
 	d2=$d1
 	d1=`expr $d1 - 3`
