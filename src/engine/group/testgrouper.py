@@ -96,6 +96,8 @@ class TestGrouper():
 				serryids = df_test['serryid'].unique()
 				sql_str = "select distinct serryid from Match where league_id=%d and serryname='%s' order by date desc"%(league_id,serryname)
 				_serryids = pd.read_sql_query(sql_str,conn)
+				if len(_serryids) == 0:
+					continue
 				started = True
 				first_serryid = _serryids.iloc[0][0]
 				if not gflags.FLAGS.test_all:
@@ -119,81 +121,31 @@ class TestGrouper():
 							dic_res[experiment_id][pre] = df_experiment[df_experiment['serryid']==_serryid].query("date < '%s'"%gflags.FLAGS.date_thresh).to_dict('record')
 						else:
 							dic_res[experiment_id][pre] = []
-				if gflags.FLAGS.test:
-					trend_res = codecs.open(trend_res_file,'w+',encoding='utf-8')
-					self.trent_creator.execute(dic_res,trend_log=trend_res)
-					team_res = []
-					kind_trend_file = codecs.open(gflags.FLAGS.kind_trend,'r',encoding='utf-8')
-					kind_trend = json.load(kind_trend_file)
-					kind_ids = {}
-					df_tmp = pd.DataFrame([])
-					for row in kind_trend:
-						trend_experiment = row['trend_experiment']
-						experiments = row['experiment']
-						trend_ids = []
-						exp = self.trend_experiments[trend_experiment]
-						features = exp['feature']
-						filters = exp['filter']
-						trent_res = self.trent_creator.test(filters,dic_res,test_id=trend_experiment)
-						df_trent = pd.DataFrame(trent_res)
-						df_tmp = df_tmp.append(df_trent)
-						for experiment_id in experiments:
-							if len(df_trent) > 0 and self.filter_trend(df_trent, experiment_id):
-								trend_ids.append(experiment_id)
-						if trend_ids:
-							kind_ids[trend_experiment] = trend_ids
-					df_tmp.to_csv(group_directory + '/trent_res.txt')
-					test_final = codecs.open(test_final_file,'w+',encoding='utf-8')
-					json.dump(kind_ids, test_final, ensure_ascii=False)
-					trend_res.close()
-					test_final.close()
-					kind_trend_file.close()
-				thresh_pre = self.get_threshPre(league_id,serryname)
-				kind_trend_file = codecs.open(gflags.FLAGS.kind_trend,'r',encoding='utf-8')
-				kind_trend = json.load(kind_trend_file)
-				kind_trend_file.close()
-				kind_ids = {}
-				if os.path.exists(group_directory + '/trent_res.txt'):
-					df_trent = pd.DataFrame.from_csv(group_directory + '/trent_res.txt')
-					if len(df_trent) > 0:
-						for row in kind_trend:
-							trend_experiment = row['trend_experiment']
-							experiments = row['experiment']
-							trend_ids = []
-							exp = self.trend_experiments[trend_experiment]
-							df_te = df_trent[df_trent['test_id']==trend_experiment]
-							for experiment_id in experiments:
-								if len(df_trent) > 0 and self.filter_trend(df_te, experiment_id, thresh_pre):
-									trend_ids.append(experiment_id)
-							if trend_ids:
-								kind_ids[trend_experiment] = trend_ids
-				test_final = codecs.open(test_final_file,'w+',encoding='utf-8')
-				json.dump(kind_ids, test_final, ensure_ascii=False)
-				test_final.close()
 				trend_res = codecs.open(trend_res_file,'w+',encoding='utf-8')
 				self.trent_creator.predict(dic_res,trend_log=trend_res)
 				test_final = codecs.open(test_final_file,'r',encoding='utf-8')
 				trend_final = codecs.open(trend_final_file,'w+',encoding='utf-8')
-				trend_dic = json.load(test_final)
+				trena_dic = json.load(test_final)
 				filtered_exps = {}
-				for key in trend_dic:
-					test_id = int(key) 
-					experiment_ids = trend_dic[key]
-					exp = self.trend_experiments[test_id]
-					features = exp['feature']
-					filters = exp['filter']
-					trenf_res = self.trent_creator.get_filtered(filters)
-					if trenf_res is not None and len(trenf_res) > 0:
-						filtered_experiments = trenf_res['experiment_id'].unique().tolist()
-						for experiment_id in experiment_ids:
-							if experiment_id in filtered_experiments:
-								if experiment_id not in filtered_exps:
-									experiment_dic = dic_res[experiment_id]
-									filtered_exps[experiment_id] = {}
-									filtered_exps[experiment_id]['limi'] = self.getLimi(experiment_dic)
-									filtered_exps[experiment_id]['test_id'] = [test_id]
-								else:
-									filtered_exps[experiment_id]['test_id'].append(test_id)
+				for key in trena_dic:
+					te = trena_dic[key]['te']
+					trena_thresh = trena_dic[key]['limi_odds']
+					for test_id_str in te: 
+						test_id = int(test_id_str) 
+						experiment_ids = te[test_id_str]
+						exp = self.trend_experiments[test_id]
+						features = exp['feature']
+						filters = exp['filter']
+						trenf_res = self.trent_creator.get_filtered(filters)
+						if trenf_res is not None and len(trenf_res) > 0:
+							filtered_experiments = trenf_res['experiment_id'].unique().tolist()
+							for experiment_id in experiment_ids:
+								if experiment_id in filtered_experiments:
+									if experiment_id not in filtered_exps:
+										filtered_exps[experiment_id] = {}
+										filtered_exps[experiment_id]['limi_odds'] = trena_thresh
+									elif trena_thresh < filtered_exps[experiment_id]['limi_odds']:
+										filtered_exps[experiment_id]['limi_odds'] = trena_thresh
 				json.dump(filtered_exps,trend_final)
 				self.trent_creator.filter_experiment()
 				trend_res.close()
@@ -209,13 +161,13 @@ class TestGrouper():
 				continue
 			limi_odds = row['limi_odds']
 			limi_odds_with_neu = row['limi_odds_with_neu']
-			if limi_odds > 1.34:
+			if limi_odds > 1.5:
 				num_neg += 1
 			else:
 				num_posi += 1
 		if num_posi + num_neg < 4:
 			return False
-		if num_posi > 0 and float(num_posi) / float(num_posi + num_neg) >= 0.7:
+		if num_posi > 0 and float(num_posi) / float(num_posi + num_neg) >= 0.9:
 			return True
 		return False  
 

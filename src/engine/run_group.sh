@@ -31,7 +31,7 @@ get_jsonObj() {
 	echo `cat $group_file | jq ".[$ind]"`
 }
 
-rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
+#rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
 
 cond=`get_jsonObj`
 echo $cond

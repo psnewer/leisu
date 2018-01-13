@@ -55,7 +55,6 @@ for root,dirs,files in walks:
 			league = cur.execute("select name from League where id=%d"%league_id).fetchone()[0]
 			serryname = predict_dic['serryname']
 			tester = predict_dic['tester']
-			test_id = predict_dic['test_id']
 			exp_id = predict_dic['exp_id']
 			sql_str = "select league_id,home_team_id,away_team_id,home_goal,away_goal from TMatch where league_id=%d"%(league_id)
 			df_tmatch = pd.read_sql_query(sql_str,conn)
@@ -70,11 +69,11 @@ for root,dirs,files in walks:
 				res['league_id'] = league_id
 				res['serryname'] = serryname
 				res['tester'] = tester
-				res['test_id'] = test_id
 				res['exp_id'] = exp_id
 				res['posi'] = num_posi
 				res['neg'] = num_neg
 				res['neu'] = num_neu
+				res['res'] = predict_dic['res']
 				res_str = json.dumps(res,ensure_ascii=False,encoding='utf-8')
 				predict_detail.write(res_str+'\n')
 				df_predict = df_predict.append(df_ele)

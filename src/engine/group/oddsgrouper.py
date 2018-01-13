@@ -10,6 +10,7 @@ import threading
 from trend_creator import *
 from trenf_creator import *
 from trent_creator import *
+from plain_trena import *
 from conf import *
 
 class OddsGrouper():
@@ -25,6 +26,7 @@ class OddsGrouper():
 		self.trend_creator = Trend_Creator(features)
 		self.trenf_creator = Trenf_Creator(filters)
 		self.trent_creator = Trent_Creator(self.trend_creator,self.trenf_creator)
+		self.plain_trena = Plain_Trena()
 		trend_experiments = data_algs['experiments']
 		for exp in trend_experiments:
 			experiment_id = exp['experiment_id']
@@ -48,7 +50,7 @@ class OddsGrouper():
 		os.system(r'mkdir %s'%self.group_directory)
 
 	def group(self):
-		self.process()
+#		self.process()
 		self.analysis()
 
 	def process(self):
@@ -125,26 +127,18 @@ class OddsGrouper():
 					team_res = []
 					kind_trend_file = codecs.open(gflags.FLAGS.kind_trend,'r',encoding='utf-8')
 					kind_trend = json.load(kind_trend_file)
-					kind_ids = {}
-					df_tmp = pd.DataFrame([])
+					df_trena = pd.DataFrame([])
 					for row in kind_trend:
 						trend_experiment = row['trend_experiment']
-						experiments = row['experiment']
-						trend_ids = []
 						exp = self.trend_experiments[trend_experiment]
 						features = exp['feature']
 						filters = exp['filter']
 						trent_res = self.trent_creator.test(filters,dic_res,test_id=trend_experiment)
 						df_trent = pd.DataFrame(trent_res)
-						df_tmp = df_tmp.append(df_trent)
-						for experiment_id in experiments:
-							if len(df_trent) > 0 and self.filter_trend(df_trent, experiment_id):
-								trend_ids.append(experiment_id)
-						if trend_ids:
-							kind_ids[trend_experiment] = trend_ids
-					df_tmp.to_csv(group_directory + '/trent_res.txt')
+						df_trena = df_trena.append(df_trent)
+					df_trena.to_csv(group_directory + '/trent_res.txt')
 					test_final = codecs.open(test_final_file,'w+',encoding='utf-8')
-					json.dump(kind_ids, test_final, ensure_ascii=False)
+					self.plain_trena.execute(df_trena,test_final=test_final) 
 					trend_res.close()
 					test_final.close()
 					kind_trend_file.close()
@@ -152,113 +146,29 @@ class OddsGrouper():
 				self.trent_creator.predict(dic_res,trend_log=trend_res)
 				test_final = codecs.open(test_final_file,'r',encoding='utf-8')
 				trend_final = codecs.open(trend_final_file,'w+',encoding='utf-8')
-				trend_dic = json.load(test_final)
+				trena_dic = json.load(test_final)
 				filtered_exps = {}
-				for key in trend_dic:
-					test_id = int(key) 
-					experiment_ids = trend_dic[key]
-					exp = self.trend_experiments[test_id]
-					features = exp['feature']
-					filters = exp['filter']
-					trenf_res = self.trent_creator.get_filtered(filters)
-					if trenf_res is not None and len(trenf_res) > 0:
-						filtered_experiments = trenf_res['experiment_id'].unique().tolist()
-						for experiment_id in experiment_ids:
-							if experiment_id in filtered_experiments:
-								if experiment_id not in filtered_exps:
-									experiment_dic = dic_res[experiment_id]
-									filtered_exps[experiment_id] = {}
-									filtered_exps[experiment_id]['limi'] = self.getLimi(experiment_dic)
-									filtered_exps[experiment_id]['test_id'] = [test_id]
-								else:
-									filtered_exps[experiment_id]['test_id'].append(test_id)
+				for key in trena_dic:
+					te = trena_dic[key]['te']
+					trena_thresh = trena_dic[key]['limi_odds']
+					for test_id_str in te: 
+						test_id = int(test_id_str) 
+						experiment_ids = te[test_id_str]
+						exp = self.trend_experiments[test_id]
+						features = exp['feature']
+						filters = exp['filter']
+						trenf_res = self.trent_creator.get_filtered(filters)
+						if trenf_res is not None and len(trenf_res) > 0:
+							filtered_experiments = trenf_res['experiment_id'].unique().tolist()
+							for experiment_id in experiment_ids:
+								if experiment_id in filtered_experiments:
+									if experiment_id not in filtered_exps:
+										filtered_exps[experiment_id] = {}
+										filtered_exps[experiment_id]['limi_odds'] = trena_thresh
+									elif trena_thresh < filtered_exps[experiment_id]['limi_odds']:
+										filtered_exps[experiment_id]['limi_odds'] = trena_thresh
 				json.dump(filtered_exps,trend_final)
 				self.trent_creator.filter_experiment()
 				trend_res.close()
 				test_final.close()
 				trend_final.close()
-
-	def filter_trend(self, df_trent, experiment_id):
-		num_posi = 0
-		num_neg = 0
-		df_experiment = df_trent[df_trent['experiment_id']==experiment_id]
-		for idx,row in df_experiment.iterrows():
-			if row['pre'] == 0:
-				continue
-			limi_odds = row['limi_odds']
-			limi_odds_with_neu = row['limi_odds_with_neu']
-			if limi_odds > 1.34:
-				num_neg += 1
-			else:
-				num_posi += 1
-		if num_posi + num_neg < 2:
-			return False
-		if num_posi > 0 and float(num_posi) / float(num_posi + num_neg) >= 0.9:
-			return True
-		return False  
-
-	def getLimi(self, experiment_dic):
-		res = {}
-		if 0 in experiment_dic and experiment_dic[0]:
-			pre_detail = experiment_dic[0]
-			df_team = pd.DataFrame(pre_detail)
-			per_counts = df_team['res'].value_counts()
-			succ = 0
-			fail = 0
-			neu = 0
-			if 0 in per_counts:
-				neu += per_counts[0]
-			if 1 in per_counts:
-				succ += per_counts[1]
-			if 2 in per_counts:
-				fail += per_counts[2]
-			if succ > 0:
-				res['limi'] = float(succ + fail) / float(succ)
-				res['limi_with_neu'] = float(succ + fail + neu) / float(succ)
-			else:
-				res['limi'] = 100.0
-				res['limi_with_neu'] = 100.0
-		return res
-		
-	def getProfit(self, res_dic):
-		tester = res_dic['name']
-		home_team_id = res_dic['home_team']
-		away_team_id = res_dic['away_team']
-		date = res_dic['date']
-		str_sql = "select * from Odds where home_team_id=%d and away_team_id=%d and date='%s'"%(home_team_id,away_team_id,date)
-		cur.execute(str_sql)
-		row = cur.fetchone()
-		if row is None:
-			return 0
-		elif res_dic['res'] == 2 or res_dic['res'] == 0:
-			return -1
-		res = 0
-		if tester == 'MIN_GOALS_TESTER' :
-			odds = row[14]
-			dapan = row[13]
-			if odds > 0:
-				if dapan <= '2.5':
-					res = odds
-				elif dapan == '2.5/3':
-					res = -0.5
-				elif dapan == '2/2.5':
-					res = 0.5 * odds
-		elif tester == 'MAY_GOALS_TESTER':
-			odds = row[12]
-			dapan = row[13]
-			if odds > 0:
-				if dapan >= '2.5':
-					res = odds
-				elif dapan == '2.5/3':
-					res = 0.5 * odds
-				elif dapan == '2/2.5':
-					res = -0.5
-		elif tester == 'HOME_WIN_TESTER':
-			odds = row[9]
-			if odds > 0:
-				res = odds - 1
-		elif tester == 'AWAY_WIN_TESTER':
-			odds = row[11]
-			if odds > 0:
-				res = odds - 1
-		return res

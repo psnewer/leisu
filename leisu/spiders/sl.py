@@ -7,6 +7,9 @@ import logging
 import logging.config
 import datetime
 from datetime import timedelta, datetime
+from selenium import webdriver 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from leisu.items import Match,Odds
 
 class SlSpider(scrapy.Spider):
@@ -14,6 +17,9 @@ class SlSpider(scrapy.Spider):
 	allowed_domains = ['leisu.com']
 	start_urls = ['http://leisu.com/']
 	dataPage = ''
+	
+	def __init__(self):
+		self.driver = webdriver.Firefox(firefox_binary='/Applications/Firefox.app/Contents/MacOS/firefox-bin')
 	logging.config.fileConfig("/Users/miller/Documents/workspace/leisu/log/logging.conf")
 	logspider = logging.getLogger("spider")
 
@@ -93,13 +99,65 @@ class SlSpider(scrapy.Spider):
 				_time = date + ts0[0] + ts0[1]
 				teams = sD.xpath(u".//td/a/font/span/text()").extract()
 				scores = sD.xpath(u".//td/span/text()").extract()
-				if (len(teams) < 2 or len(scores) < 2):
-					if (date < today or len(teams) < 2):
-						clause = continent+" "+country+" "+league+" "+season+" "+serryid+" "+stage+" "+' '.join(teams)+" "+' '.join(scores)
-						self.logspider.warn(clause)
-						continue
-					else:
-						scores = [-1,-1]
+				if len(scores) < 2 and date < today and len(teams)==2:
+					href = 'https:' + sD.xpath(u".//td/a/@href").re_first("(.+)")
+					yield scrapy.Request(href, callback=self.parseTeam, meta={'season':season, 'continent':continent, 'country':country, 'league':league, 'serryid': serryid, 'serryname': serryname, 'stage': stage, 'date':_time, 'teams':teams})
+				else:
+					if (len(teams) < 2 or len(scores) < 2):
+						if (date < today or len(teams) < 2):
+							clause = continent+" "+country+" "+league+" "+season+" "+serryid+" "+stage+" "+' '.join(teams)+" "+' '.join(scores)
+							self.logspider.warn(clause)
+							continue
+						else:
+							scores = [-1,-1]
+					home_team = teams[0]
+					away_team = teams[1]
+					home_goal = scores[0]
+					away_goal = scores[1]
+					match = Match()
+					match['continent'] = continent
+					match['country'] = country
+					match['league'] = league
+					match['season'] = season
+					match['stage'] = stage
+					match['date'] = _time
+					match['serryid'] = serryid
+					match['serryname'] = serryname
+					match['home_team'] = home_team
+					match['away_team'] = away_team
+					match['home_goal'] = home_goal
+					match['away_goal'] = away_goal
+					yield match
+
+	def parseTeam(self, response):
+		self.driver.get(response.url)
+		continent = response.meta['continent']
+		country = response.meta['country']
+		league = response.meta['league']
+		season = response.meta['season']
+		serryid = response.meta['serryid']
+		serryname = response.meta['serryname']
+		stage = response.meta['stage']
+		date = response.meta['date']
+		teams = response.meta['teams']
+		_date = datetime.strptime(date[0:8], '%Y%m%d').strftime('%Y-%m-%d')
+		sA = self.driver.find_elements_by_xpath(u"//table[contains(@id,'schedules-table')]/tbody/tr/td[text()[contains(.,'%s')]]"%_date)
+		while sA == []:
+			try:
+				next_page = self.driver.find_element_by_xpath(u"//div[contains(@class,'clearfix-row')]/div[@id='schedules-pagination']/a[text()[contains(.,'下一页')]]")
+				if 'disable' in next_page.get_attribute("class"):
+					break
+				next_page.click()
+			except:
+				print "#####Arrive the last page.#####"
+				break
+			wait = WebDriverWait(self.driver, 2)
+			wait.until(lambda driver:driver.find_element_by_xpath(u"//table[contains(@id,'schedules-table')]"))
+			sA = self.driver.find_elements_by_xpath(u"//table[contains(@id,'schedules-table')]/tbody/tr/td[text()[contains(.,'%s')]]"%_date)
+		if sA:
+			sB = sA[0].find_elements_by_xpath("../td/b")
+			if sB:
+				scores = sB[0].text.split('-')
 				home_team = teams[0]
 				away_team = teams[1]
 				home_goal = scores[0]
@@ -110,7 +168,7 @@ class SlSpider(scrapy.Spider):
 				match['league'] = league
 				match['season'] = season
 				match['stage'] = stage
-				match['date'] = _time
+				match['date'] = date
 				match['serryid'] = serryid
 				match['serryname'] = serryname
 				match['home_team'] = home_team
