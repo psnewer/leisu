@@ -31,10 +31,8 @@ class Plain_Trena():
 		f_exp.close()
 
 	def execute(self,df_trent,test_final):
-		posi = 0
-		neg = 0
+		res = {}
 		if len(df_trent) > 0:
-			res = {}
 			for flag in self.experiments:
 				res_ele = {}
 				params = self.experiments[flag]
@@ -43,12 +41,14 @@ class Plain_Trena():
 					df_testid = df_trent[df_trent['test_id']==test_id]
 					experiment_ids = df_testid['experiment_id'].unique()
 					for experiment_id in experiment_ids:
+						posi = 0
+						neg = 0
 						df_experiment = df_testid[df_testid['experiment_id']==experiment_id]
 						pres = df_experiment['pre'].unique()
 						for pre in pres:
 							row_pre = df_experiment[df_experiment['pre']==pre].iloc[0]
 							df_pres = df_experiment[df_experiment['pre'] > pre]
-							if len(df_pres) < params['num']:
+							if len(df_pres) < params['num'] or pre==0:
 								continue
 							num_neg = len(df_pres[df_pres['limi_odds'] > params['neg_odds']])
 							num_posi = len(df_pres) - num_neg
@@ -56,17 +56,17 @@ class Plain_Trena():
 								if row_pre['limi_odds'] > params['posi_odds']:
 									neg += 1
 								else:
-									neg += 1
-									if test_id in res_ele:
-										res_ele[test_id].append(experiment_id)
-									else:
-										res_ele[test_id] = [experiment_id]
 									posi += 1
-				if posi > 0 and float(posi) / float(posi + neg) < params['trena_rt']:
+						if posi > 0 and float(posi) / float(posi + neg) >= params['trena_rt']:
+							if test_id in res_ele:
+								res_ele[test_id].append(experiment_id)
+							else:
+								res_ele[test_id] = [experiment_id]
+				if res_ele:
 					res[flag] = {}
 					res[flag]['te'] = res_ele
 					res[flag]['limi_odds'] = params['posi_odds']
-			json.dump(res, test_final, ensure_ascii=False)
+		json.dump(res, test_final, ensure_ascii=False)
 						
 			
 

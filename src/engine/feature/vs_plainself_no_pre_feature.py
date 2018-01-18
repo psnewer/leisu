@@ -45,6 +45,8 @@ class VS_PLAINSELF_NO_PRE_FEATURE(ABSTRACT_FEATURE):
 		cond_str = ' and '.join(condition)
 		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
 		df_serry = pd.read_sql_query(sql_str,conn)
+		if gflags.FLAGS.update:
+			df_serry = df_serry.head(1)
 		serry_res = self.get_serryDic(league_id,df_serry)
 		serry_feature = self.get_serryFeature(league_id,df_serry,serry_res)
 		current_serryfeature = self.get_currentSerryFeature(league_id,df_serry,serry_res)

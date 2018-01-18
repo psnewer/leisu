@@ -56,11 +56,15 @@ class OddsGrouper():
 	def process(self):
 		for cond in self.conditions:
 			league_id = int(cond[0].split('=')[1])
-			serryname = cond[1].split('=')[1].strip('\'')
+			serryname = cond[1].split('=')[1].strip('\'').strip(' ')
 			group_directory = self.group_directory + '/' + serryname
 			os.system(r'mkdir %s'%group_directory)
-			feature_res = group_directory + '/feature_res.txt'
-			test_res = group_directory + '/test_res.txt'
+			if gflags.FLAGS.update:
+				feature_res = group_directory + '/feature_res_0.txt'
+				test_res = group_directory + '/test_res_0.txt'
+			else:
+				feature_res = group_directory + '/feature_res.txt'
+				test_res = group_directory + '/test_res.txt'
 			feature_res = codecs.open(feature_res,'w+',encoding='utf-8')
 			test_res = codecs.open(test_res,'w+',encoding='utf-8')
 			self.tester_creator.group(cond,feature_log=feature_res)
@@ -93,6 +97,15 @@ class OddsGrouper():
 				df_test = pd.DataFrame.from_csv(test_res_file)
 				if len(df_test) == 0:
 					continue
+				if gflags.FLAGS.update:
+					test_res_file0 = group_directory + '/test_res_0.txt'
+					if not os.path.exists(test_res_file0):
+						continue
+					df_test_0 = pd.DataFrame.from_csv(test_res_file0)
+					if len(df_test_0) > 0:
+						first_serryid = df_test_0.iloc[0]['serryid']
+						df_test = df_test[df_test['serryid'] != first_serryid]
+						df_test = df_test.append(df_test_0)
 				df_test = df_test.astype({'serryid': str, "date": str})
 				dic_res = {}
 				serryids = df_test['serryid'].unique()
@@ -113,7 +126,7 @@ class OddsGrouper():
 						_serryid = row['serryid']
 						pre = idx
 						if not started:
-							pre = pre + 1
+							pre = pre + 1						
 						if _serryid in serryids:
 							pre = idx
 							if not started:

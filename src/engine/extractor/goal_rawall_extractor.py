@@ -323,7 +323,7 @@ class GOAL_RAWALL_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		away_res = []
 		label_res = []
 		for idx,serry in df_serry.iterrows():
-			if idx < 1:
+			if idx < 2:
 				continue
 			serryid = serry['serryid']
 			pre_idx = idx + 1

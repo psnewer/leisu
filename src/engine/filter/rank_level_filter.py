@@ -27,15 +27,17 @@ class RANK_LEVEL_FILTER(ABSTRACT_FILTER):
 				else:
 					delete_row.append(idx)
 					continue
-			if row['PRE_RANK_FEATURE'][0]['number'] > 0:
+			if row['PRE_RANK_FEATURE'][0]['number'] > 2:
 				to_team = row['toteam']
 				date = row['date']
 				row_to = df.query("team_id==%d & date=='%s'"%(to_team,date)).iloc[-1]
 				if row_to['PRE_RANK_FEATURE'][0]['number'] > 0:
 					rank = float(row['PRE_RANK_FEATURE'][0]['score'])/row['PRE_RANK_FEATURE'][0]['number']
 					rank_to = float(row_to['PRE_RANK_FEATURE'][0]['score'])/row_to['PRE_RANK_FEATURE'][0]['number']
-					if (rank >= self.params['1_thresh'] and rand_to < self.params['1_thresh']) or (rank_to >= self.params['1_thresh'] and rand < self.params['1_thresh']):
+					if (rank >= self.params['1_thresh'] and rank_to < self.params['1_thresh']) or (rank_to >= self.params['1_thresh'] and rank < self.params['1_thresh']):
 						delete_row.append(idx)	
 					elif rank < self.params['1_thresh'] and rank > self.params['3_thresh'] and rank_to <= self.params['3_thresh']:
-						delete_row.append(idx)	
+						delete_row.append(idx)
+			else:
+				delete_row.append(idx)	
 		return delete_row

@@ -84,8 +84,8 @@ class Predictor():
 						df_ele = df_ele[df_ele['date'] <= date_2]
 						df = df.append(df_ele)
 		if len(df) > 0:
-			df = df.drop_duplicates(['home_team','away_team','date'])
-			df = df.groupby('league').apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
+			df = df.groupby(['home_team','away_team','date']).apply(lambda x: x.sort_values(by='limi').iloc[0]).reset_index(drop=True)
+			df = df.groupby(['league']).apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
 		df.to_csv(gflags.FLAGS.predict_summary,encoding="utf_8_sig")
 
 	def process(self,league_id,serryid,df,feature_log,predict_log):
@@ -133,9 +133,9 @@ class Predictor():
 				if int(exp_id) in exps:
 					league = cur.execute("select name from League where id=%d"%league_id).fetchone()[0]
 					rows = self.trena_thresh[(self.trena_thresh['league']==league)]
-					if len(rows) == 0 or (len(rows) > 0 and rows.iloc[0][kind_name] >= exp_cand[exp_id]['limi_odds']):
+					if (len(rows) == 0 or kind_name=='home_win' or kind_name=='away_win' or (len(rows) > 0 and rows.iloc[0][kind_name] >= exp_cand[exp_id]['limi_odds'])) and exp_cand[exp_id]['limi_odds'] <= 1.8:
 						exp_cand[exp_id]['kind'] = kind_name
-					elif len(rows) > 0 and rows.iloc[0][kind_name] < exp_cand[exp_id]['limi_odds']:
+					elif (len(rows) > 0 and ((kind_name=='min_goal' or kind_name=='may_goal') and rows.iloc[0][kind_name] < exp_cand[exp_id]['limi_odds'])) or exp_cand[exp_id]['limi_odds'] > 1.8:
 						del_exps.append(exp_id)
 					break
 		for exp_id in del_exps:

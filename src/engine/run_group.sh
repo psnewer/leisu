@@ -40,7 +40,7 @@ do
     read -u1000
     {
 		echo $cond
-        python run_analysis.py --flagfile=./conf/conf.gflag --group --test --test_all --league_cond="$cond"
+        python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
 		checkError "run_group $cond"
         echo >&1000
     } & 

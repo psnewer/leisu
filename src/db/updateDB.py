@@ -21,18 +21,6 @@ tips_file = '/Users/miller/Documents/workspace/leisu/src/db/name_tips.json'
 db = '/Users/miller/Desktop/soccer.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
-cur.execute('''drop table Continent''')
-cur.execute('''drop table Team''')
-cur.execute('''drop table Country''')
-cur.execute('''drop table League''')
-cur.execute('''drop table Match''')
-cur.execute('''drop table TMatch''')
-cur.execute('''CREATE TABLE `Continent` ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' TEXT UNIQUE)''')
-cur.execute('''CREATE TABLE "Team" (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT UNIQUE)''')
-cur.execute('''CREATE TABLE `Country` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `name` TEXT UNIQUE, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`))''')
-cur.execute('''CREATE TABLE `League` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `country_id` INTEGER, `name` TEXT UNIQUE, FOREIGN KEY(`country_id`) REFERENCES `country`(`id`))''')
-cur.executescript('''CREATE TABLE `Match` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname` TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, 'home_goal' INTEGER, 'away_goal' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX match_index on Match (league_id, season, serryid, serryname, stage, date, home_team_id, away_team_id)''')
-cur.executescript('''CREATE TABLE `TMatch` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname`    TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX tmatch_index on TMatch(league_id, season, serryid, serryname, stage, date, home_team_id, away_team_id)''')
 
 def saveMatch(filepath, idspath):
 	data = open(filepath)
@@ -63,7 +51,7 @@ def saveMatch(filepath, idspath):
 			serryname = 'default'
 		elif serryname in name_tips:
 			serryname = name_tips[serryname]
-		serryname = re.sub("[()-/ ]+","",serryname)
+		serryname = re.sub("[()-/]+","",serryname)
 		if league in name_tips:
 			league = name_tips[league]
 		if continent not in ids:
@@ -112,6 +100,12 @@ def saveMatch(filepath, idspath):
 	idsdata.close()
 	data.close()
 	conn.commit()
-	conn.close()
+
+def updateTMatch():
+	now = time.strftime("%Y%m%d%H%M", time.localtime())
+	cur.execute("DELETE FROM TMatch WHERE date <= '%s'"%(now))
+	conn.commit()
 
 saveMatch(matchFileDirectory,idsDirectory)
+updateTMatch()
+conn.close()

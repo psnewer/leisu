@@ -12,8 +12,10 @@ from current_score_filter import *
 from home_win_filter import *
 from min_team_filter import *
 from vs_filter import *
+from rank_level_filter import *
 from vs_model_filter import *
 from goal_model_filter import *
+from model_filter import *
 from counter_vs_filter import *
 from rank_win_filter import *
 

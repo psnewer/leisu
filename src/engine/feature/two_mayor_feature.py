@@ -47,6 +47,8 @@ class TWO_MAYOR_FEATURE(ABSTRACT_FEATURE):
 		cond_str = ' and '.join(cond)
 		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
 		df_serry = pd.read_sql_query(sql_str,conn)
+		if gflags.FLAGS.update:
+			df_serry = df_serry.head(1)
 		team_res = []
 		for idx,serry in df_serry.iterrows():
 			serryid = serry['serryid']

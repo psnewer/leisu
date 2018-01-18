@@ -24,6 +24,8 @@ class ABSTRACT_TESTER():
 		cond_str = ' and '.join(cond)
 		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
 		df_serry = pd.read_sql_query(sql_str,conn)
+		if gflags.FLAGS.update:
+			df_serry = df_serry.head(1)
 		for idx,serry in df_serry.iterrows():
 			serryid = serry['serryid']
 			cond[1] = "serryid='%s'"%serryid
