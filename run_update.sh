@@ -14,19 +14,16 @@ function checkError()
 }
 
 scrapy crawl sl
-#mv /Users/miller/Documents/workspace/leisu/leisu/matches.json /Users/miller/Documents/workspace/leisu/leisu/tmp.json
-#scrapy crawl odds
-#mv /Users/miller/Documents/workspace/leisu/leisu/tmp.json /Users/miller/Documents/workspace/leisu/leisu/matches.json
 
 cd /Users/miller/Documents/workspace/leisu/src/db
-sh -x run_refresh.sh
-checkError "run_refresh"
+sh -x run_update.sh
+checkError "run_update"
 
 cd /Users/miller/Documents/workspace/leisu/src/engine
 #sh -x run_train.sh
 #checkError "run_train"
 #cd /Users/miller/Documents/workspace/leisu/src/engine
-sh -x run_group.sh -f ./conf/group.txt -t -r
+sh -x run_group.sh -f ./conf/group.txt -u
 #checkError "run_group"
 #python run_analysis.py --flagfile=./conf/conf.gflag --predict
 #checkError "run_analysis"

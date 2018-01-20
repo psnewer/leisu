@@ -3,7 +3,28 @@
 cd `dirname $0`
 
 tempfifo=$$.fifo        # $$表示当前执行文件的PID
-group_file=$1           # 开始时间
+
+while getopts "f:tur" arg
+do
+        case $arg in
+             f)
+                group_file=$OPTARG #参数存在$OPTARG中
+                ;;
+             t)
+                mode=$mode"test"
+                ;;
+             u)
+                mode=$mode"update"
+                ;;
+			 r)
+				rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
+				;;
+             ?) 
+            	echo "unkonw argument"
+        exit 1
+        ;;
+        esac
+done
 
 trap "exec 1000>&-;exec 1000<&-;exit 0" 2
 mkfifo $tempfifo
@@ -40,7 +61,15 @@ do
     read -u1000
     {
 		echo $cond
-        python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
+		if [ $mode -eq test ]; then
+        	python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
+		elif [ $mode -eq update ]; then
+			python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
+		elif [ $mode -eq testupdate -a $mode -eq updatetest ]; then
+			python run_analysis.py --flagfile=./conf/conf.gflag --group --test --update --league_cond="$cond"
+		else
+			python run_analysis.py --flagfile=./conf/conf.gflag --group --league_cond="$cond"
+		fi
 		checkError "run_group $cond"
         echo >&1000
     } & 

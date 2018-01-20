@@ -66,7 +66,7 @@ for root,dirs,files in walks:
 				df_testid = df_trent[df_trent['test_id']==test_id]
 				experiment_ids = df_testid['experiment_id'].unique()
 				for experiment_id in experiment_ids:
-					if experiment_id < 28:
+					if experiment_id > 28:
 						continue
 					posi = 0
 					neg = 0
@@ -81,10 +81,10 @@ for root,dirs,files in walks:
 						df_pres = df_experiment[df_experiment['pre'] > pre]
 						if len(df_pres) < params['num']:
 							continue
-						num_neg = len(df_pres[df_pres['limi_odds'] > params['neg_odds']])
+						num_neg = len(df_pres[df_pres['limi_odds_with_neu'] > params['neg_odds']])
 						num_posi = len(df_pres) - num_neg
 						if float(num_posi) / float(num_posi + num_neg) >= params['posi_rt']:
-							if row_pre['limi_odds'] > params['posi_odds']:
+							if row_pre['limi_odds_with_neu'] > params['posi_odds']:
 								if pre > pre_thresh:
 									neg += 1
 									neg_f += 1
@@ -115,7 +115,7 @@ for root,dirs,files in walks:
 			if res_ele:
 				res[flag] = {}
 				res[flag]['te'] = res_ele
-				res[flag]['limi_odds'] = params['posi_odds']
+				res[flag]['limi_odds_with_neu'] = params['posi_odds']
 				result_posi += posi_pre_2
 				result_neg += neg_pre_2
 				print posi_pre_2,neg_pre_2,league

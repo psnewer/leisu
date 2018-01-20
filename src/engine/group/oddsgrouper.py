@@ -50,7 +50,8 @@ class OddsGrouper():
 		os.system(r'mkdir %s'%self.group_directory)
 
 	def group(self):
-#		self.process()
+		if gflags.FLAGS.test:
+			self.process()
 		self.analysis()
 
 	def process(self):

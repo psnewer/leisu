@@ -2,10 +2,6 @@
 
 cd `dirname $0`
 
-rm ids.json
-
-echo "{}" > ids.json
-
 function checkError()
 {
     if [ $? -eq 0 ]
@@ -17,10 +13,8 @@ function checkError()
     fi
 }
 
-python matchDB.py
-checkError "matchDB"
-#python oddsDB.py
-#checkError "oddsDB"
+python updateDB.py
+checkError "updateDB"
 
 cd /Users/miller/Documents/workspace/leisu/src/engine/script
 python get_groupcondition.py
