@@ -20,9 +20,9 @@ class GOAL_RAWALL_FEATURE(ABSTRACT_FEATURE):
 	def execute_predict(self,league_id,serryid,df_serry,feature_log):
 		team_res = []
 		serryname = df_serry.iloc[-1]['serryname']
-		train_dir = gflags.FLAGS.extract_path + str(league_id) + '/' + serryname
-		if not os.path.exists(train_dir):
-			return team_res
+#		train_dir = gflags.FLAGS.extract_path + str(league_id) + '/' + serryname
+#		if not os.path.exists(train_dir):
+#			return team_res
 		sql_str = "select distinct serryid from Match where league_id=%d and serryname='%s' order by date desc"%(league_id,serryname)
 		serries = pd.read_sql_query(sql_str,conn).head(2)
 		serry_res = self.get_serryDic(league_id,serries)
@@ -38,10 +38,10 @@ class GOAL_RAWALL_FEATURE(ABSTRACT_FEATURE):
 	def execute_test(self,condition,feature_log):
 		team_res = []
 		league_id = int(condition[0].split('=')[1])
-		serryname = condition[1].split('=')[1]
-		train_dir = gflags.FLAGS.extract_path + str(league_id) + '/' + eval(serryname)
-		if not os.path.exists(train_dir):
-			return team_res
+#		serryname = condition[1].split('=')[1]
+#		train_dir = gflags.FLAGS.extract_path + str(league_id) + '/' + eval(serryname)
+#		if not os.path.exists(train_dir):
+#			return team_res
 		cond_str = ' and '.join(condition)
 		sql_str = "select distinct serryid from Match where %s order by date desc"%(cond_str)
 		df_serry = pd.read_sql_query(sql_str,conn)

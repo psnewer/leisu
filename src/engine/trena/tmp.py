@@ -20,13 +20,23 @@ import string
 from dateutil.parser import parse
 from conf import *
 
+kind_data = codecs.open('/Users/miller/Documents/workspace/leisu/src/engine/conf/kinds.txt','r',encoding='utf-8')
+kind_list = json.load(kind_data)
+kind_data.close()
+
 f_exp = codecs.open('/Users/miller/Documents/workspace/leisu/src/engine/conf/trena.conf','r',encoding='utf-8')
 experiments = json.load(f_exp)
 sexperiments = {}
 for exp in experiments:
 	flag = exp['flag']
 	params = exp['params']
-	sexperiments[flag] = params
+	kinds = exp['kind']
+	exps = []
+	for kind in kinds:
+		exps.extend(kind_list[kind])
+	sexperiments[flag] = {}
+	sexperiments[flag]['exps'] = exps
+	sexperiments[flag]['params'] = params
 f_exp.close()
 
 filter_trend_file = codecs.open('/Users/miller/Documents/workspace/leisu/src/engine/conf/filter_trend.conf','r',encoding='utf-8')
@@ -52,7 +62,8 @@ for root,dirs,files in walks:
 			continue
 		res = {}
 		for flag in sexperiments:
-			params = sexperiments[flag]
+			exps = sexperiments[flag]['exps']
+			params = sexperiments[flag]['params']
 			test_ids = df_trent['test_id'].unique()
 			res_ele = {}
 			posi_pre_2 = 0
@@ -66,7 +77,9 @@ for root,dirs,files in walks:
 				df_testid = df_trent[df_trent['test_id']==test_id]
 				experiment_ids = df_testid['experiment_id'].unique()
 				for experiment_id in experiment_ids:
-					if experiment_id > 28:
+					if experiment_id not in range(29,100):
+						continue
+					if experiment_id not in exps:
 						continue
 					posi = 0
 					neg = 0
@@ -78,8 +91,8 @@ for root,dirs,files in walks:
 						if pre == 0:
 							continue
 						row_pre = df_experiment[df_experiment['pre']==pre].iloc[0]
-						df_pres = df_experiment[df_experiment['pre'] > pre]
-						if len(df_pres) < params['num']:
+						df_pres = df_experiment[df_experiment['pre'] > pre].head(params['num'])
+						if len(df_pres) < params['min_num']:
 							continue
 						num_neg = len(df_pres[df_pres['limi_odds_with_neu'] > params['neg_odds']])
 						num_posi = len(df_pres) - num_neg
@@ -96,14 +109,14 @@ for root,dirs,files in walks:
 									posi_f += 1
 								else: 
 									posi_pre += 1
-					if posi > 0 and float(posi) / float(posi + neg) >= params['trena_rt']:
+					if posi > params['posi_num'] and float(posi) / float(posi + neg) >= params['trena_rt']:
 						if test_id in ele:
 							ele[test_id].append(experiment_id)
 						else:
 							ele[test_id] = [experiment_id]
 						posi_pre_1 += posi_pre
 						neg_pre_1 += neg_pre
-			if ele and posi_f > 0 and float(posi_f) / float(posi_f + neg_f) >= params['f_rt']:
+			if ele and posi_f > 0 and float(posi_f) / float(posi_f + neg_f) >= 0.0:
 				for _test_id in ele:
 					for _experiment_id in ele[_test_id]:
 						if _test_id in res_ele:
@@ -115,7 +128,7 @@ for root,dirs,files in walks:
 			if res_ele:
 				res[flag] = {}
 				res[flag]['te'] = res_ele
-				res[flag]['limi_odds_with_neu'] = params['posi_odds']
+				res[flag]['limi_odds'] = params['thresh_odds']
 				result_posi += posi_pre_2
 				result_neg += neg_pre_2
 				print posi_pre_2,neg_pre_2,league

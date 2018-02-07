@@ -7,9 +7,6 @@ import logging
 import logging.config
 import datetime
 from datetime import timedelta, datetime
-from selenium import webdriver 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from leisu.items import Match,Odds
 
 class SlSpider(scrapy.Spider):
@@ -17,9 +14,6 @@ class SlSpider(scrapy.Spider):
 	allowed_domains = ['leisu.com']
 	start_urls = ['http://leisu.com/']
 	dataPage = ''
-	
-	def __init__(self):
-		self.driver = webdriver.Firefox(firefox_binary='/Applications/Firefox.app/Contents/MacOS/firefox-bin')
 	logging.config.fileConfig("/Users/miller/Documents/workspace/leisu/log/logging.conf")
 	logspider = logging.getLogger("spider")
 

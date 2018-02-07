@@ -26,9 +26,9 @@ do
         esac
 done
 
-trap "exec 1000>&-;exec 1000<&-;exit 0" 2
+trap "exec 100>&-;exec 100<&-;exit 0" 2
 mkfifo $tempfifo
-exec 1000<>$tempfifo
+exec 100<>$tempfifo
 rm -rf $tempfifo
 
 function checkError()
@@ -44,7 +44,7 @@ function checkError()
 
 for ((i=1; i<=30; i++))
 do
-    echo >&1000
+    echo >&100
 done
 
 ind=0
@@ -52,26 +52,25 @@ get_jsonObj() {
 	echo `cat $group_file | jq ".[$ind]"`
 }
 
-#rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
 
 cond=`get_jsonObj`
 echo $cond
 while  test "$cond" != null
 do
-    read -u1000
+    read -u100
     {
 		echo $cond
-		if [ $mode -eq test ]; then
+		if [ "$mode" == "test" ]; then
         	python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
-		elif [ $mode -eq update ]; then
-			python run_analysis.py --flagfile=./conf/conf.gflag --group --test --league_cond="$cond"
-		elif [ $mode -eq testupdate -a $mode -eq updatetest ]; then
+		elif [ "$mode" == "update" ]; then
+			python run_analysis.py --flagfile=./conf/conf.gflag --group --update --league_cond="$cond"
+		elif [ "$mode" == "testupdate" -o "$mode" == "updatetest" ]; then
 			python run_analysis.py --flagfile=./conf/conf.gflag --group --test --update --league_cond="$cond"
 		else
 			python run_analysis.py --flagfile=./conf/conf.gflag --group --league_cond="$cond"
 		fi
 		checkError "run_group $cond"
-        echo >&1000
+        echo >&100
     } & 
 	ind=$(($ind+1))
 	cond=`get_jsonObj`

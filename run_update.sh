@@ -13,12 +13,12 @@ function checkError()
     fi
 }
 
-scrapy crawl sl
-
-cd /Users/miller/Documents/workspace/leisu/src/db
-sh -x run_update.sh
-checkError "run_update"
-
+#scrapy crawl sl
+#
+#cd /Users/miller/Documents/workspace/leisu/src/db
+#sh -x run_update.sh
+#checkError "run_update"
+#
 cd /Users/miller/Documents/workspace/leisu/src/engine
 #sh -x run_train.sh
 #checkError "run_train"

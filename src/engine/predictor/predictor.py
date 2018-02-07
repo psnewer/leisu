@@ -84,7 +84,7 @@ class Predictor():
 						df_ele = df_ele[df_ele['date'] <= date_2]
 						df = df.append(df_ele)
 		if len(df) > 0:
-			df = df.groupby(['home_team','away_team','date']).apply(lambda x: x.sort_values(by='limi').iloc[0]).reset_index(drop=True)
+			df = df.groupby(['home_team','away_team','date','tester']).apply(lambda x: x.sort_values(by='limi').iloc[0]).reset_index(drop=True)
 			df = df.groupby(['league']).apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
 		df.to_csv(gflags.FLAGS.predict_summary,encoding="utf_8_sig")
 
@@ -122,21 +122,29 @@ class Predictor():
 		kind_path = gflags.FLAGS.kind_file
 		kind_data = codecs.open(kind_path,'r',encoding='utf-8')
 		kind_list = json.load(kind_data)
-		df_kind = pd.DataFrame(kind_list)
 		trend_data = codecs.open(trend_path,'r',encoding='utf-8')	
 		exp_cand = json.load(trend_data)
 		del_exps = []
 		for exp_id in exp_cand:
-			for idx,row in df_kind.iterrows():
-				kind_name = row['name']
-				exps = row['exps']
+			for kind_name in kind_list:
+				exps = kind_list[kind_name]
 				if int(exp_id) in exps:
 					league = cur.execute("select name from League where id=%d"%league_id).fetchone()[0]
 					rows = self.trena_thresh[(self.trena_thresh['league']==league)]
-					if (len(rows) == 0 or kind_name=='home_win' or kind_name=='away_win' or (len(rows) > 0 and rows.iloc[0][kind_name] >= exp_cand[exp_id]['limi_odds'])) and exp_cand[exp_id]['limi_odds'] <= 1.8:
-						exp_cand[exp_id]['kind'] = kind_name
-					elif (len(rows) > 0 and ((kind_name=='min_goal' or kind_name=='may_goal') and rows.iloc[0][kind_name] < exp_cand[exp_id]['limi_odds'])) or exp_cand[exp_id]['limi_odds'] > 1.8:
-						del_exps.append(exp_id)
+					if len(rows) == 0:
+						if kind_name=='min_goal' or kind_name=='may_goal':
+							exp_cand[exp_id]['kind'] = kind_name
+						elif kind_name=='home_win' or kind_name=='away_win':
+							exp_cand[exp_id]['kind'] = kind_name
+						else:
+							del_exps.append(exp_id)
+					else:
+						if (kind_name=='min_goal' or kind_name=='may_goal') and rows.iloc[0][kind_name] >= exp_cand[exp_id]['limi_odds']:
+							exp_cand[exp_id]['kind'] = kind_name
+						elif kind_name=='home_win' or kind_name=='away_win':
+							exp_cand[exp_id]['kind'] = kind_name
+						else:
+							del_exps.append(exp_id)
 					break
 		for exp_id in del_exps:
 			del exp_cand[exp_id]
@@ -145,7 +153,7 @@ class Predictor():
 		return exp_cand
 
 	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,exp_id,predict_log):
-		if len(df) < 1 or (df_team is not None and len(df_team) < 1):
+		if len(df) < 1 or df_team is None or (df_team is not None and len(df_team) < 1):
 			return
 		league_id = df.iloc[-1]['league_id']
 		serryname = df.iloc[-1]['serryname']
