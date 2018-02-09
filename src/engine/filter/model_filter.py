@@ -32,7 +32,7 @@ class MODEL_FILTER(ABSTRACT_FILTER):
 
 	def setParams(self,params):
 		super(MODEL_FILTER,self).setParams(params)
-		if gflags.FLAGS.group or gflags.FLAGS.predict:
+		if gflags.FLAGS.group or gflags.FLAGS.predict or gflags.FLAGS.predict_fix:
 			self.net = caffe.Net(str(self.params['proto']), str(self.params['weights']), caffe.TEST)
 
 	def filter(self,df):

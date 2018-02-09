@@ -10,6 +10,7 @@ from filter_creator import *
 from tester_creator import *
 from extractor_creator import *
 from predictor import *
+from fix_predictor import *
 from oddsgrouper import *
 from testgrouper import TestGrouper
 from plain_plot import *
@@ -95,6 +96,13 @@ class Processor(object):
 		resfiles = gflags.FLAGS.predict_path + '*'
 		os.system(r'rm -rf %s'%resfiles)
 		predictor = Predictor(self.tester_creator,self.experiments)	
+		predictor.predict()
+		predictor.pack()	
+
+	def predict_fix(self):
+		resfiles = gflags.FLAGS.predict_path + '*'
+		os.system(r'rm -rf %s'%resfiles)
+		predictor = Fix_Predictor(self.tester_creator)	
 		predictor.predict()
 		predictor.pack()	
 

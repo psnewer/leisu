@@ -25,6 +25,9 @@ class VS_PLAINSELF_NO_PRE_FEATURE(ABSTRACT_FEATURE):
 #			return team_res
 		sql_str = "select distinct serryid from Match where league_id=%d and serryname='%s' order by date desc"%(league_id,serryname)
 		serries = pd.read_sql_query(sql_str,conn).head(2)
+		serryid = df_serry.iloc[-1]['serryid']
+		if serryid not in serries['serryid'].unique():
+			return team_res
 		serry_res = self.get_serryDic(league_id,serries)
 		serry_feature = self.get_serryFeature(league_id,serries,serry_res)
 		match_feature = self.get_predict_currentMatchFeature(league_id,df_serry,serry_res)

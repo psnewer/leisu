@@ -12,12 +12,14 @@ from processor import *
 gflags.DEFINE_string('db_path', '', 'db path')
 gflags.DEFINE_string('alg_path', '', 'server.cfg')  
 gflags.DEFINE_string('experiment_path', '', 'experiment.conf')
+gflags.DEFINE_string('experiment_fix', '', 'fix_experiment.conf')
 gflags.DEFINE_string('trend_path', '', 'trend.conf')
 gflags.DEFINE_string('trena_path', '', 'trena.conf')
 gflags.DEFINE_string('trena_thresh', '', 'trena_thresh.conf')
 gflags.DEFINE_string('extract_conf', '', 'extract.conf')
-gflags.DEFINE_string('buckets_path', '', 'bucket.conf')
+gflags.DEFINE_string('fix_leagues', '', 'fix leagues')
 gflags.DEFINE_bool('predict', False, 'predict')
+gflags.DEFINE_bool('predict_fix', False, 'predict fix')
 gflags.DEFINE_bool('group', False, 'group')
 gflags.DEFINE_bool('test', False, 'test')
 gflags.DEFINE_bool('update', False, 'update')
@@ -44,6 +46,8 @@ if __name__ == "__main__":
 	pro = Processor()
 	if (gflags.FLAGS.predict):
 		pro.predict()
+	elif (gflags.FLAGS.predict_fix):
+		pro.predict_fix()
 	elif (gflags.FLAGS.group):
 		pro.group()
 	elif (gflags.FLAGS.extract):
