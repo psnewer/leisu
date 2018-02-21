@@ -1,11 +1,11 @@
 #! /bin/bash
 
 cd `dirname $0`
-
-sh -x run_extract.sh ./conf/extract.txt
-
-python merge_extract.py
-
+#
+#sh -x run_extract.sh ./conf/extract.txt
+#
+#python merge_extract.py
+#
 tempfifo=$$.fifo        # $$表示当前执行文件的PID
 group_file=$1           # 开始时间
 

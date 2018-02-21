@@ -269,7 +269,7 @@ class VS_PLAINSELF_NO_PRE_EXTRACTOR(ABSTRACT_EXTRACTOR):
 				if end > len(df_team):
 					continue
 				mom_score = 0
-				todate = df_team.iloc[-1]['date']
+				todate = df_team.iloc[end-1]['date']
 				for j in range(first,end):
 					torow = df_team.iloc[j]
 					mom_score += torow['score']
@@ -286,6 +286,8 @@ class VS_PLAINSELF_NO_PRE_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		away_res = []
 		label_res = []
 		for idx,serry in df_serry.iterrows():
+#			if idx < 2:
+#				continue
 			serryid = serry['serryid']
 #			pre_idx = idx + 1
 #			if pre_idx >= len(df_serry):

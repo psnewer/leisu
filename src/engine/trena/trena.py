@@ -56,8 +56,6 @@ for root,dirs,files in walks:
 				df_testid = df_trent[df_trent['test_id']==test_id]
 				experiment_ids = df_testid['experiment_id'].unique()
 				for experiment_id in experiment_ids:
-					if experiment_id not in range(29,100):
-						continue
 					if experiment_id not in exps:
 						continue
 					posi = 0

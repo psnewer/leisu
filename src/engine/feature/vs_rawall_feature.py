@@ -397,7 +397,7 @@ class VS_RAWALL_FEATURE(ABSTRACT_FEATURE):
 				if end > len(df_team):
 					continue
 				mom_score = 0
-				todate = df_team.iloc[-1]['date']
+				todate = df_team.iloc[end-1]['date']
 				for j in range(first,end):
 					torow = df_team.iloc[j]
 					mom_score += torow['score']

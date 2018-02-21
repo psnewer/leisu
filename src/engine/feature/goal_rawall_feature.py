@@ -316,7 +316,7 @@ class GOAL_RAWALL_FEATURE(ABSTRACT_FEATURE):
 			for i in range(0,self.params['length']):
 				torow = df_team.iloc[i]
 				todate = torow['date']
-				toscore = serry_dic[team][todate]['score']
+				toscore = serry_dic[team][todate]['goal']
 				if torow['home_team_id'] == team:
 					toteam = torow['away_team_id']
 					home_num += 1
@@ -400,7 +400,7 @@ class GOAL_RAWALL_FEATURE(ABSTRACT_FEATURE):
 				if end > len(df_team):
 					continue
 				mom_score = 0
-				todate = df_team.iloc[-1]['date']
+				todate = df_team.iloc[end-1]['date']
 				for j in range(first,end):
 					torow = df_team.iloc[j]
 					mom_score += torow['score']

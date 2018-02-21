@@ -12,8 +12,12 @@ from vs_plainself_no_pre_extractor import *
 from vs_plainto_extractor import *
 from vs_plainall_extractor import *
 from vs_rawself_extractor import *
+from vs_rawself_no_pre_extractor import *
 from vs_rawall_extractor import *
 from goal_rawall_extractor import *
+from goal_rawall_no_pre_extractor import *
+from goal_rawself_extractor import *
+from goal_rawself_no_pre_extractor import *
 from vs_rawall_no_pre_extractor import *
 
 class Extractor_Creator(object):

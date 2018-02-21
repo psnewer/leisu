@@ -1,2 +1,10 @@
-./leisu_goal_rawall_solver.prototxt
 ./leisu_vs_rawall_solver.prototxt
+./leisu_vs_rawall_no_pre_solver.prototxt
+./leisu_vs_rawself_solver.prototxt
+./leisu_vs_rawself_no_pre_solver.prototxt
+./leisu_vs_plainself_solver.prototxt
+./leisu_vs_plainself_no_pre_solver.prototxt
+./leisu_goal_rawall_solver.prototxt
+./leisu_goal_rawall_no_pre_solver.prototxt
+./leisu_goal_rawself_solver.prototxt
+./leisu_goal_rawself_no_pre_solver.prototxt

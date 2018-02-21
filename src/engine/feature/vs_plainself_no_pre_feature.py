@@ -24,7 +24,7 @@ class VS_PLAINSELF_NO_PRE_FEATURE(ABSTRACT_FEATURE):
 #		if not os.path.exists(train_dir):
 #			return team_res
 		sql_str = "select distinct serryid from Match where league_id=%d and serryname='%s' order by date desc"%(league_id,serryname)
-		serries = pd.read_sql_query(sql_str,conn).head(2)
+		serries = pd.read_sql_query(sql_str,conn).head(1)
 		serryid = df_serry.iloc[-1]['serryid']
 		if serryid not in serries['serryid'].unique():
 			return team_res
@@ -369,7 +369,7 @@ class VS_PLAINSELF_NO_PRE_FEATURE(ABSTRACT_FEATURE):
 				if end > len(df_team):
 					continue
 				mom_score = 0
-				todate = df_team.iloc[-1]['date']
+				todate = df_team.iloc[end-1]['date']
 				for j in range(first,end):
 					torow = df_team.iloc[j]
 					mom_score += torow['score']

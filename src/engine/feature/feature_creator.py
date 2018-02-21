@@ -15,7 +15,12 @@ from vs_plainself_feature import *
 from vs_plainself_no_pre_feature import *
 from vs_rawall_feature import *
 from vs_rawall_no_pre_feature import *
+from vs_rawself_feature import *
+from vs_rawself_no_pre_feature import *
 from goal_rawall_feature import *
+from goal_rawall_no_pre_feature import *
+from goal_rawself_feature import *
+from goal_rawself_no_pre_feature import *
 from conf import *
 
 class Feature_Creator(object):
