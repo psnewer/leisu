@@ -1,0 +1,23 @@
+# The train/test net protocol buffer definition
+# this follows "ADAM: A METHOD FOR STOCHASTIC OPTIMIZATION"
+net: "/Users/miller/Documents/workspace/leisu/ZOO/leisu_vs_rawself_train.prototxt"
+type: "Adam"
+test_iter: 1000
+test_interval: 5000
+base_lr: 0.0001
+momentum: 0.9
+momentum2: 0.999
+delta: 0.00000001
+weight_decay: 0.0005
+# since Adam dynamically changes the learning rate, we set the base learning
+# rate to a fixed value
+lr_policy: "fixed"
+# Display every 1000 iterations
+display: 2500
+# The maximum number of iterations
+max_iter: 3000000
+# snapshot intermediate results
+snapshot: 50000
+snapshot_prefix: "/Users/miller/Documents/workspace/leisu/ZOO/snap/vs_rawself/"
+# solver mode: CPU or GPU
+solver_mode: CPU
