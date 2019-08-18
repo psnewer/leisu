@@ -15,10 +15,9 @@ import sys
 import string
 from dateutil.parser import parse
 
-oddsDirectory = '/Users/miller/Documents/workspace/leisu/leisu/odds.json'
-idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
-db = '/Users/miller/Desktop/soccer.db'
-errorFile = '/Users/hugomathien/Documents/workspace/footballdata/match_error.txt'
+oddsDirectory = '../../leisu/odds.json'
+idsDirectory = './ids.json'
+db = './soccer.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 cur.execute('''drop table Odds''')

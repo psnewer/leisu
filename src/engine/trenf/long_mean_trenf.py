@@ -13,18 +13,38 @@ class LONG_MEAN_TRENF(ABSTRACT_TRENF):
 	def __init__(self):
 		self.name = 'LONG_MEAN_TRENF'
 		self.params = {}
-		self.params['mean_thresh'] = 2.0
-		self.params['rt'] = 0.5
+		self.params['num_mean'] = 2
+		self.params['with_neu'] = False
 
 	def filter(self,df):
 		delete_row = []
 		for idx,row in df.iterrows():
 			if 'LONG_MEAN_TREND' in row:
-				num_extra = 0
-				for i in row['LONG_MEAN_TREND']:
-					if row['LONG_MEAN_TREND'][i] > self.params['mean_thresh']:
-						num_extra += 1
-				if num_extra < len(row['LONG_MEAN_TREND']) * self.params['rt']: 
-					continue
+				if self.params['with_neu']:
+					std_mean = 100.0
+					num_mean = 0
+					for  i in row['LONG_MEAN_TREND']['limi_odds_with_neu']:
+						if i != 0:
+							if std_mean >= row['LONG_MEAN_TREND']['limi_odds_with_neu'][i]:
+								std_mean = row['LONG_MEAN_TREND']['limi_odds_with_neu'][i]
+							num_mean = num_mean + 1
+							if num_mean > self.params['num_mean']:
+								break
+					current_mean = row['LONG_MEAN_TREND']['limi_odds_with_neu'][0]
+					if current_mean >= std_mean:
+						continue
+				else:
+					std_mean = 100.0
+					num_mean = 0
+					for i in row['LONG_MEAN_TREND']['limi_odds']:
+						if i != 0:
+							if std_mean >= row['LONG_MEAN_TREND']['limi_odds'][i]:
+								std_mean = row['LONG_MEAN_TREND']['limi_odds'][i]
+							num_mean = num_mean + 1
+							if num_mean > self.params['num_mean']:
+								break
+					current_mean = row['LONG_MEAN_TREND']['limi_odds'][0]
+					if current_mean >= std_mean:
+						continue
 			delete_row.append(idx)
 		return delete_row

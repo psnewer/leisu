@@ -47,34 +47,10 @@ class Processor(object):
 		f_exp.close()
 
 	def process(self):
-		f_buckets = codecs.open(gflags.FLAGS.buckets_path, 'r', encoding='utf-8')
-		buckets = json.load(f_buckets)
-		for bucket in buckets:
-			experiment_id = bucket['experiment_id']
-			exp = self.experiments[experiment_id]
-			features = exp['feature']
-			filters = exp['filter']
-			testers = exp['tester']
-			cands = bucket['condition']
-			self.feature_creator.set_features(features)
-			self.filter_creator.set_features(filters)
-			for cand in cands:
-				self.feature_creator.execute(cand)
-		f_buckets.close()
+		pass
 
 	def test(self):
-		f_buckets = codecs.open(gflags.FLAGS.buckets_path, 'r', encoding='utf-8')
-		buckets = json.load(f_buckets)
-		for bucket in buckets:
-			experiment_id = bucket['experiment_id']
-			exp = self.experiments[experiment_id]
-			testers = exp['tester']
-			filters = exp['filter']
-			cands = bucket['condition']
-			for cand in cands:
-				self.tester_creator.execute(cand)
-				self.tester_creator.test(filters,testers,cand)
-		f_buckets.close()
+		pass
 
 	def group(self):
 		grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)

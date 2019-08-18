@@ -10,7 +10,7 @@ import pandas as pd
 import sqlite3
 from conf import *
 
-conn = sqlite3.connect('/Users/miller/Desktop/soccer.db')
+conn = sqlite3.connect('../../db/soccer.db')
 
 if __name__ == "__main__":
 	sql_str = "select * from Match"

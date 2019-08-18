@@ -21,6 +21,7 @@ from goal_rawall_feature import *
 from goal_rawall_no_pre_feature import *
 from goal_rawself_feature import *
 from goal_rawself_no_pre_feature import *
+from asia_odds_feature import *
 from conf import *
 
 class Feature_Creator(object):

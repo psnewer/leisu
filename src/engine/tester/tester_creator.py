@@ -8,6 +8,8 @@ from may_goals_tester import *
 from home_win_tester import *
 from away_win_tester import *
 from draw_tester import *
+from asia_home_tester import *
+from asia_away_tester import *
 from conf import *
 
 class Tester_Creator(object):

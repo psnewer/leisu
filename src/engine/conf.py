@@ -21,7 +21,7 @@ sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/extractor/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/predictor/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/manager/')
 
-conn = sqlite3.connect('/Users/miller/Desktop/soccer.db')
+conn = sqlite3.connect(os.path.split(os.path.realpath(__file__))[0]+'/../db/soccer.db')
 cur = conn.cursor()
 
 conf = {

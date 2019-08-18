@@ -36,12 +36,12 @@ def analysis(df_team,df_tmatch,tester):
 				num_posi += 1
 	return num_posi,num_neg,num_neu
 
-predict_detail = codecs.open('/Users/miller/Documents/workspace/leisu/res/predict_detail.txt','a+',encoding='utf-8')
-filter_trend_file = codecs.open('/Users/miller/Documents/workspace/leisu/src/engine/conf/filter_trend.conf','r',encoding='utf-8')
+predict_detail = codecs.open('../res/predict_detail.txt','a+',encoding='utf-8')
+filter_trend_file = codecs.open('./conf/filter_trend.conf','r',encoding='utf-8')
 filter_trend = json.load(filter_trend_file)
 df_filter = pd.DataFrame(filter_trend)
 filter_trend_file.close()
-walks = os.walk('/Users/miller/Documents/workspace/leisu/res/predict',topdown=False)
+walks = os.walk('../res/predict',topdown=False)
 team_res = []
 for root,dirs,files in walks:
 	if 'predict_res.txt' in files:

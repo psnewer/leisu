@@ -6,3 +6,5 @@ leisu/odds.json
 ZOO/goal_rt.json
 ZOO/snap
 src/db/ids.json
+src/engine/conf/extract.txt
+src/engine/conf/group.txt

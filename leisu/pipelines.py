@@ -15,7 +15,7 @@ class CustomJsonLinesItemExporter(JsonLinesItemExporter):
 
 class MatchPipeline(object):
 	def __init__(self):
-		self.file = open('/Users/miller/Documents/workspace/leisu/leisu/matches.json', 'wb')
+		self.file = open('./leisu/matches.json', 'wb')
 		self.exporter = CustomJsonLinesItemExporter(self.file)
 		self.exporter.fields_to_export = [
 				'continent',
@@ -29,7 +29,10 @@ class MatchPipeline(object):
 				'home_team',
 				'away_team',
 				'home_goal',
-				'away_goal']
+				'away_goal',
+				'home_odds',
+				'away_odds',
+				'pan']
 
 	def process_item(self, item, spider):
 		if spider.name == 'sl':
@@ -38,7 +41,7 @@ class MatchPipeline(object):
 
 class OddsPipeline(object):
 	def __init__(self):
-		self.file = open('/Users/miller/Documents/workspace/leisu/leisu/odds.json', 'wb')
+		self.file = open('./leisu/odds.json', 'wb')
 		self.exporter = CustomJsonLinesItemExporter(self.file)
 		self.exporter.fields_to_export = [
 				'league',

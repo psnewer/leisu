@@ -1,9 +1,9 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append('/Users/miller/Documents/workspace/caffe/python')
+#sys.path.append('../../../../workspace/caffe/python')
 import numpy as np
-import caffe
+#import caffe
 from conf import *
 import pandas as pd
 import sqlite3
@@ -25,7 +25,7 @@ class VS_MODEL_FILTER(ABSTRACT_FILTER):
 		self.params['x_rt'] = False
 		self.params['x_rt_feature'] = ''
 		self.params['x_rt_thresh'] = 0.5
-		rt_data = codecs.open('/Users/miller/Documents/workspace/leisu/ZOO/goal_rt.json','r+',encoding='utf-8')
+		rt_data = codecs.open('../../ZOO/goal_rt.json','r+',encoding='utf-8')
 		self.rt = json.load(rt_data)
 		caffe.set_mode_cpu()
 		self.net = None

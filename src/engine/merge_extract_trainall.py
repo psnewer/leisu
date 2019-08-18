@@ -11,12 +11,12 @@ import codecs
 import numpy as np
 
 if __name__ == "__main__":
-	f_exp = codecs.open('/Users/miller/Documents/workspace/leisu/src/engine/conf/extract.conf', 'r', encoding='utf-8')
+	f_exp = codecs.open('./conf/extract.conf', 'r', encoding='utf-8')
 	data_features = json.load(f_exp)
 	features = data_features['features']
 	experiments = data_features['experiments']
 	all = data_features['all']
-	total_file = '/Users/miller/Documents/workspace/leisu/res/extract/total'
+	total_file = '../res/extract/total'
 	os.system(r'rm -rf %s'%total_file)
 	os.system(r'mkdir %s'%total_file)
 	for feature in features:
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 			train_csv = featurestr + '_' + 'extract_train.csv'
 			test_csv = featurestr + '_' + 'extract_test.csv'
 			all_csv = featurestr + '_' + 'extract_all.csv'
-			walks = os.walk('/Users/miller/Documents/workspace/leisu/res/extract',topdown=False)
+			walks = os.walk('../res/extract',topdown=False)
 			for root,dirs,files in walks:
 				if test_csv in files:
 					train_file = os.path.join(root,train_csv)

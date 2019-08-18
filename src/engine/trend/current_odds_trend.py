@@ -12,7 +12,6 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 	def __init__(self):
 		self.name = 'CURRENT_ODDS_TREND'
 		self.params = {}
-		self.params['with_neu'] = False
 
 	def execute_predict(self,dic_res,trend_log):
 		date_res = []
@@ -21,7 +20,7 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 			if 0 in experiment_dic and experiment_dic[0]:
 				res = {}
 				pre_detail = experiment_dic[0]
-				df_pre = pd.DataFrame(pre_detail)	
+				df_pre = pd.DataFrame(pre_detail)
 				res[self.name] = self.get_every_date_odds(df_pre)
 				res['experiment_id'] = experiment_id
 				date_res.append(res)
@@ -53,20 +52,30 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 		return date_res
 
 	def process(self,res_detail,ind):
-		length = len(res_detail)
 		res = {}
+		res['limi_odds'] = {}
+		res['limi_odds_with_neu'] = {}
+		length = len(res_detail['limi_odds'])
 		for i in range(0,ind):
-			res[i+1] = {}
-			res[i+1]['now'] = res_detail[length-ind+i+1]['now']
-			res[i+1]['all'] = res_detail[length-ind+i+1]['all']
+			res['limi_odds'][i+1] = {}
+			res['limi_odds'][i+1]['now'] = res_detail['limi_odds'][length-ind+i+1]['now']
+			res['limi_odds'][i+1]['all'] = res_detail['limi_odds'][length-ind+i+1]['all']
+		length = len(res_detail['limi_odds_with_neu'])
+		for i in range(0,ind):
+			res['limi_odds_with_neu'][i+1] = {}
+			res['limi_odds_with_neu'][i+1]['now'] = res_detail['limi_odds_with_neu'][length-ind+i+1]['now']
+			res['limi_odds_with_neu'][i+1]['all'] = res_detail['limi_odds_with_neu'][length-ind+i+1]['all']
 		return res
 		
 	def get_every_date_odds(self,df_pre):
 		dates = df_pre['date'].unique()
 		length = len(dates)
 		res = {}
+		res['limi_odds'] = {}
+		res['limi_odds_with_neu'] = {}
 		for i in range(length - 1, -1, -1):
-			res[length - i] = {}
+			res['limi_odds'][length - i] = {}
+			res['limi_odds_with_neu'][length - i] = {}
 			date = dates[i]
 			df_date_now = df_pre[df_pre['date']==date]
 			df_date_all = df_pre[df_pre['date']<=date]
@@ -81,18 +90,14 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 				succ = per_count_now[1]
 			if 2 in per_count_now:
 				fail = per_count_now[2]
-			if self.params['with_neu']:
-				if succ > 0:
-					limi_odds_with_neu = float(succ + fail + neu) / float(succ)
-					res[length - i]['now'] = limi_odds_with_neu
-				else:
-					res[length - i]['now'] = 100.0
+			if succ > 0:
+				limi_odds =  float(succ + fail) / float(succ)
+				limi_odds_with_neu = float(succ + fail + neu) / float(succ)
+				res['limi_odds'][length - i]['now'] = limi_odds
+				res['limi_odds_with_neu'][length - i]['now'] = limi_odds_with_neu
 			else:
-				if succ > 0:
-					limi_odds =  float(succ + fail) / float(succ)
-					res[length - i]['now'] = limi_odds
-				else:
-					res[length - i]['now'] = 100.0
+				res['limi_odds'][length - i]['now'] = 100.0
+				res['limi_odds_with_neu'][length - i]['now'] = 100.0
 			succ = 0
 			fail = 0
 			neu = 0
@@ -102,17 +107,13 @@ class CURRENT_ODDS_TREND(ABSTRACT_TREND):
 				succ = per_count_all[1]
 			if 2 in per_count_all:
 				fail = per_count_all[2]
-			if self.params['with_neu']:
-				if succ > 0:
-					limi_odds_with_neu = float(succ + fail + neu) / float(succ)
-					res[length - i]['all'] = limi_odds_with_neu
-				else:
-					res[length - i]['all'] = 100.0
+			if succ > 0:
+				limi_odds =  float(succ + fail) / float(succ)
+				limi_odds_with_neu = float(succ + fail + neu) / float(succ)
+				res['limi_odds'][length - i]['all'] = limi_odds
+				res['limi_odds_with_neu'][length - i]['all'] = limi_odds_with_neu
 			else:
-				if succ > 0:
-					limi_odds =  float(succ + fail) / float(succ)
-					res[length - i]['all'] = limi_odds
-				else:
-					res[length - i]['all'] = 100.0
+				res['limi_odds'][length - i]['all'] = 100.0
+				res['limi_odds_with_neu'][length - i]['all'] = 100.0
 		return res
 			

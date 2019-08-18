@@ -1,9 +1,9 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append('/Users/miller/Documents/workspace/caffe/python')
+#sys.path.append('../../../../workspace/caffe/python')
 import numpy as np
-import caffe
+#import caffe
 from conf import *
 import pandas as pd
 import sqlite3

@@ -18,9 +18,11 @@ class ABSTRACT_TRENT():
 		for key in params:
 			self.params[key] = params[key]
 
-	def analysis(self,dic_res,df_team,test_id):
+	def analysis(self,dic_res,df_team,test_id,experiment_ids):
 		team_res = []
 		for experiment_id in dic_res:
+			if experiment_id not in experiment_ids:
+				continue
 			experiment_dic = dic_res[experiment_id]
 			for i in experiment_dic:
 				if experiment_dic[i]:
@@ -43,6 +45,8 @@ class ABSTRACT_TRENT():
 						succ = per_count[1]
 					if 2 in per_count:
 						fail = per_count[2]
+					if succ == 0 and fail == 0:
+						continue
 					if succ > 0:
 						limi_odds = float(succ + fail)/float(succ)
 						limi_odds_with_neu = float(succ + fail + neu)/float(succ)

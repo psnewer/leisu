@@ -14,7 +14,7 @@ class OddsSpider(scrapy.Spider):
 	allowed_domains = ['leisu.com']
 	start_urls = ['http://leisu.com/']
 	dataPage = ''
-#	logging.config.fileConfig("/Users/miller/Documents/workspace/leisu/log/logging.conf")
+#	logging.config.fileConfig("./log/logging.conf")
 #	logspider = logging.getLogger("spider")
 
 	def parse(self, response):

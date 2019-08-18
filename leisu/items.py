@@ -21,6 +21,9 @@ class Match(scrapy.Item):
 	away_team = scrapy.Field()
 	home_goal = scrapy.Field()
 	away_goal = scrapy.Field()
+	home_odds = scrapy.Field()
+	away_odds = scrapy.Field()
+	pan = scrapy.Field()
 
 class Odds(scrapy.Item):
 	league = scrapy.Field()

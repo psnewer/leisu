@@ -10,7 +10,7 @@ import sqlite3
 import codecs
 from conf import *
 
-conn = sqlite3.connect('/Users/miller/Desktop/soccer.db')
+conn = sqlite3.connect('../../db/soccer.db')
 
 if __name__ == "__main__":
 	sql_str = "select * from TMatch"
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 		cond_res['league_id'] = league_id
 		cond_res['serryname'] = []
 		where = "league_id=%s"%league_id
-		sql_str = "select distinct serryname from Match where %s"%where
+		sql_str = "select distinct serryname from TMatch where %s"%where
 		df_serry = pd.read_sql_query(sql_str,conn)
 		for i,_serry in df_serry.iterrows():
 			serryname = _serry['serryname']

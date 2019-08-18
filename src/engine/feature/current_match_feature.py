@@ -11,7 +11,7 @@ class CURRENT_MATCH_FEATURE(ABSTRACT_FEATURE):
 	def __init__(self):
 		self.name = 'CURRENT_MATCH_FEATURE'
 		self.params = {}
-		self.params['period']	= 5
+		self.params['period']	= 100 
 
 	def execute_predict(self,league_id,serryid,df_serry,feature_log):
 		sql_str = "select * from Match where league_id=%d and serryid='%s'"%(league_id,serryid)

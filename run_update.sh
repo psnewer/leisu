@@ -14,11 +14,12 @@ function checkError()
 }
 
 #scrapy crawl sl
+scrapy crawl sl -a category='update'
 #
-#cd /Users/miller/Documents/workspace/leisu/src/db
-#sh -x run_update.sh
-#checkError "run_update"
-#
+cd /Users/miller/Documents/workspace/leisu/src/db
+sh -x run_update.sh
+checkError "run_update"
+
 cd /Users/miller/Documents/workspace/leisu/src/engine
 #sh -x run_train.sh
 #checkError "run_train"

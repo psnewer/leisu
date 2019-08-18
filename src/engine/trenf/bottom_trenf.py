@@ -15,17 +15,27 @@ class BOTTOM_TRENF(ABSTRACT_TRENF):
 		self.params = {}
 		self.params['bottom'] = 1.4
 		self.params['rt'] = 0.6
+		self.params['with_neu'] = False
 
 	def filter(self,df):
 		delete_row = []
 		for idx,row in df.iterrows():
 			if 'PEAK_ODDS_TREND' in row:
-				peaks = row['PEAK_ODDS_TREND']
-				num_ebb = 0
-				for i in peaks['min_odds']:
-					if peaks['min_odds'][i] <= self.params['bottom']:
-						num_ebb += 1
-				if num_ebb > self.params['rt'] * len(peaks['min_odds']):
-					continue
+				if self.params['with_neu']:
+					peaks = row['PEAK_ODDS_TREND']['limi_odds_with_neu']
+					num_ebb = 0
+					for i in peaks['min_odds']:
+						if peaks['min_odds'][i] <= self.params['bottom']:
+							num_ebb += 1
+					if num_ebb > self.params['rt'] * len(peaks['min_odds']):
+						continue
+				else:
+					peaks = row['PEAK_ODDS_TREND']['limi_odds']
+					num_ebb = 0
+					for i in peaks['min_odds']:
+						if peaks['min_odds'][i] <= self.params['bottom']:
+							num_ebb += 1
+					if num_ebb > self.params['rt'] * len(peaks['min_odds']):
+						continue
 			delete_row.append(idx)
 		return delete_row

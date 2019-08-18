@@ -17,14 +17,14 @@ import sys
 import string
 from dateutil.parser import parse
 
-warnningFileDirectory = '/Users/miller/Documents/workspace/leisu/log/logww.log'
-idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
-db = '/Users/miller/Desktop/soccer.db'
+warnningFileDirectory = '../../log/logww.log'
+idsDirectory = './ids.json'
+db = './soccer.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 
 def checkError():
-	logging.config.fileConfig("/Users/miller/Documents/workspace/leisu/log/logging.conf")
+	logging.config.fileConfig("../../log/logging.conf")
 	logrect = logging.getLogger("rect")
 	data = codecs.open(warnningFileDirectory,'r',encoding='utf-8')
 	idsdata = codecs.open(idsDirectory,'r',encoding='utf-8')

@@ -13,7 +13,6 @@ class PEAK_ODDS_TREND(ABSTRACT_TREND):
 		self.name = 'PEAK_ODDS_TREND'
 		self.params = {}
 		self.params['bottom'] = 1.4
-		self.params['with_neu'] = False
 		self.params['num_season'] = 4
 
 	def execute_predict(self,dic_res,trend_log):
@@ -51,14 +50,18 @@ class PEAK_ODDS_TREND(ABSTRACT_TREND):
 	def process(self,experiment_dic,pre):
 		res = {}
 		peaks = {}
-		peaks['max_odds'] = {}
-		peaks['min_odds'] = {}
+		peaks['limi_odds'] = {}
+		peaks['limi_odds_with_neu'] = {}
+		peaks['limi_odds']['max_odds'] = {}
+		peaks['limi_odds']['min_odds'] = {}
+		peaks['limi_odds_with_neu']['max_odds'] = {}
+		peaks['limi_odds_with_neu']['min_odds'] = {}
 		if self.params['num_season'] + pre in experiment_dic:
 			for i in range(pre + 1,self.params['num_season'] + pre + 1):
 				if experiment_dic[i]:
 					pre_detail = experiment_dic[i]
 					df_team = pd.DataFrame(pre_detail)
-					date_odds = self.get_every_date_odds(df_team)
+					date_odds = self.get_every_date_odds(df_team)['limi_odds']
 					j = 0
 					while j in date_odds and date_odds[j] == 0:
 						 j += 1
@@ -74,15 +77,40 @@ class PEAK_ODDS_TREND(ABSTRACT_TREND):
 						elif odds > max_odds:
 							max_odds = odds
 					if max_odds > 0.0:
-						peaks['max_odds'][i] = max_odds
+						peaks['limi_odds']['max_odds'][i] = max_odds
 					if min_odds < 100.0:
-						peaks['min_odds'][i] = min_odds
+						peaks['limi_odds']['min_odds'][i] = min_odds
+			for i in range(pre + 1,self.params['num_season'] + pre + 1):
+				if experiment_dic[i]:
+					pre_detail = experiment_dic[i]
+					df_team = pd.DataFrame(pre_detail)
+					date_odds = self.get_every_date_odds(df_team)['limi_odds_with_neu']
+					j = 0
+					while j in date_odds and date_odds[j] == 0:
+						 j += 1
+					if j not in date_odds:
+						continue
+					pre_odds = date_odds[j]
+					max_odds = 0.0
+					min_odds = 100.0
+					for k in range(j+1,len(date_odds)):
+						odds = date_odds[k]
+						if odds < min_odds and max_odds > self.params['bottom']:
+							min_odds = odds
+						elif odds > max_odds:
+							max_odds = odds
+					if max_odds > 0.0:
+						peaks['limi_odds_with_neu']['max_odds'][i] = max_odds
+					if min_odds < 100.0:
+						peaks['limi_odds_with_neu']['min_odds'][i] = min_odds
 		return peaks
 
 	def get_every_date_odds(self,df_pre):
 		dates = df_pre['date'].unique()
 		length = len(dates)
 		res = {}
+		res['limi_odds'] = {}
+		res['limi_odds_with_neu'] = {}
 		for i in range(0, length):
 			date = dates[i]
 			df_date = df_pre[df_pre['date']<=date]
@@ -96,16 +124,12 @@ class PEAK_ODDS_TREND(ABSTRACT_TREND):
 				succ = per_count[1]
 			if 2 in per_count:
 				fail = per_count[2]
-			if self.params['with_neu']:
-				if succ > 0:
-					limi_odds_with_neu = float(succ + fail + neu) / float(succ)
-					res[i] = limi_odds_with_neu
-				else:
-					res[i] = 0
+			if succ > 0:
+				limi_odds =  float(succ + fail) / float(succ)
+				limi_odds_with_neu = float(succ + fail + neu) / float(succ)
+				res['limi_odds'][i] = limi_odds
+				res['limi_odds_with_neu'][i] = limi_odds_with_neu
 			else:
-				if succ > 0:
-					limi_odds =  float(succ + fail) / float(succ)
-					res[i] = limi_odds
-				else:
-					res[i] = 0
+				res['limi_odds'][i] = 0
+				res['limi_odds_with_neu'][i] = 0
 		return res

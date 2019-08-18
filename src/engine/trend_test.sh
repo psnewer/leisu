@@ -8,7 +8,7 @@ d2=$3
 
 python test_db.py $d1 $d2
 
-rm /Users/miller/Documents/workspace/leisu/res/group/*/*/trend_final.txt
+rm ../res/group/*/*/trend_final.txt
 
 tempfifo=$$.fifo        # $$表示当前执行文件的PID
 group_file=$1           # 开始时间

@@ -14,17 +14,29 @@ class HAS_BOTTOM_TRENF(ABSTRACT_TRENF):
 		self.name = 'HAS_BOTTOM_TRENF'
 		self.params = {}
 		self.params['bottom'] = 1.4
+		self.params['with_neu'] = False
 
 	def filter(self,df):
 		delete_row = []
 		for idx,row in df.iterrows():
-			if 'CURRENT_ODDS_TREND' in row:
+			if 'CURRENT_ODDS_TREND' in row and self.params['with_neu']:
 				signal_bottom = False
 				signal_peak = False
-				for i in row['CURRENT_ODDS_TREND']:
-					if row['CURRENT_ODDS_TREND'][i]['all'] >= 1.0 and row['CURRENT_ODDS_TREND'][i]['all'] < self.params['bottom']:
+				for i in row['CURRENT_ODDS_TREND']['limi_odds_with_neu']:
+					if row['CURRENT_ODDS_TREND']['limi_odds_with_neu'][i]['all'] >= 1.0 and row['CURRENT_ODDS_TREND']['limi_odds_with_neu'][i]['all'] < self.params['bottom']:
 						signal_bottom = True
-					elif row['CURRENT_ODDS_TREND'][i]['all'] > self.params['bottom'] and signal_bottom:
+					elif row['CURRENT_ODDS_TREND']['limi_odds_with_neu'][i]['all'] > self.params['bottom'] and signal_bottom:
+						signal_peak = True 
+						break
+				if not (signal_bottom and signal_peak):
+					continue
+			elif 'CURRENT_ODDS_TREND' in row and not self.params['with_neu']:
+				signal_bottom = False
+				signal_peak = False
+				for i in row['CURRENT_ODDS_TREND']['limi_odds']:
+					if row['CURRENT_ODDS_TREND']['limi_odds'][i]['all'] >= 1.0 and row['CURRENT_ODDS_TREND']['limi_odds'][i]['all'] < self.params['bottom']:
+						signal_bottom = True
+					elif row['CURRENT_ODDS_TREND']['limi_odds'][i]['all'] > self.params['bottom'] and signal_bottom:
 						signal_peak = True 
 						break
 				if not (signal_bottom and signal_peak):

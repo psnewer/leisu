@@ -14,10 +14,10 @@ function checkError()
 }
 
 scrapy crawl sl
-#mv /Users/miller/Documents/workspace/leisu/leisu/matches.json /Users/miller/Documents/workspace/leisu/leisu/tmp.json
-#scrapy crawl odds
-#mv /Users/miller/Documents/workspace/leisu/leisu/tmp.json /Users/miller/Documents/workspace/leisu/leisu/matches.json
-
+##mv /Users/miller/Documents/workspace/leisu/leisu/matches.json /Users/miller/Documents/workspace/leisu/leisu/tmp.json
+##scrapy crawl odds
+##mv /Users/miller/Documents/workspace/leisu/leisu/tmp.json /Users/miller/Documents/workspace/leisu/leisu/matches.json
+#
 cd /Users/miller/Documents/workspace/leisu/src/db
 sh -x run_refresh.sh
 checkError "run_refresh"

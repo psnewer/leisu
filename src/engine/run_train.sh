@@ -4,8 +4,8 @@ cd `dirname $0`
 #
 #sh -x run_extract.sh ./conf/extract.txt
 #
-#python merge_extract.py
-#
+python merge_extract.py
+
 tempfifo=$$.fifo        # $$表示当前执行文件的PID
 group_file=$1           # 开始时间
 
@@ -25,7 +25,7 @@ function checkError()
     fi
 }
 
-cd /Users/miller/Documents/workspace/leisu/ZOO
+cd ../../ZOO
 
 while read LINE
 do
@@ -38,7 +38,7 @@ done  < ./solvers.txt
 #wait
 #echo "train done!!!!"
 #
-#cd /Users/miller/Documents/workspace/leisu/res/extract
+#cd ../../res/extract
 #
 #for ((i=1; i<=30; i++))
 #do
@@ -58,15 +58,15 @@ done  < ./solvers.txt
 #				cd $_dir
 #				if [ -f "VS_RAWALL_EXTRACTOR_extract_test.txt" ];
 #				then
-#					caffe test -model /Users/miller/Documents/workspace/leisu/ZOO/leisu_vs_rawall_rt_train.prototxt -weights /Users/miller/Documents/workspace/leisu/ZOO/snap/vs_rawall/_iter_1000000.caffemodel > ./rawall_log.txt 2>&1
+#					caffe test -model ../../../../ZOO/leisu_vs_rawall_rt_train.prototxt -weights ../../../../ZOO/snap/vs_rawall/_iter_1000000.caffemodel > ./rawall_log.txt 2>&1
 #				fi
 #				if [ -f "VS_RAWALL_NO_PRE_EXTRACTOR_extract_test.txt" ];
 #				then
-#					caffe test -model /Users/miller/Documents/workspace/leisu/ZOO/leisu_vs_rawall_no_pre_rt_train.prototxt -weights /Users/miller/Documents/workspace/leisu/ZOO/snap/vs_rawall_no_pre/_iter_1000000.caffemodel > ./rawall_no_pre_log.txt 2>&1
+#					caffe test -model ../../../../ZOO/leisu_vs_rawall_no_pre_rt_train.prototxt -weights ../../../../ZOO/snap/vs_rawall_no_pre/_iter_1000000.caffemodel > ./rawall_no_pre_log.txt 2>&1
 #				fi
 #				if [ -f "GOAL_RAWALL_EXTRACTOR_extract_test.txt" ];
 #				then
-#					caffe test -model /Users/miller/Documents/workspace/leisu/ZOO/leisu_goal_rt_train.prototxt -weights /Users/miller/Documents/workspace/leisu/ZOO/snap/goal_rawall/_iter_1000000.caffemodel > ./goal_log.txt 2>&1
+#					caffe test -model ../../../../ZOO/leisu_goal_rt_train.prototxt -weights ../../../../ZOO/snap/goal_rawall/_iter_1000000.caffemodel > ./goal_log.txt 2>&1
 #				fi
 #				cd ..
 #			fi
@@ -77,10 +77,10 @@ done  < ./solvers.txt
 #
 #wait
 #
-#cd /Users/miller/Documents/workspace/leisu/ZOO
+#cd /Users/miller/Documents/leisu/leisu/ZOO
 #python get_goal_odds.py
 #
-#cd /Users/miller/Documents/workspace/leisu/res/extract
+#cd /Users/miller/Documents/leisu/leisu/res/extract
 #
 #for dir in `ls .`
 #do
@@ -97,12 +97,12 @@ done  < ./solvers.txt
 #                then
 #                read -u1000
 #                {
-#                    cp /Users/miller/Documents/workspace/leisu/ZOO/leisu_goal_fine_solver.prototxt .
-#                    cp /Users/miller/Documents/workspace/leisu/ZOO/leisu_goal_fine_train.prototxt .
-#                    cp /Users/miller/Documents/workspace/leisu/ZOO/leisu_goal_fine_deploy.prototxt .
+#                    cp ../../../../ZOO/leisu_goal_fine_solver.prototxt .
+#                    cp ../../../../ZOO/leisu_goal_fine_train.prototxt .
+#                    cp ../../../../ZOO/leisu_goal_fine_deploy.prototxt .
 #                    mkdir snap
 #                    mkdir snap/goal_rawall_all
-#                    caffe train -solver ./leisu_goal_fine_solver.prototxt -weights /Users/miller/Documents/workspace/leisu/ZOO/snap/goal_rawall/_iter_1000000.caffemodel
+#                    caffe train -solver ./leisu_goal_fine_solver.prototxt -weights ../../../../ZOO/snap/goal_rawall/_iter_1000000.caffemodel
 #                    checkError "train dir $dir $_dir goal"
 #                    echo >&1000
 #                } &

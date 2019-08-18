@@ -40,7 +40,7 @@ class Extractor_Creator(object):
 		condition = json.loads(condition)
 		league_str = str(condition['league_id'])
 		league_cond = 'league_id=' + league_str
-		self.extract_directory = gflags.FLAGS.extract_path + league_str
+		self.extract_directory = os.path.abspath(gflags.FLAGS.extract_path + league_str)
 		os.system(r'mkdir %s'%self.extract_directory)
 		for serryname in condition['serryname']:
 			os.system(r"mkdir '%s'"%(self.extract_directory+'/'+serryname))

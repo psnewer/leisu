@@ -19,7 +19,7 @@ from dateutil.parser import parse
 from conf import *
 
 team_res = []
-predict_detail = codecs.open('/Users/miller/Documents/workspace/leisu/res/predict_tmp.txt','r',encoding='utf-8')
+predict_detail = codecs.open('../res/predict_tmp.txt','r',encoding='utf-8')
 for row in predict_detail:
 	ele = json.loads(row)
 	test_ids = ele['test_id']
@@ -28,7 +28,7 @@ for row in predict_detail:
 		predict_detail_ele['test_id'] = test_id
 		team_res.append(predict_detail_ele)
 df = pd.DataFrame(team_res)
-#df.to_csv('/Users/miller/Documents/workspace/leisu/res/predict_detail.csv',encoding="utf_8_sig")
+#df.to_csv('../res/predict_detail.csv',encoding="utf_8_sig")
 predict_detail.close()
 
 f1 = lambda x: float(x['posi']['sum']+x['neg']['sum'])/float(x['posi']['sum']) if x['posi']['sum']>0 else 0.0
@@ -53,4 +53,4 @@ df_te.rename(columns={'posi':'te_posi','neg':'te_neg','neu':'te_neu'},inplace=Tr
 df_detail = df_te.merge(df_exp,how='inner',on=['league_id','serryname','tester','exp_id'])
 df_detail = df_detail.merge(df_trend,how='inner',on=['league_id','serryname','tester','test_id'])
 df_detail = df_detail.merge(df_league,how='inner',on=['league_id','serryname','tester'])
-df_detail.to_csv('/Users/miller/Documents/workspace/leisu/res/predict_detail.csv')
+df_detail.to_csv('../res/predict_detail.csv')

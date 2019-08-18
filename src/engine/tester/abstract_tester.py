@@ -77,9 +77,9 @@ class ABSTRACT_TESTER():
 				neutral_away_team = row['neutral_away_team']
 				home_teams = None
 				away_teams = None
-				if 1 in row:
+				if 1 in row and row[1]==row[1]:
 					home_teams = row[1]
-				if 2 in row:
+				if 2 in row and row[2]==row[2]:
 					away_teams = row[2]
 				if (self.params['lateral'] == 1):
 					for idx,home_team in enumerate(posi_home_team):

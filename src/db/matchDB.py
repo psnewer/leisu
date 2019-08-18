@@ -15,10 +15,10 @@ import sys
 import string
 from dateutil.parser import parse
 
-matchFileDirectory = '/Users/miller/Documents/workspace/leisu/leisu/matches.json'
-idsDirectory = '/Users/miller/Documents/workspace/leisu/src/db/ids.json'
-tips_file = '/Users/miller/Documents/workspace/leisu/src/db/name_tips.json'
-db = '/Users/miller/Desktop/soccer.db'
+matchFileDirectory = '../../leisu/matches.json'
+idsDirectory = './ids.json'
+tips_file = './name_tips.json'
+db = './soccer.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 cur.execute('''drop table Continent''')
@@ -31,8 +31,8 @@ cur.execute('''CREATE TABLE `Continent` ('id' INTEGER PRIMARY KEY AUTOINCREMENT,
 cur.execute('''CREATE TABLE "Team" (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT UNIQUE)''')
 cur.execute('''CREATE TABLE `Country` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `name` TEXT UNIQUE, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`))''')
 cur.execute('''CREATE TABLE `League` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `country_id` INTEGER, `name` TEXT UNIQUE, FOREIGN KEY(`country_id`) REFERENCES `country`(`id`))''')
-cur.executescript('''CREATE TABLE `Match` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname` TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, 'home_goal' INTEGER, 'away_goal' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX match_index on Match (league_id, season, serryid, serryname, stage, date, home_team_id, away_team_id)''')
-cur.executescript('''CREATE TABLE `TMatch` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname`    TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX tmatch_index on TMatch(league_id, season, serryid, serryname, stage, date, home_team_id, away_team_id)''')
+cur.executescript('''CREATE TABLE `Match` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname` TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, 'home_goal' INTEGER, 'away_goal' INTEGER, 'home_odds' FLOAT, 'away_odds' FLOAT, 'pan' FLOAT, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX match_index on Match (league_id, season, serryid, serryname, stage, date, home_team_id, away_team_id)''')
+cur.executescript('''CREATE TABLE `TMatch` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 'continent_id' INTEGER, `country_id` INTEGER, `league_id` INTEGER, `season`    TEXT, `serryid`    TEXT, `serryname`    TEXT, `stage`    INTEGER, `date` TEXT, 'home_team_id' INTEGER, 'away_team_id' INTEGER, 'home_odds' FLOAT, 'away_odds' FLOAT, 'pan' FLOAT, FOREIGN KEY(`continent_id`) REFERENCES `Continent`(`id`),FOREIGN KEY(`country_id`) REFERENCES `Country`(`id`),FOREIGN KEY(`league_id`) REFERENCES `League`(`id`),FOREIGN KEY(`home_team_id`) REFERENCES `Team`(`id`),FOREIGN KEY(`away_team_id`) REFERENCES `Team`(`id`), CONSTRAINT match_unique UNIQUE (league_id, season, date, home_team_id, away_team_id)); CREATE INDEX tmatch_index on TMatch(league_id, season, serryid, serryname, stage, date, home_team_id, away_team_id)''')
 
 def saveMatch(filepath, idspath):
 	data = open(filepath)
@@ -59,6 +59,9 @@ def saveMatch(filepath, idspath):
 		away_team = rowdata['away_team']
 		home_goal= rowdata['home_goal']
 		away_goal = rowdata['away_goal']
+		home_odds = rowdata['home_odds']
+		away_odds = rowdata['away_odds']
+		pan = rowdata['pan']
 		if serryname is None:
 			serryname = 'default'
 		elif serryname in name_tips:
@@ -67,46 +70,44 @@ def saveMatch(filepath, idspath):
 		if league in name_tips:
 			league = name_tips[league]
 		if continent not in ids:
-			cur.execute('''INSERT OR IGNORE INTO Continent (name) VALUES ( ? )''', (continent, ) )
+			cur.execute('''Insert or Ignore INTO Continent (name) VALUES ( ? )''', (continent, ) )
 			cur.execute('SELECT id FROM Continent WHERE name = ? ', (continent, ))
 			continent_id = cur.fetchone()[0]
 			ids[continent] = continent_id
 		else:
 			continent_id = ids[continent]
 		if country not in ids:
-			cur.execute('''INSERT OR IGNORE INTO Country (name,continent_id) VALUES ( ?, ? )''', (country,continent_id, ) )
+			cur.execute('''Insert or Ignore INTO Country (name,continent_id) VALUES ( ?, ? )''', (country,continent_id, ) )
 			cur.execute('SELECT id FROM Country WHERE name = ? ', (country, ))
 			country_id = cur.fetchone()[0]
 			ids[country] = country_id
 		else:
 			country_id = ids[country]
 		if league not in ids:
-			cur.execute('''INSERT OR IGNORE INTO League (name,country_id) VALUES ( ?, ? )''', (league,country_id, ) )
+			cur.execute('''Insert or Ignore INTO League (name,country_id) VALUES ( ?, ? )''', (league,country_id, ) )
 			cur.execute('SELECT id FROM League WHERE name = ? ', (league, ))
 			league_id = cur.fetchone()[0]
 			ids[league] = league_id
 		else:
 			league_id = ids[league]
 		if home_team not in ids:
-			cur.execute('''INSERT OR IGNORE INTO Team (name) VALUES ( ? )''', (home_team, ) )
+			cur.execute('''Insert or Ignore INTO Team (name) VALUES ( ? )''', (home_team, ) )
 			cur.execute('SELECT id FROM Team WHERE name = ? ', (home_team, ))
 			home_team_id = cur.fetchone()[0]
 			ids[home_team] = home_team_id
 		else:
 			home_team_id = ids[home_team]
 		if away_team not in ids:
-			cur.execute('''INSERT OR IGNORE INTO Team (name) VALUES ( ? )''', (away_team, ) )
+			cur.execute('''Insert or Ignore INTO Team (name) VALUES ( ? )''', (away_team, ) )
 			cur.execute('SELECT id FROM Team WHERE name = ? ', (away_team, ))
 			away_team_id = cur.fetchone()[0]
 			ids[away_team] = away_team_id
 		else:
 			away_team_id = ids[away_team]
 		if (home_goal == -1):
-			cur.execute('''INSERT OR IGNORE INTO TMatch (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,))
+			cur.execute('''Insert or Ignore INTO TMatch (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_odds,away_odds,pan) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_odds,away_odds,pan))
 		else:
-			if date[8:12] < '0700' and continent != u'美洲':
-				date = (datetime.strptime(date[0:8], '%Y%m%d') + timedelta(-1)).strftime('%Y%m%d') + '2359'
-			cur.execute('''INSERT OR IGNORE INTO Match (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal,))
+			cur.execute('''Insert or Ignore INTO Match (continent_id,country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal,home_odds,away_odds,pan) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (continent_id, country_id,league_id,season,serryid,serryname,date,stage,home_team_id,away_team_id,home_goal,away_goal,home_odds,away_odds,pan))
 	idsdata.seek(0,os.SEEK_SET)
 	json.dump(ids,idsdata, ensure_ascii=False)
 	idsdata.close()

@@ -12,11 +12,9 @@ class RANK_LEVEL_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
 		self.name = 'RANK_LEVEL_FILTER'
 		self.params = {}
-		self.params['1_thresh'] = 2.0
-		self.params['3_thresh'] = 1.0
+		self.params['thresh'] = 1
 		self.params['area'] = 1
 		self.params['ignore'] = True
-		self.params['equal'] = True
 
 	def filter(self,df):
 		delete_row = []
@@ -31,13 +29,12 @@ class RANK_LEVEL_FILTER(ABSTRACT_FILTER):
 				to_team = row['toteam']
 				date = row['date']
 				row_to = df.query("team_id==%d & date=='%s'"%(to_team,date)).iloc[-1]
-				if row_to['PRE_RANK_FEATURE'][0]['number'] > 0:
+				if row_to['PRE_RANK_FEATURE'][0]['number'] > 2:
 					rank = float(row['PRE_RANK_FEATURE'][0]['score'])/row['PRE_RANK_FEATURE'][0]['number']
 					rank_to = float(row_to['PRE_RANK_FEATURE'][0]['score'])/row_to['PRE_RANK_FEATURE'][0]['number']
-					if (rank >= self.params['1_thresh'] and rank_to < self.params['1_thresh']) or (rank_to >= self.params['1_thresh'] and rank < self.params['1_thresh']):
-						delete_row.append(idx)	
-					elif (rank <= self.params['3_thresh'] and rank_to > self.params['3_thresh']) or (rank_to <= self.params['3_thresh'] and rank > self.params['3_thresh']):
-						delete_row.append(idx)
+					if (int(rank) - int(rank_to)) <= self.params['thresh']:
+						continue
 			else:
 				delete_row.append(idx)	
+			delete_row.append(idx)
 		return delete_row

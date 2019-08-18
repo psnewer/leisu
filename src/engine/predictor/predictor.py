@@ -16,10 +16,6 @@ class Predictor():
 	def __init__(self,tester_creator,experiments):
 		self.tester_creator = tester_creator
 		self.experiments = experiments
-		trena_thresh_file = codecs.open(gflags.FLAGS.trena_thresh,'r',encoding='utf-8')
-		trena_thresh = json.load(trena_thresh_file)
-		self.trena_thresh = pd.DataFrame(trena_thresh)
-		trena_thresh_file.close()
 
 	def predict(self):
 		sql_str = "select * from TMatch"
@@ -31,17 +27,24 @@ class Predictor():
 			os.system(r'mkdir %s'%predict_directory)
 			feature_res = predict_directory + '/feature_res.txt'
 			predict_res = predict_directory + '/predict_res.txt'
+			predict_sres = predict_directory + '/predict_sres.txt'
 			feature_log = codecs.open(feature_res,'w+',encoding='utf-8')
 			predict_log = codecs.open(predict_res,'a+',encoding='utf-8')
+			predict_slog = codecs.open(predict_sres,'a+',encoding='utf-8')
 			df_league = df.query("league_id==%d"%league)
 			serries = df_league['serryid'].unique()
 			for serry in serries:
 				df_serry = df_league.query("serryid=='%s'"%serry)
-				self.process(league,serry,df_serry,feature_log,predict_log)
+				self.process(league,serry,df_serry,feature_log,predict_log,predict_slog)
 			feature_log.close()
 			predict_log.close()
+			predict_slog.close()
 
 	def pack(self):
+		self.pack_b()
+		self.pack_s()
+
+	def pack_b(self):
 		walks = os.walk(gflags.FLAGS.predict_path,topdown=False)
 		df = pd.DataFrame([])
 		for root,dirs,files in walks:
@@ -56,8 +59,54 @@ class Predictor():
 					league = cur.fetchone()[0]
 					serryname = predict_dic['serryname']
 					tester = predict_dic['tester']
+#					limi = predict_dic['limi']
+					test_id_dic = predict_dic['test_id']
+					for match_res in predict_dic['res']:
+						for test_id in test_id_dic:
+							limi = test_id_dic[test_id]
+							res = {}
+							home_team_id = match_res['home_team_id']
+							away_team_id = match_res['away_team_id']
+							cur.execute('SELECT name FROM Team WHERE id = ? ', (home_team_id, ))
+							home_team = cur.fetchone()[0]
+							cur.execute('SELECT name FROM Team WHERE id = ? ', (away_team_id, ))
+							away_team = cur.fetchone()[0]
+							cur.execute('SELECT date FROM TMatch WHERE home_team_id = ? and away_team_id = ? ', (home_team_id, away_team_id, ))
+							date = cur.fetchone()[0]
+							res['league'] = league
+							res['serryname'] = serryname
+							res['tester'] = tester
+							res['date'] = date
+							res['limi'] = limi
+							res['test_id'] = test_id
+							res['home_team'] = home_team
+							res['away_team'] = away_team
+							team_res.append(res)
+					if team_res:
+						df_ele = pd.DataFrame(team_res).sort_values(by='date')
+						df = df.append(df_ele)
+		if len(df) > 0:
+			df = df.groupby(['home_team','away_team','date','tester','test_id']).apply(lambda x: x.sort_values(by='limi').iloc[0]).reset_index(drop=True)
+			df = df.sort_values(by=['date','league']).reset_index(0,drop=True)
+		df.to_csv(gflags.FLAGS.predict_summary,encoding="utf_8_sig")
+
+	def pack_s(self):
+		walks = os.walk(gflags.FLAGS.predict_path,topdown=False)
+		df = pd.DataFrame([])
+		for root,dirs,files in walks:
+			if 'predict_sres.txt' in files:
+				absfile = os.path.join(root,'predict_sres.txt')
+				predictdata = codecs.open(absfile,'r',encoding='utf-8')
+				for row in predictdata:
+					team_res = []
+					predict_dic = json.loads(row,encoding='utf-8')
+					league_id = predict_dic['league_id']
+					cur.execute('SELECT name FROM League WHERE id = ? ', (league_id, ))
+					league = cur.fetchone()[0]
+					serryname = predict_dic['serryname']
+					tester = predict_dic['tester']
 					limi = predict_dic['limi']
-					limi_with_neu = predict_dic['limi_with_neu']
+					test_id = predict_dic['test_id']
 					for match_res in predict_dic['res']:
 						res = {}
 						home_team_id = match_res['home_team_id']
@@ -73,7 +122,7 @@ class Predictor():
 						res['tester'] = tester
 						res['date'] = date
 						res['limi'] = limi
-						res['limi_with_neu'] = limi_with_neu
+						res['test_id'] = test_id
 						res['home_team'] = home_team
 						res['away_team'] = away_team
 						team_res.append(res)
@@ -84,12 +133,17 @@ class Predictor():
 						df_ele = df_ele[df_ele['date'] <= date_2]
 						df = df.append(df_ele)
 		if len(df) > 0:
-			df = df.groupby(['home_team','away_team','date','tester']).apply(lambda x: x.sort_values(by='limi').iloc[0]).reset_index(drop=True)
+			df = df.groupby(['home_team','away_team','date','tester']).apply(lambda x: x.sort_values(by='limi',ascending = False).iloc[0]).reset_index(drop=True)
 			df = df.groupby(['league']).apply(lambda x: x.sort_values(by='date')).reset_index(0,drop=True)
-		df.to_csv(gflags.FLAGS.predict_summary,encoding="utf_8_sig")
+		df.to_csv(gflags.FLAGS.predict_s_summary,encoding="utf_8_sig")
 
-	def process(self,league_id,serryid,df,feature_log,predict_log):
+	def process(self,league_id,serryid,df,feature_log,predict_log,predict_slog):
 		exp_ids = self.get_experiment(league_id,serryid)
+		self.execute(exp_ids,league_id,serryid,df,feature_log,predict_log)
+		exp_ids = self.get_sexperiment(league_id,serryid)
+		self.execute(exp_ids,league_id,serryid,df,feature_log,predict_slog)
+
+	def execute(self,exp_ids,league_id,serryid,df,feature_log,predict_log):
 		features = []
 		filters = []
 		testers = []
@@ -105,13 +159,12 @@ class Predictor():
 			exp_id = int(exp_id_str)
 			exp_dic = exp_ids[exp_id_str]
 			exp = self.experiments[exp_id]
-			limi = exp_dic['limi_odds']
-			limi_with_neu = limi
+			test_id = exp_dic['test_id']
 			filters = exp['filter']
 			tester = exp['tester'][0]
 			tester_kind = exp_dic['kind']
 			df_filter = self.tester_creator.get_filtered(filters)
-			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,limi,limi_with_neu,exp_id,predict_log)
+			self.analysis(df,df_filter,self.tester_creator.testers[tester],tester_kind,test_id,exp_id,predict_log)
 	
 	def get_experiment(self,league_id,serryid):
 		cur.execute("SELECT serryname FROM TMATCH WHERE league_id = %d and serryid = '%s'"%(league_id, serryid))
@@ -124,35 +177,38 @@ class Predictor():
 		kind_list = json.load(kind_data)
 		trend_data = codecs.open(trend_path,'r',encoding='utf-8')	
 		exp_cand = json.load(trend_data)
-		del_exps = []
 		for exp_id in exp_cand:
 			for kind_name in kind_list:
 				exps = kind_list[kind_name]
 				if int(exp_id) in exps:
-					league = cur.execute("select name from League where id=%d"%league_id).fetchone()[0]
-					rows = self.trena_thresh[(self.trena_thresh['league']==league)]
-					if len(rows) == 0:
-						if kind_name=='min_goal' or kind_name=='may_goal':
-							exp_cand[exp_id]['kind'] = kind_name
-						elif kind_name=='home_win' or kind_name=='away_win':
-							exp_cand[exp_id]['kind'] = kind_name
-						else:
-							del_exps.append(exp_id)
-					else:
-						if (kind_name=='min_goal' or kind_name=='may_goal') and rows.iloc[0][kind_name] >= exp_cand[exp_id]['limi_odds']:
-							exp_cand[exp_id]['kind'] = kind_name
-						elif kind_name=='home_win' or kind_name=='away_win':
-							exp_cand[exp_id]['kind'] = kind_name
-						else:
-							del_exps.append(exp_id)
+					exp_cand[exp_id]['kind'] = kind_name
 					break
-		for exp_id in del_exps:
-			del exp_cand[exp_id]
 		kind_data.close()
 		trend_data.close()	
 		return exp_cand
 
-	def analysis(self,df,df_team,tester,tester_kind,limi,limi_with_neu,exp_id,predict_log):
+	def get_sexperiment(self,league_id,serryid):
+		cur.execute("SELECT serryname FROM TMATCH WHERE league_id = %d and serryid = '%s'"%(league_id, serryid))
+		serryname = cur.fetchone()[0]
+		trend_path=gflags.FLAGS.group_path + str(league_id) + '/' + serryname + '/strend_final.txt'
+		if (not os.path.isfile(trend_path)):
+			return []
+		kind_path = gflags.FLAGS.kind_file
+		kind_data = codecs.open(kind_path,'r',encoding='utf-8')
+		kind_list = json.load(kind_data)
+		trend_data = codecs.open(trend_path,'r',encoding='utf-8')	
+		exp_cand = json.load(trend_data)
+		for exp_id in exp_cand:
+			for kind_name in kind_list:
+				exps = kind_list[kind_name]
+				if int(exp_id) in exps:
+					exp_cand[exp_id]['kind'] = kind_name
+					break
+		kind_data.close()
+		trend_data.close()	
+		return exp_cand
+
+	def analysis(self,df,df_team,tester,tester_kind,test_id,exp_id,predict_log):
 		if len(df) < 1 or df_team is None or (df_team is not None and len(df_team) < 1):
 			return
 		league_id = df.iloc[-1]['league_id']
@@ -161,8 +217,8 @@ class Predictor():
 		team_res['league_id'] = league_id
 		team_res['serryname'] = serryname
 		team_res['tester'] = tester_kind
-		team_res['limi'] = limi
-		team_res['limi_with_neu'] = limi_with_neu
+#		team_res['limi'] = limi
+		team_res['test_id'] = test_id
 		team_res['exp_id'] = exp_id
 		team_res['res'] = []
 		res_list = []
@@ -185,9 +241,9 @@ class Predictor():
 			date = row['date']
 			home_teams_posi = None
 			away_teams_posi = None
-			if 1 in row:
+			if 1 in row and row[1]==row[1]:
 				home_teams_posi = row[1]
-			if 2 in row:
+			if 2 in row and row[2]==row[2]:
 				away_teams_posi = row[2]
 			home_teams = row['home_teams']
 			away_teams = row['away_teams']

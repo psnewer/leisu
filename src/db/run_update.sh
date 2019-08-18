@@ -16,8 +16,8 @@ function checkError()
 python updateDB.py
 checkError "updateDB"
 
-cd /Users/miller/Documents/workspace/leisu/src/engine/script
+cd ../engine/script
 python get_groupcondition.py
 checkError "get_groupcondition"
-python get_extractorcondition.py
-checkError "get_extractorcondition.py"
+#python get_extractorcondition.py
+#checkError "get_extractorcondition.py"

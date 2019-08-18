@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import codecs
 import json
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import time
+import re
 import logging
 import logging.config
 import datetime
@@ -11,151 +15,205 @@ from leisu.items import Match,Odds
 
 class SlSpider(scrapy.Spider):
 	name = 'sl'
-	allowed_domains = ['leisu.com']
-	start_urls = ['http://leisu.com/']
-	dataPage = ''
-	logging.config.fileConfig("/Users/miller/Documents/workspace/leisu/log/logging.conf")
+	logging.config.fileConfig("./log/logging.conf")
 	logspider = logging.getLogger("spider")
 
+	def __init__(self,category=None,*args,**kwargs):
+		self.allowed_domains = ['zq.win007.com']
+		self.start_urls = ['http://zq.win007.com/jsData/infoHeader.js']
+		self.dataPage = ''
+        	self.cand_data = codecs.open("./src/db/leagues.conf",'r+',encoding='utf-8')
+        	self.cand = json.load(self.cand_data)
+		self.category = category
+
 	def parse(self, response):
-		href = response.xpath(u"//li/a[text()[contains(.,'资料库')]]/@href").re_first("//(.+)")
-		self.dataPage = "https://" + href
+		self.dataPage = "http://zq.win007.com"
 		self.logspider.info(self.dataPage)
-		yield scrapy.Request(self.dataPage, callback=self.parseData)
-
-	def parseData(self, response):
+		base_url = 'http://zq.win007.com/cn/{}/{}/{}.html'
+		#base_url = 'http://zq.win007.com/jsData/matchResult/{}/s{}.js?version={}'
 		#获取洲际
-		sZ = response.xpath(u"//div[@class='lallrace_nav_wrap']/ul/li/a/text()").extract()
-		sA = response.xpath(u"//div[@class='match-content']")
-		parts1 = sA.xpath(u".//div[contains(@class,'match-class')]")
-		for idx,part1 in enumerate(parts1):
-			sB = part1.xpath(u".//div[@class='country-match']/div/div/ul/li")
-			continent = sZ[idx]
-			for sC in sB:
-				country = sC.xpath(u".//a/text()").re_first('(.+)')
-				sD = sC.xpath(u".//div/a")
-				for _league in sD:
-					league = _league.xpath(".//text()").re_first('(.+)')
-					href = _league.xpath(".//@href").re_first('(.+)')
-					url = self.dataPage + href
-					yield scrapy.Request(url, callback=self.parseLeague, meta={'continent':continent, 'country':country, 'league':league})
-
-	def parseLeague(self, response):
-		continent = response.meta['continent']
-		country = response.meta['country']
-		league = response.meta['league']
-		sA = response.xpath(u"//div/ul/li/a[text()[contains(.,'赛季')]]")
-		for sB in sA:
-			season = sB.xpath(u".//text()").re_first('(.+)')
-			href = sB.xpath(u".//@href").re_first('/(.+)')
-			url = self.dataPage + href
-			yield scrapy.Request(url, callback=self.parseSeason, meta={'season':season, 'continent':continent, 'country':country, 'league':league})
-	
+		continent_info = {'1':u'欧洲', '2':u'美洲', '3':u'亚洲', '4':u'大洋洲', '5':u'非洲'}
+		str = response.text
+		league_line = re.findall(r'= (\[.*?\]\])',str)
+		for line in league_line:
+			league_info = json.loads(line,encoding='utf-8')
+			continent_id = league_info[3]
+			continent = continent_info[continent_id]
+			country = league_info[1]
+			leagues = league_info[4]
+			if country not in self.cand:
+				continue
+			for league_line in leagues:
+				league_strs = league_line.split(',')
+				league_id = league_strs[0]
+				league = league_strs[1]
+				match_type = league_strs[3]
+				if league not in self.cand[country]:
+					continue
+#				if league != u'日职乙':
+#					continue
+				if match_type == '0':
+					match_type = 'League'
+				else:
+					match_type = 'SubLeague'
+				for idx,season in enumerate(league_strs[4:]):
+					if self.category is not None and idx != 0:
+						continue
+					url = base_url.format(match_type,season,league_id)
+#					url = 'http://zq.win007.com/cn/SubLeague/2009/284.html'
+#					league_id = '284'
+#					season = '2009'
+					yield scrapy.Request(url, callback=self.parseSeason, meta={'continent':continent, 'country':country, 'league':league, 'season':season, 'league_id':league_id, 'idx':idx})
+												 
 	def parseSeason(self, response):
 		continent = response.meta['continent']
 		country = response.meta['country']
 		league = response.meta['league']
 		season = response.meta['season']
-		today=time.strftime("%Y%m%d", time.localtime())
-		tomorrow = (datetime.today() + timedelta(3)).strftime('%Y%m%d')
-		sA = response.xpath(u"//div[contains(@id,'stage-content')]")
-		for _sB in sA:
-			serryid = _sB.xpath(u".//@data-id").re_first('(.+)')
-			serryname = response.xpath(u"//ol/li[contains(@data-id,'%s')]/@data-name"%serryid).re_first('(.+)')
-			sB = _sB.xpath(u".//table[contains(@class,'schedule-table')]")
-			sC = sB.xpath('.//tr')[1:]
-			date_reserve = ''
-			for sD in sC:
-				stage = sD.xpath(u".//@data-round").re_first('(.+)')
-				date = sD.xpath(u".//@data-date").re_first('(.+)')
-				_time = sD.xpath(u".//td[contains(@class,'td-date')]/text()").re_first('(.+)')
-				if _time is None:
-					_time = sD.xpath(u".//td[contains(@class,'bd-r')]/text()").re_first('(.+)')
-				if _time is None:
-					_time = sD.xpath(u".//td[contains(@class,'text-a-l')]/text()").re_first('(.+)')
-					if _time is None:
-						continue
-					else:
-						_time = _time.split(' ')[0]
-					date_reserve = ''.join(_time.split("/"))
-					continue
-				ts = _time.strip().split("  ")
-				ts0 = ts[0].split(":")
-				if (len(date) < 8 and len(ts) == 2):
-					date = ''.join(ts[1].split("/"))
-				if (len(date) < 8):
-					date = date_reserve
-					if (len(date) < 8):
-						self.logspider.warn(continent+" "+country+" "+league+" "+season+" "+stage)
-						continue
-				if (date > tomorrow):
-					continue
-				_time = date + ts0[0] + ts0[1]
-				teams = sD.xpath(u".//td/a/font/span/text()").extract()
-				scores = sD.xpath(u".//td/span/text()").extract()
-				if (len(teams) < 2 or len(scores) < 2):
-					if (date < today or len(teams) < 2):
-						clause = continent+" "+country+" "+league+" "+season+" "+serryid+" "+stage+" "+' '.join(teams)+" "+' '.join(scores)
-						self.logspider.warn(clause)
-						continue
-					else:
-						scores = [-1,-1]
-				home_team = teams[0]
-				away_team = teams[1]
-				home_goal = scores[0]
-				away_goal = scores[1]
-				match = Match()
-				match['continent'] = continent
-				match['country'] = country
-				match['league'] = league
-				match['season'] = season
-				match['stage'] = stage
-				match['date'] = _time
-				match['serryid'] = serryid
-				match['serryname'] = serryname
-				match['home_team'] = home_team
-				match['away_team'] = away_team
-				match['home_goal'] = home_goal
-				match['away_goal'] = away_goal
-				yield match
+		league_id = response.meta['league_id']
+		idx = response.meta['idx']
+		href = response.xpath(u"//script[contains(@src,'matchResult')]/@src").re_first('(.+)')
+		url = self.dataPage + href
+		yield scrapy.Request(url, callback=self.parseSubLeague, meta={'continent':continent, 'country':country, 'league':league, 'season':season, 'league_id':league_id, 'idx':idx}, dont_filter = True)
 
-	def parseTeam(self, response):
-		self.driver.get(response.url)
+	def parseSubLeague(self, response):
 		continent = response.meta['continent']
 		country = response.meta['country']
 		league = response.meta['league']
 		season = response.meta['season']
-		serryid = response.meta['serryid']
+		league_id = response.meta['league_id']
+		idx = response.meta['idx']
+		today=time.strftime("%Y%m%d%H%M", time.localtime())
+		tomorrow = (datetime.today() + timedelta(7)).strftime('%Y%m%d%H%M')
+		yesterday = (datetime.today() + timedelta(-7)).strftime('%Y%m%d%H%M')
+		if 'arrSubLeague' in response.text:
+			arr_subleague = re.search(r'arrSubLeague = (\[\[.*?\]\])',response.text).group(1)
+			subleagues = eval(arr_subleague)
+			base_url = 'http://zq.win007.com/jsData/matchResult/{}/s{}.js?version={}'
+			for sub in subleagues:
+				if u'升级' not in sub[1] and u'降级' not in sub[1] and u'附加' not in sub[1] and u'冠军' not in sub[1] and u'决赛' not in sub[1]:
+					serryname = sub[1]
+					sub_id = sub[0]
+					serryid = league_id + '_' + str(sub_id)
+					req_time = time.strftime('%Y%m%d%H', time.localtime())
+					url = base_url.format(season,serryid,req_time)
+					yield scrapy.Request(url, callback=self.parseRound, meta={'continent':continent, 'country':country, 'league':league, 'season':season, 'serryname':serryname, 'serryid':serryid + '_'+ str(season), 'idx':idx}, dont_filter = True)
+		else:
+			list_all_team = self.team_data_id(response)
+			rounds = re.findall(r'jh\[(.*?)\] = (\[\[.*?\]\])',response.text)
+			for round_str in rounds:
+				if len(round_str) < 2:
+					continue
+				stage = round_str[0].strip('"').split('_')[1]
+				matches = re.findall(r'\[(.*?)\]',round_str[1].replace('[[','[').replace(']]',']'))
+				for match_str in matches:
+					match_info = match_str.split(',')
+					if len(match_info) < 11:
+						continue
+					date = ''.join(re.findall(r'(\d+)',match_info[3]))
+					if date > tomorrow:
+						continue
+					if (int(match_info[4]) not in list_all_team or int(match_info[5]) not in list_all_team) or len(date)==0:
+						continue
+					home_team = list_all_team[int(match_info[4])]
+					away_team = list_all_team[int(match_info[5])]
+					scores = match_info[6].strip("'").split('-')
+					if len(scores) < 2 and idx == 0:
+						home_goal = -1
+						away_goal = -1
+					elif len(scores) < 2 and idx > 0:
+						self.logspider.warn(continent+" "+country+" "+league+" "+season+" "+stage)
+						continue
+					else:
+						home_goal = scores[0]
+						away_goal = scores[1]
+					if home_goal < 0 and date < today:
+						continue
+					if self.category is not None:
+						if date < yesterday:
+							continue
+					home_odds = '0.9'
+					away_odds = '0.9'
+					pan = match_info[10]
+					if len(pan) == 0:
+						continue
+					match = Match()
+					match['continent'] = continent
+					match['country'] = country
+					match['league'] = league
+					match['season'] = season
+					match['stage'] = stage
+					match['date'] = date
+					match['serryid'] = league_id + '_' + str(season)
+					match['serryname'] = u'联赛'
+					match['home_team'] = home_team
+					match['away_team'] = away_team
+					match['home_goal'] = home_goal
+					match['away_goal'] = away_goal
+					match['home_odds'] = home_odds
+					match['away_odds'] = away_odds
+					match['pan'] = pan
+					yield match
+
+	
+	def team_data_id(self,response):
+		# 获取每个队伍的id和队名
+		team_str = re.search(r'arrTeam = (\[\[.*?\]\])',response.text).group(1)
+		teams = eval(team_str)
+		list_all_team = {}
+		for item in teams:
+			list_all_team[item[0]]=item[1]
+		return list_all_team		
+
+	def parseRound(self, response):
+		continent = response.meta['continent']
+		country = response.meta['country']
+		league = response.meta['league']
+		season = response.meta['season']
+		idx = response.meta['idx']
 		serryname = response.meta['serryname']
-		stage = response.meta['stage']
-		date = response.meta['date']
-		teams = response.meta['teams']
-		_date = datetime.strptime(date[0:8], '%Y%m%d').strftime('%Y-%m-%d')
-		sA = self.driver.find_elements_by_xpath(u"//table[contains(@id,'schedules-table')]/tbody/tr/td[text()[contains(.,'%s')]]"%_date)
-		times = 0
-		while sA == [] and times < 100:
-			times += 1
-			try:
-				next_page = self.driver.find_element_by_xpath(u"//div[contains(@class,'clearfix-row')]/div[@id='schedules-pagination']/a[text()[contains(.,'下一页')]]")
-				if 'disable' in next_page.get_attribute("class"):
-					break
-				next_page.click()
-			except:
-				print "#####Arrive the last page.#####"
-				break
-			wait = WebDriverWait(self.driver, 2)
-			wait.until(lambda driver:driver.find_element_by_xpath(u"//table[contains(@id,'schedules-table')]"))
-			sA = self.driver.find_elements_by_xpath(u"//table[contains(@id,'schedules-table')]/tbody/tr/td[text()[contains(.,'%s')]]"%_date)
-		if sA:
-			sB = sA[0].find_elements_by_xpath("../td/b")
-			if sB:
-				scores = sB[0].text.split('-')
-				if len(scores) != 2 or (len(scores) > 0 and scores[0] == ''):
-					scores = [-1,-1]
-				home_team = teams[0]
-				away_team = teams[1]
-				home_goal = scores[0]
-				away_goal = scores[1]
+		serryid = response.meta['serryid']
+		list_all_team = self.team_data_id(response)
+		rounds = re.findall(r'jh\[(.*?)\] = (\[\[.*?\]\])',response.text)
+		today=time.strftime("%Y%m%d%H%M", time.localtime())
+		tomorrow = (datetime.today() + timedelta(7)).strftime('%Y%m%d%H%M')
+		yesterday = (datetime.today() + timedelta(-7)).strftime('%Y%m%d%H%M')
+		for round_str in rounds:
+			if len(round_str) < 2:
+				continue
+			stage = round_str[0].strip('"').split('_')[1]
+			matches = re.findall(r'\[(.*?)\]',round_str[1].replace('[[','[').replace(']]',']'))
+			for match_str in matches:
+				match_info = match_str.split(',')
+				if len(match_info) < 11:
+					continue
+				date = ''.join(re.findall(r'(\d+)',match_info[3]))
+				if date > tomorrow:
+					continue
+				if (int(match_info[4]) not in list_all_team or int(match_info[5]) not in list_all_team) or len(date)==0:
+					continue
+				home_team = list_all_team[int(match_info[4])]
+				away_team = list_all_team[int(match_info[5])]
+				scores = match_info[6].strip("'").split('-')
+				if len(scores) < 2 and idx == 0:
+					home_goal = -1
+					away_goal = -1
+				elif len(scores) < 2 and idx > 0:
+					self.logspider.warn(continent+" "+country+" "+league+" "+season+" "+stage)
+					continue
+				else:
+					home_goal = scores[0]
+					away_goal = scores[1]
+				if home_goal < 0 and date < today:
+					continue
+				if self.category is not None:
+					if date < yesterday:
+						continue
+				home_odds = '0.9'
+				away_odds = '0.9'
+				pan = match_info[10]
+				if len(pan) == 0:
+					continue
 				match = Match()
 				match['continent'] = continent
 				match['country'] = country
@@ -169,4 +227,9 @@ class SlSpider(scrapy.Spider):
 				match['away_team'] = away_team
 				match['home_goal'] = home_goal
 				match['away_goal'] = away_goal
+				match['home_odds'] = home_odds
+				match['away_odds'] = away_odds
+				match['pan'] = pan
 				yield match
+
+

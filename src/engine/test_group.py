@@ -11,10 +11,10 @@ import codecs
 from conf import *
 
 if __name__ == "__main__":
-	walks = os.walk('/Users/miller/Documents/workspace/leisu/res/group',topdown=False)
+	walks = os.walk('../res/group',topdown=False)
 	for root,dirs,files in walks:
 		if 'group_detail.txt' in files:
-			f_kind = codecs.open('/Users/miller/Documents/workspace/leisu/src/engine/conf/kinds.txt','r',encoding='utf-8')
+			f_kind = codecs.open('./conf/kinds.txt','r',encoding='utf-8')
 			kinds = json.load(f_kind)
 			group_detail_file = os.path.join(root,'group_detail.txt')
 			group_final_file = os.path.join(root,'group_final.txt')

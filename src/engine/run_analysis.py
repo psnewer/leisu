@@ -3,8 +3,8 @@
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-sys.path.append('/Users/miller/Documents/workspace/caffe/python')
-import caffe
+#sys.path.append('../../../../workspace/caffe/python')
+#import caffe
 import gflags
 from conf import *
 from processor import *
@@ -15,6 +15,7 @@ gflags.DEFINE_string('experiment_path', '', 'experiment.conf')
 gflags.DEFINE_string('experiment_fix', '', 'fix_experiment.conf')
 gflags.DEFINE_string('trend_path', '', 'trend.conf')
 gflags.DEFINE_string('trena_path', '', 'trena.conf')
+gflags.DEFINE_string('strena_path', '', 'strena.conf')
 gflags.DEFINE_string('trena_thresh', '', 'trena_thresh.conf')
 gflags.DEFINE_string('extract_conf', '', 'extract.conf')
 gflags.DEFINE_string('fix_leagues', '', 'fix leagues')
@@ -32,6 +33,7 @@ gflags.DEFINE_string('group_path', '', 'group path')
 gflags.DEFINE_string('extract_path', '', 'extract path')
 gflags.DEFINE_string('predict_path', '', 'predict path')
 gflags.DEFINE_string('predict_summary', '', 'predict summary')
+gflags.DEFINE_string('predict_s_summary', '', 'predict sell summary')
 gflags.DEFINE_string('league_cond', '', 'league cond')
 gflags.DEFINE_string('kind_file', '', 'kind file')
 gflags.DEFINE_string('kind_trend', '', 'kind trend')

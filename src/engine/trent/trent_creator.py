@@ -28,12 +28,10 @@ class Trent_Creator(object):
 	def get_filtered(self,filter_list):
 		return self.trenf_creator.get_filtered(filter_list)
 
-	def test(self,filters,dic_res,test_id):
+	def test(self,filters,dic_res,experiment_ids,test_id):
 		df_filter = self.trenf_creator.get_filtered(filters)
 		if df_filter is not None and len(df_filter) > 0:
-			return self.tester.analysis(dic_res,df_filter,test_id)
+			return self.tester.analysis(dic_res,df_filter,test_id,experiment_ids)
 		else:
 			return []
 
-	def filter_experiment(self):
-		pass						

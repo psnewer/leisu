@@ -22,7 +22,12 @@ class ROUND_RT_TREND(ABSTRACT_TREND):
 				res = {}
 				pre_detail = experiment_dic[0]
 				df_pre = pd.DataFrame(pre_detail)	
-				res[self.name] = self.get_rt(df_pre)
+				league_id = df_pre.iloc[0]['league_id']
+				serryname = df_pre.iloc[0]['serryname']
+				serryid = df_pre.iloc[0]['serryid']
+				cur.execute("SELECT date FROM TMatch WHERE league_id = %d and serryname = '%s' and serryid = %s order by date"%(league_id,serryname,serryid))
+				date = cur.fetchone()[0]
+				res[self.name] = self.get_rt(df_pre,date)
 				res['experiment_id'] = experiment_id
 				date_res.append(res)
 				res_str = json.dumps(res,cls=GenEncoder)
@@ -46,18 +51,17 @@ class ROUND_RT_TREND(ABSTRACT_TREND):
 						res['pre'] = pre
 						res['date'] = date
 						df_date = df_pre[df_pre['date']<=date]
-						res[self.name] = self.get_rt(df_date)
+						res[self.name] = self.get_rt(df_date,date)
 						date_res.append(res)
 						res_str = json.dumps(res,cls=GenEncoder)
 						trend_log.write(res_str+'\n')
 		return date_res
 
-	def get_rt(self,df_pre):
+	def get_rt(self,df_pre,date):
 		res = {}
 		row = df_pre.iloc[-1]
 		home_team_id = row['home_team']
 		away_team_id = row['away_team']
-		date = row['date']
 		league_id = row['league_id']
 		serryname = row['serryname']
 		serryid = row['serryid']

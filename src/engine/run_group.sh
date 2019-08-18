@@ -17,7 +17,7 @@ do
                 mode=$mode"update"
                 ;;
 			 r)
-				rm -rf /Users/miller/Documents/workspace/leisu/res/group/*
+				rm -rf ../../res/group/*
 				;;
              ?) 
             	echo "unkonw argument"
@@ -42,7 +42,7 @@ function checkError()
     fi
 }
 
-for ((i=1; i<=30; i++))
+for ((i=1; i<=3; i++))
 do
     echo >&100
 done

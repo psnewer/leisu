@@ -17,7 +17,14 @@ from vs_model_filter import *
 from goal_model_filter import *
 from model_filter import *
 from counter_vs_filter import *
-from rank_win_filter import *
+from win_score_filter import *
+from s_win_score_filter import *
+from asia_odds_filter import *
+from rank_delta_filter import *
+from rank_thresh_filter import *
+from current_win_filter import *
+from mean_asia_filter import *
+from lose_veri_filter import *
 
 class Filter_Creator(object):
 	def __init__(self,str_filters):
