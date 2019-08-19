@@ -1,0 +1,92 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+run_group  failed
+{ "league_id": 1, "serryname": [ "A组", "B组", "B组附加" ] }
+{ "league_id": 1, "serryname": [ "A组", "B组", "B组附加" ] }
+{ "league_id": 4, "serryname": [ "准决赛", "决赛", "default" ] }
+{ "league_id": 7, "serryname": [ "default", "附加赛", "附加赛决赛" ] }
+{ "league_id": 5, "serryname": [ "default", "附加赛", "附加赛决赛" ] }
+{ "league_id": 6, "serryname": [ "default", "附加赛", "附加赛决赛", "附加赛1" ] }
+{ "league_id": 10, "serryname": [ "default", "附加赛", "附加赛决赛" ] }
+{ "league_id": 11, "serryname": [ "default", "附加赛", "附加赛决赛" ] }
+{ "league_id": 13, "serryname": [ "default" ] }
+{ "league_id": 15, "serryname": [ "资格赛1", "资格赛2", "分组赛", "十六强", "半准决赛", "准决赛", "决赛" ] }
+{ "league_id": 14, "serryname": [ "default" ] }
+{ "league_id": 2, "serryname": [ "default" ] }
+{ "league_id": 21, "serryname": [ "default", "决赛", "淘汰賽", "附加赛", "准决赛" ] }
+{ "league_id": 22, "serryname": [ "default", "冠军附加赛", "A组", "B组", "降级附加赛" ] }
+{ "league_id": 27, "serryname": [ "default", "春季半准决赛", "春季准决赛", "秋季准决赛", "秋季决赛", "春季决赛", "秋季半准决赛", "附加赛", "春季附加赛", "秋季附加赛" ] }
+{ "league_id": 31, "serryname": [ "内陆联赛", "沿海联赛", "决赛", "附加赛", "附加决赛", "default" ] }
+{ "league_id": 30, "serryname": [ "default", "附加赛", "附加赛决赛" ] }
+{ "league_id": 28, "serryname": [ "default", "春季半准决赛", "春季准决赛", "春季决赛", "秋季半准决赛", "秋季准决赛", "秋季决赛", "附加赛" ] }
+{ "league_id": 29, "serryname": [ "default", "春季准决赛", "春季决赛", "秋季准决赛", "秋季决赛", "附加赛", "秋季第四名", "春季半准决赛", "秋季半准决赛" ] }
+{ "league_id": 24, "serryname": [ "default" ] }
+{ "league_id": 25, "serryname": [ "default" ] }
+{ "league_id": 38, "serryname": [ "default", "A组", "B组", "附加赛", "降级附加赛", "冠军附加赛", "排名赛", "冠军附加" ] }
+{ "league_id": 40, "serryname": [ "default", "A组", "B组", "降级附加赛", "第五名决赛", "附加赛", "冠军赛", "降级赛" ] }
+{ "league_id": 46, "serryname": [ "分组赛春", "分组赛秋", "半准决秋", "半准决春", "准决赛春", "准决赛秋", "决赛秋", "决赛春", "十六强春", "十六强秋" ] }
+{ "league_id": 59, "serryname": [ "default", "春季准决赛", "春季决赛", "秋季准决赛", "秋季决赛", "春季附加赛", "秋季附加赛" ] }
+{ "league_id": 62, "serryname": [ "default", "秋半准决赛", "秋季准决赛", "秋季决赛", "春半准决赛", "春季准决赛", "春季决赛", "附加赛" ] }
+{ "league_id": 79, "serryname": [ "default", "准决赛", "决赛", "TI准决赛", "TI决赛", "半准决赛" ] }
+{ "league_id": 80, "serryname": [ "default", "首循环准决赛", "首循环决赛", "次循环准决赛", "次循环决赛", "总决赛", "附加赛", "降级赛", "准决赛" ] }
+{ "league_id": 85, "serryname": [ "default", "决赛", "首循环决赛", "首循环准决赛", "次循环准决赛", "次循环决赛", "次循环1", "次循环1决赛", "次循环2", "首循环1", "首循环2", "首循环附加", "决赛首", "附加赛" ] }
+{ "league_id": 89, "serryname": [ "default", "准决赛", "决赛", "总决赛", "决赛圈", "降级赛", "半准決賽" ] }
+{ "league_id": 91, "serryname": [ "金杯", "挑战杯", "复仇杯", "马德普杯", "门多萨杯", "德罗萨杯", "百年纪念杯", "布宜诺斯", "诺法尔杯", "马德普金", "拉普拉塔", "马德普拉塔", "科尔多瓦", "BBVA杯", "萨尔塔杯", "德城", "银城", "安第斯杯", "葡萄酒杯", "勇者杯", "马德普挑", "经典杯", "default" ] }
