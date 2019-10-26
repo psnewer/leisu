@@ -34,7 +34,7 @@ class SlSpider(scrapy.Spider):
 		#获取洲际
 		continent_info = {'1':u'欧洲', '2':u'美洲', '3':u'亚洲', '4':u'大洋洲', '5':u'非洲'}
 		str = response.text
-		league_line = re.findall(r'= (\[.*?\]\])',str)
+		league_line = re.findall(r'=\s*(\[.*?\]\])',str)
 		for line in league_line:
 			league_info = json.loads(line,encoding='utf-8')
 			continent_id = league_info[3]
@@ -87,7 +87,7 @@ class SlSpider(scrapy.Spider):
 		tomorrow = (datetime.today() + timedelta(7)).strftime('%Y%m%d%H%M')
 		yesterday = (datetime.today() + timedelta(-7)).strftime('%Y%m%d%H%M')
 		if 'arrSubLeague' in response.text:
-			arr_subleague = re.search(r'arrSubLeague = (\[\[.*?\]\])',response.text).group(1)
+			arr_subleague = re.search(r'arrSubLeague\s*=\s*(\[\[.*?\]\])',response.text).group(1)
 			subleagues = eval(arr_subleague)
 			base_url = 'http://zq.win007.com/jsData/matchResult/{}/s{}.js?version={}'
 			for sub in subleagues:
@@ -100,7 +100,7 @@ class SlSpider(scrapy.Spider):
 					yield scrapy.Request(url, callback=self.parseRound, meta={'continent':continent, 'country':country, 'league':league, 'season':season, 'serryname':serryname, 'serryid':serryid + '_'+ str(season), 'idx':idx}, dont_filter = True)
 		else:
 			list_all_team = self.team_data_id(response)
-			rounds = re.findall(r'jh\[(.*?)\] = (\[\[.*?\]\])',response.text)
+			rounds = re.findall(r'jh\[(.*?)\]\s*=\s*(\[\[.*?\]\])',response.text)
 			for round_str in rounds:
 				if len(round_str) < 2:
 					continue
@@ -158,7 +158,7 @@ class SlSpider(scrapy.Spider):
 	
 	def team_data_id(self,response):
 		# 获取每个队伍的id和队名
-		team_str = re.search(r'arrTeam = (\[\[.*?\]\])',response.text).group(1)
+		team_str = re.search(r'arrTeam\s*=\s*(\[\[.*?\]\])',response.text).group(1)
 		teams = eval(team_str)
 		list_all_team = {}
 		for item in teams:
@@ -174,7 +174,7 @@ class SlSpider(scrapy.Spider):
 		serryname = response.meta['serryname']
 		serryid = response.meta['serryid']
 		list_all_team = self.team_data_id(response)
-		rounds = re.findall(r'jh\[(.*?)\] = (\[\[.*?\]\])',response.text)
+		rounds = re.findall(r'jh\[(.*?)\]\s*=\s*(\[\[.*?\]\])',response.text)
 		today=time.strftime("%Y%m%d%H%M", time.localtime())
 		tomorrow = (datetime.today() + timedelta(7)).strftime('%Y%m%d%H%M')
 		yesterday = (datetime.today() + timedelta(-7)).strftime('%Y%m%d%H%M')
