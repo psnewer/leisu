@@ -13,8 +13,8 @@ import datetime
 from datetime import timedelta, datetime
 from leisu.items import Match
 
-class SlSpider(scrapy.Spider):
-	name = 'sl'
+class GjSpider(scrapy.Spider):
+	name = 'gj'
 	# logging.config.fileConfig("./log/logging.conf")
 	# logspider = logging.getLogger("spider")
 
@@ -52,20 +52,14 @@ class SlSpider(scrapy.Spider):
 					continue
 				# if league != u'法甲':
 				# 	continue
-				if match_type == '0':
-					match_type = 'League'
-				else:
-					match_type = 'SubLeague'
+				match_type = 'CupMatch'
 				for idx,season in enumerate(league_strs[4:]):
 					if self.category == 'predict':
 						if idx != 0:
 							continue
-					# if self.category is not None and idx != 0:
-					# 	continue
 					url = base_url.format(match_type,season,league_id)
-#					url = 'http://zq.titan007.com/cn/SubLeague/2009/284.html'
-#					league_id = '284'
-#					season = '2009'
+					# if season != "2022-2023":
+					# 	continue
 					yield scrapy.Request(url, callback=self.parseSeason, meta={'continent':continent, 'country':country, 'league':league, 'season':season, 'league_id':league_id, 'idx':idx})
 												 
 	def parseSeason(self, response):
@@ -74,20 +68,20 @@ class SlSpider(scrapy.Spider):
 		yield scrapy.Request(url, callback=self.parseSubLeague, meta=response.meta, dont_filter = True)
 
 	def parseSubLeague(self, response):
-		base_url = 'http://zq.titan007.com/jsData/matchResult/{}/s{}.js?version={}'
+		base_url = 'http://zq.titan007.com/jsData/matchResult/{}/c{}.js?version={}'
 		req_time = time.strftime('%Y%m%d%H', time.localtime())
-		if 'arrLeague' in response.text:
-			arr_league = re.search(r'arrLeague\s*=\s*(\[.*?\])',response.text).group(1)
+		if 'arrCup' in response.text:
+			arr_league = re.search(r'arrCup\s*=\s*(\[.*?\])',response.text).group(1)
 			leagues = eval(arr_league)
 			response.meta['league'] = leagues[3]
-		if 'arrSubLeague' in response.text:
-			arr_subleague = re.search(r'arrSubLeague\s*=\s*(\[\[.*?\]\])',response.text).group(1)
+		if 'arrCupKind' in response.text:
+			arr_subleague = re.search(r'arrCupKind\s*=\s*(\[\[.*?\]\])',response.text).group(1)
 			subleagues = eval(arr_subleague)
 			for sub in subleagues:
 				sub_id = sub[0]
 				serryid = response.meta['league_id'] + '_' + str(sub_id)
-				url = base_url.format(response.meta['season'],serryid,req_time)
-				response.meta['serryname'] = sub[3]
+				url = base_url.format(response.meta['season'],response.meta['league_id'],req_time)
+				response.meta['serryname'] = sub[4]
 				response.meta['serryid'] = serryid
 				yield scrapy.Request(url, callback=self.parseRound, meta=response.meta, dont_filter = True)
 		else:
@@ -105,7 +99,7 @@ class SlSpider(scrapy.Spider):
 		for round_str in rounds:
 			if len(round_str) < 2:
 				continue
-			stage = round_str[0].strip('"').split('_')[1]
+			stage = round_str[0].strip('"')
 			matches = re.findall(r'\[([^\[\]]*?)\]',round_str[1])
 			for match_str in matches:
 				match_info = match_str.split(',')
@@ -162,8 +156,6 @@ class SlSpider(scrapy.Spider):
 				yield scrapy.Request(url, callback=self.parseProcedure, meta={'match': match}, dont_filter = True)
 
 	def parseProcedure(self, response):
-		# if response.meta['match']['match_id'] != '2398985':
-		# 	return
 		if 'sOdds' not in response.text:
 			response.meta['match']['procedure'] = '[]'
 		else:

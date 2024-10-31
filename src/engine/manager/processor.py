@@ -1,86 +1,102 @@
 # -*- coding: utf-8 -*-
-
-import json
-import sqlite3
-import gflags
 import codecs
-import pandas as pd
-from feature_creator import *
-from filter_creator import *
-from tester_creator import *
-from extractor_creator import *
-from predictor import *
-from fix_predictor import *
-from oddsgrouper import *
-from testgrouper import TestGrouper
-from plain_plot import *
 from conf import *
+from feature_creator import Feature_Creator
+from filter_creator import Filter_Creator
+from tester_creator import Tester_Creator
+from extractor_creator import Extractor_Creator
+from analysis_creator import Analysis_Creator
+from predictor import Predictor
 
 class Processor(object):
 	def __init__(self):
 		global conn
-		self.experiments = {}
-		f_exp = codecs.open(gflags.FLAGS.experiment_path, 'r', encoding='utf-8')
-		data_algs = json.load(f_exp)
-		features = data_algs['features']
-		filters = data_algs['filters']
-		testers = data_algs['testers']
-		experiments = data_algs['experiments']
-		self.feature_creator = Feature_Creator(features)
-		self.filter_creator = Filter_Creator(filters)
-		self.tester_creator = Tester_Creator(testers,self.feature_creator,self.filter_creator)
-		for exp in experiments:
-			experiment_id = exp['experiment_id']
-			algs = exp['algs']
-			testers = exp['testers']
-			filters = exp['filters']
-			self.experiments[experiment_id] = {}
-			self.experiments[experiment_id]['feature'] = []
-			self.experiments[experiment_id]['tester'] = []
-			self.experiments[experiment_id]['filter'] = []
-			for alg in algs:
-				self.experiments[experiment_id]['feature'].append(alg)
-			for filter in filters:
-				self.experiments[experiment_id]['filter'].append(filter)
-			for tester in testers:
-				self.experiments[experiment_id]['tester'].append(tester)
-		f_exp.close()
+		# self.experiments = {}
+		# f_exp = codecs.open(gflags.FLAGS.experiment_path, 'r', encoding='utf-8')
+		# data_algs = json.load(f_exp)
+		# features = data_algs['features']
+		# filters = data_algs['filters']
+		# testers = data_algs['testers']
+		# experiments = data_algs['experiments']
+		# self.feature_creator = Feature_Creator()
+		# self.filter_creator = Filter_Creator()
+		# self.tester_creator = Tester_Creator()
+		# for exp in experiments:
+		# 	experiment_id = exp['experiment_id']
+		# 	algs = exp['algs']
+		# 	testers = exp['testers']
+		# 	filters = exp['filters']
+		# 	self.experiments[experiment_id] = {}
+		# 	self.experiments[experiment_id]['feature'] = []
+		# 	self.experiments[experiment_id]['tester'] = []
+		# 	self.experiments[experiment_id]['filter'] = []
+		# 	for alg in algs:
+		# 		self.experiments[experiment_id]['feature'].append(alg)
+		# 	for filter in filters:
+		# 		self.experiments[experiment_id]['filter'].append(filter)
+		# 	for tester in testers:
+		# 		self.experiments[experiment_id]['tester'].append(tester)
+		# f_exp.close()
 
 	def process(self):
 		pass
 
 	def test(self):
 		pass
-
-	def group(self):
-		grouper = OddsGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
-		grouper.group()
-
-	def trend_test(self):
-		test_grouper = TestGrouper(self.tester_creator,self.experiments,gflags.FLAGS.league_cond)
-		test_grouper.group()
-
-	def plot(self):
-		plain_plot = Plain_Plot()
-		plain_plot.plot()
 	
 	def extract(self):
 		extractor = Extractor_Creator()
-		extractor.extract(gflags.FLAGS.league_cond)
+		if 'league_cond' not in gflags.FLAGS:
+			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+			league_conds = json.load(f_exp)
+			for league_cond in league_conds:
+				extractor.execute(league_cond)
+		else:
+			extractor.execute(json.loads(gflags.FLAGS.league_cond))
+
+	def feature(self):
+		featurer = Feature_Creator()
+		if 'league_cond' not in gflags.FLAGS:
+			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+			league_conds = json.load(f_exp)
+			for league_cond in league_conds:
+				featurer.execute(league_cond)
+		else:
+			featurer.execute(json.loads(gflags.FLAGS.league_cond))
+
+	def filter(self):
+		filter = Filter_Creator()
+		if 'league_cond' not in gflags.FLAGS:
+			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+			league_conds = json.load(f_exp)
+			for league_cond in league_conds:
+				filter.execute(league_cond)
+		else:
+			filter.execute(json.loads(gflags.FLAGS.league_cond))
+
+	def test(self):
+		tester = Tester_Creator()
+		if 'league_cond' not in gflags.FLAGS:
+			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+			league_conds = json.load(f_exp)
+			for league_cond in league_conds:
+				tester.execute(league_cond)
+		else:
+			tester.execute(json.loads(gflags.FLAGS.league_cond))
+	
+	def analysis(self):
+		analysis = Analysis_Creator()
+		if 'league_cond' not in gflags.FLAGS:
+			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+			league_conds = json.load(f_exp)
+			for league_cond in league_conds:
+				analysis.execute(league_cond)
+		else:
+			analysis.execute(json.loads(gflags.FLAGS.league_cond))
 	
 	def predict(self):
-		resfiles = gflags.FLAGS.predict_path + '*'
-		os.system(r'rm -rf %s'%resfiles)
-		predictor = Predictor(self.tester_creator,self.experiments)	
-		predictor.predict()
-		predictor.pack()	
-
-	def predict_fix(self):
-		resfiles = gflags.FLAGS.predict_path + '*'
-		os.system(r'rm -rf %s'%resfiles)
-		predictor = Fix_Predictor(self.tester_creator)	
-		predictor.predict()
-		predictor.pack()	
+		predictor = Predictor()	
+		predictor.predict()	
 
 	def close(self):
 		global conn

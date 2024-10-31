@@ -1,8 +1,5 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
-import conf
-import sqlite3
-import pandas as pd
 
 class ABSTRACT_FEATURE():
 	

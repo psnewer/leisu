@@ -1,33 +1,33 @@
 # -*- coding: utf-8 -*-
-from filter import *
+from analysis import *
 
-class Filter_Creator(object):
+class Analysis_Creator(object):
 	def __init__(self):
-		self.filter_cand = []
-		f_exp = codecs.open(gflags.FLAGS.filter_conf, 'r', encoding='utf-8')
+		self.analysis_cand = []
+		f_exp = codecs.open(gflags.FLAGS.analysis_conf, 'r', encoding='utf-8')
 		data_cands = json.load(f_exp)
 		cands = data_cands['cands']
 		for cand in cands:
 			candstr = cand['name'] + '()'
-			filter_ins = eval(candstr)
-			filter_ins.setParams(cand['params'])
-			self.filter_cand.append(filter_ins)
+			analysis_ins = eval(candstr)
+			analysis_ins.setParams(cand['params'])
+			self.analysis_cand.append(analysis_ins)
 
 	def execute(self,condition):
 		# condition = json.loads(condition)
 		league_str = condition['league']
 		league_cond = "league='%s'"%league_str
-		league_dir = os.path.abspath(gflags.FLAGS.filter_path + league_str)
+		league_dir = os.path.abspath(gflags.FLAGS.analysis_path + league_str)
 		mkdir(league_dir)
 		if 'serryname' not in condition:
 			cond = [league_cond]
 			cond_str = ' and '.join(cond)
 			sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
-			for filter in self.filter_cand:
-				filter_dir = league_dir + '/' + filter.name
-				mkdir(filter_dir)
-				filter.process(cond_str,seasons,filter_dir)
+			for analysis in self.analysis_cand:
+				analysis_dir = league_dir + '/' + analysis.name
+				mkdir(analysis_dir)
+				analysis.process(cond_str,seasons,analysis_dir)
 		else:
 			for serryname in condition['serryname']:
 				serry_dir = league_dir+'/'+serryname
@@ -37,8 +37,8 @@ class Filter_Creator(object):
 				cond_str = ' and '.join(cond)
 				sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
-				for filter in self.filter_cand:
-					filter_dir = serry_dir + '/' + filter.name
-					mkdir(filter_dir)
-					filter.process(cond_str,seasons,filter_dir)
-
+				for analysis in self.analysis_cand:
+					analysis_dir = serry_dir + '/' + analysis.name
+					mkdir(analysis_dir)
+					analysis.process(cond_str,seasons,analysis_dir)
+						

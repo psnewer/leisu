@@ -1,58 +1,43 @@
 # -*- coding: utf-8 -*-
-
-import json
-import pandas as pd
-import gflags
-from minor_period_feature import *
-from one_mayor_feature import *
-from two_mayor_feature import *
-from pre_rank_feature import *
-from pre_vs_feature import *
-from min_team_feature import *
-from current_match_feature import *
-from win_score_feature import *
-from vs_plainself_feature import *
-from vs_plainself_no_pre_feature import *
-from vs_rawall_feature import *
-from vs_rawall_no_pre_feature import *
-from vs_rawself_feature import *
-from vs_rawself_no_pre_feature import *
-from goal_rawall_feature import *
-from goal_rawall_no_pre_feature import *
-from goal_rawself_feature import *
-from goal_rawself_no_pre_feature import *
-from asia_odds_feature import *
-from conf import *
+from feature import *
 
 class Feature_Creator(object):
-	def __init__(self,algs):
-		self.features = dict()
-		self.feature_cand = []
-		for _alg in algs:
-			_algstr = _alg['name']+'()'
-			alg_ins = eval(_algstr)
-			alg_ins.setParams(_alg['params'])
-			self.features[_alg['flag']] = alg_ins
-			self.feature_cand.append(_alg['flag'])
-		self.feature_res = {}
+	def __init__(self):
+		self.featurer_cand = []
+		f_exp = codecs.open(gflags.FLAGS.feature_conf, 'r', encoding='utf-8')
+		data_cands = json.load(f_exp)
+		cands = data_cands['cands']
+		for cand in cands:
+			candstr = cand['name'] + '()'
+			featurer_ins = eval(candstr)
+			featurer_ins.setParams(cand['params'])
+			self.featurer_cand.append(featurer_ins)
 
-	def set_features(self,feature_list):
-		self.feature_cand = []
-		for feature in feature_list:
-			self.feature_cand.append(feature)
-
-	def execute_test(self,condition,feature_log):
-		team_res = []
-		for feature in self.feature_cand:
-			feature_ins = self.features[feature]
-			res = feature_ins.execute_test(condition,feature_log)
-			team_res.extend(res)
-		return team_res
-
-	def execute_predict(self,league_id,serryid,df,feature_log):
-		team_res = []
-		for feature in self.feature_cand:
-			feature_ins = self.features[feature]
-			res = feature_ins.execute_predict(league_id,serryid,df,feature_log)
-			team_res.extend(res)
-		return team_res
+	def execute(self,condition):
+		# condition = json.loads(condition)
+		league_str = condition['league']
+		league_cond = "league='%s'"%league_str
+		league_dir = os.path.abspath(gflags.FLAGS.feature_path + league_str)
+		mkdir(league_dir)
+		if 'serryname' not in condition:
+			cond = [league_cond]
+			cond_str = ' and '.join(cond)
+			sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
+			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+			for featurer in self.featurer_cand:
+				featurer_dir = league_dir + '/' + featurer.name
+				mkdir(featurer_dir)
+				featurer.process(cond_str,seasons,featurer_dir)
+		else:
+			for serryname in condition['serryname']:
+				serry_dir = league_dir+'/'+serryname
+				mkdir(serry_dir)
+				serry_cond = "serryname='%s'"%serryname
+				cond = [league_cond,serry_cond]
+				cond_str = ' and '.join(cond)
+				sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
+				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+				for featurer in self.featurer_cand:
+					featurer_dir = serry_dir + '/' + featurer.name
+					mkdir(featurer_dir)
+					featurer.process(cond_str,seasons,featurer_dir)

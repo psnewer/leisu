@@ -1,13 +1,6 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
-from conf import *
-import sqlite3
-import gflags
-import math
-import json
-import codecs
-import pandas as pd
-import numpy as np
+from tester import *
 
 class ABSTRACT_TESTER():
 	def __init__(self):

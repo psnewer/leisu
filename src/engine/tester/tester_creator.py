@@ -1,55 +1,44 @@
 # -*- coding: utf-8 -*-
-
-import json
-import pandas as pd
-import gflags
-from min_goals_tester import *
-from may_goals_tester import *
-from home_win_tester import *
-from away_win_tester import *
-from draw_tester import *
-from asia_home_tester import *
-from asia_away_tester import *
-from conf import *
+from tester import *
 
 class Tester_Creator(object):
-	def __init__(self,str_testers,feature_creator,filter_creator):
-		self.testers = dict()
+	def __init__(self):
 		self.tester_cand = []
-		self.feature_creator = feature_creator
-		self.filter_creator = filter_creator
-		for tester in str_testers:
-			_testerstr = tester['name']+'()'
-			tester_ins = eval(_testerstr)
-			tester_ins.setParams(tester['params'])
-			self.testers[tester['flag']] = tester_ins
-	
-	def set_tester(self,tester_list):
-		self.tester_cand = []
-		for tester in tester_list:
-			self.tester_cand.append(tester)
+		f_exp = codecs.open(gflags.FLAGS.test_conf, 'r', encoding='utf-8')
+		data_cands = json.load(f_exp)
+		cands = data_cands['cands']
+		for cand in cands:
+			candstr = cand['name'] + '()'
+			tester_ins = eval(candstr)
+			tester_ins.setParams(cand['params'])
+			self.tester_cand.append(tester_ins)
 
-	def setProcessor(self,features,filters):
-		self.feature_creator.set_features(features)
-		self.filter_creator.set_filters(filters)
-
-	def group(self,condition,feature_log):
-		team_res = self.feature_creator.execute_test(condition,feature_log)
-		self.filter_creator.execute(team_res)
-
-	def predict(self,league_id,serryid,df,feature_log):
-		team_res = self.feature_creator.execute_predict(league_id,serryid,df,feature_log)
-		self.filter_creator.execute(team_res)
-
-	def get_filtered(self,filter_list):
-		return self.filter_creator.get_filtered(filter_list)
-
-	def test(self,filters,testers,condition):
-		self.set_tester(testers)
-		for tester in self.tester_cand:
-			df_filter = self.filter_creator.get_filtered(filters)
-			if df_filter is not None and len(df_filter) > 0:
-				return self.testers[tester].analysis(condition,df_filter)
-			else:
-				return []
+	def execute(self,condition):
+		# condition = json.loads(condition)
+		league_str = condition['league']
+		league_cond = "league='%s'"%league_str
+		league_dir = os.path.abspath(gflags.FLAGS.test_path + league_str)
+		mkdir(league_dir)
+		if 'serryname' not in condition:
+			cond = [league_cond]
+			cond_str = ' and '.join(cond)
+			sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
+			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+			for tester in self.tester_cand:
+				test_dir = league_dir + '/' + tester.name
+				mkdir(test_dir)
+				tester.process(cond_str,seasons,test_dir)
+		else:
+			for serryname in condition['serryname']:
+				serry_dir = league_dir+'/'+serryname
+				mkdir(serry_dir)
+				serry_cond = "serryname='%s'"%serryname
+				cond = [league_cond,serry_cond]
+				cond_str = ' and '.join(cond)
+				sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
+				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+				for tester in self.tester_cand:
+					tester_dir = serry_dir + '/' + tester.name
+					mkdir(tester_dir)
+					tester.process(cond_str,seasons,tester_dir)
 						
