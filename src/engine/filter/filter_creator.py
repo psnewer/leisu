@@ -25,7 +25,7 @@ class Filter_Creator(object):
 			sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
 			if (gflags.FLAGS.predict):
-				seasons = max_season = [max(seasons, key=int)]
+				seasons = [max(seasons, key=str)]
 			for filter in self.filter_cand:
 				filter_dir = league_dir + '/' + filter.name
 				mkdir(filter_dir)
@@ -40,7 +40,7 @@ class Filter_Creator(object):
 				sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
 				if (gflags.FLAGS.predict):
-					seasons = max_season = [max(seasons, key=int)]
+					seasons = [max(seasons, key=str)]
 				for filter in self.filter_cand:
 					filter_dir = serry_dir + '/' + filter.name
 					mkdir(filter_dir)
