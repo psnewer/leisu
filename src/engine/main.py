@@ -7,8 +7,6 @@ from conf import *
 if __name__ == "__main__":
 	Flags(sys.argv)
 	pro = Processor()
-	if (gflags.FLAGS.predict):
-		pro.predict()
 	if (gflags.FLAGS.extract):
 		pro.extract()
 	if (gflags.FLAGS.feature):
