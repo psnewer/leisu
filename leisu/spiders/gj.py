@@ -22,7 +22,7 @@ class GjSpider(scrapy.Spider):
 		self.allowed_domains = ['zq.titan007.com']
 		self.start_urls = ['http://zq.titan007.com/jsData/infoHeader.js']
 		self.dataPage = ''
-		self.cand_data = codecs.open("./src/db/leagues_cand.json",'r+',encoding='utf-8')
+		self.cand_data = codecs.open("./src/db/games_cand.json",'r+',encoding='utf-8')
 		self.cand = json.load(self.cand_data)
 		self.category = category
 

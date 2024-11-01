@@ -25,6 +25,8 @@ class Extractor_Creator(object):
 			cond_str = ' and '.join(cond)
 			sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+			if (gflags.FLAGS.predict):
+				seasons = max_season = [max(seasons, key=int)]
 			for extractor in self.extractor_cand:
 				extractor_dir = league_dir + '/' + extractor.name
 				mkdir(extractor_dir)
@@ -38,6 +40,8 @@ class Extractor_Creator(object):
 				cond_str = ' and '.join(cond)
 				sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+				if (gflags.FLAGS.predict):
+					seasons = max_season = [max(seasons, key=int)]
 				for extractor in self.extractor_cand:
 					extractor_dir = serry_dir + '/' + extractor.name
 					mkdir(extractor_dir)

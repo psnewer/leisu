@@ -24,6 +24,8 @@ class Feature_Creator(object):
 			cond_str = ' and '.join(cond)
 			sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+			if (gflags.FLAGS.predict):
+				seasons = max_season = [max(seasons, key=int)]
 			for featurer in self.featurer_cand:
 				featurer_dir = league_dir + '/' + featurer.name
 				mkdir(featurer_dir)
@@ -37,6 +39,8 @@ class Feature_Creator(object):
 				cond_str = ' and '.join(cond)
 				sql_str = "select distinct season from matches where %s order by date desc"%(cond_str)
 				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
+				if (gflags.FLAGS.predict):
+					seasons = max_season = [max(seasons, key=int)]
 				for featurer in self.featurer_cand:
 					featurer_dir = serry_dir + '/' + featurer.name
 					mkdir(featurer_dir)
