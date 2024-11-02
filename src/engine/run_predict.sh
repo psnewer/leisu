@@ -17,6 +17,6 @@ cd ../..
 scrapy crawl sl -a category=predict
 scrapy crawl gj -a category=predict
 
-cd `dirname $0`
-pthon main.py --extract --feature --filter --predict
+cd ./src/engine/
+python main.py --extract --feature --filter --predict
 

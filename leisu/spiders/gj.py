@@ -94,8 +94,8 @@ class GjSpider(scrapy.Spider):
 		list_all_team = self.team_data_id(response)
 		rounds = re.findall(r'jh\[(.*?)\]\s*=\s*(\[\[.*?\]\])',response.text)
 		today=time.strftime("%Y%m%d%H%M", time.localtime())
-		tomorrow = (datetime.today() + timedelta(3)).strftime('%Y%m%d%H%M')
-		yesterday = (datetime.today() + timedelta(-3)).strftime('%Y%m%d%H%M')
+		tomorrow = (datetime.today() + timedelta(7)).strftime('%Y%m%d%H%M')
+		yesterday = (datetime.today() + timedelta(-7)).strftime('%Y%m%d%H%M')
 		for round_str in rounds:
 			if len(round_str) < 2:
 				continue
