@@ -37,7 +37,7 @@ class Predictor():
 	def extract_rows(self, row, today, league, filter, thresh, team):
 		filtered_dicts = []
 		for record in json.loads(row['selected']):
-			if record['date'] >= 202410261800:
+			if record['date'] >= today:
 				filtered_dicts.append({
 					'league': league,
 					'date': record['date'],
