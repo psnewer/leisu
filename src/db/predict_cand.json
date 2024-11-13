@@ -6,7 +6,7 @@
                                 {"team": "Everton", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
                                 {"team": "Southampton", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 3}, "density":false},
                                 {"team": "Leicester City", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
-                                {"team": "Fulham", "filter": "VS_TAWD", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
+                                {"team": "Fulham", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Aston Villa", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Brighton Hove Albion", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Manchester United", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
