@@ -46,6 +46,7 @@
                             ],
     "Italian Serie A": [
                                 {"team": "Fiorentina", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -3}, "density":true},
+                                {"team": "AC Milan", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true},
                                 {"team": "AS Roma", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Monza", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Venezia", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 3}, "density":false},
