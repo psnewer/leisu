@@ -27,8 +27,7 @@
                                 {"team": "Strasbourg", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
                                 {"team": "Saint Etienne", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 1}, "density":false},
                                 {"team": "Stade Brestois", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -3}, "density":true},
-                                {"team": "Rennes", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true},
-                                {"team": "Lens", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true}
+                                {"team": "Rennes", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true}
                             ],
     "German Bundesliga": [
                                 {"team": "Heidenheimer", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 2}, "density":false},
