@@ -10,6 +10,10 @@ class VS_RAWDRAW_ANALYSIS(ABSTRACT_ANALYSIS):
         
     def process(self,cond_str,seasons,ext_dir):
         analysis_dir = ext_dir.replace('analysis','test')
+        if self.params['density']:
+            analysis_dir += '_DENSITY'
+            ext_dir += '_DENSITY'
+            mkdir(ext_dir)
         all_data = []
         for season in seasons:
             data_file = analysis_dir + '/' + season + '.xlsx'

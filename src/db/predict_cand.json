@@ -13,13 +13,14 @@
                                 {"team": "Brentford", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
                                 {"team": "West Ham United", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Nottingham Forest", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
-                                {"team": "Crystal Palace", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 2}, "density":false}
+                                {"team": "Crystal Palace", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 2}, "density":false},
+                                {"team": "Manchester City", "filter": "VS_RAWDRAW", "season": "2024-2025", "params": {"thresh": -1}, "density":false}
                             ],
     "France Ligue 1": [
                                 {"team": "Montpellier", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 3}, "density":false},
                                 {"team": "Toulouse", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
                                 {"team": "Angers", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
-                                {"team": "Nantes", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 3}, "density":false},
+                                {"team": "Nantes", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
                                 {"team": "AJ Auxerre", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Reims", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Le Havre", "filter": "VS_TAWDRAW", "season": "2024-2025", "params": {"thresh": 0}, "density":false},
@@ -65,6 +66,7 @@
     "Spanish La Liga": [
                                 {"team": "Mallorca", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},
                                 {"team": "Girona", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true},
+                                {"team": "Girona", "filter": "VS_RAWDRAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true},
                                 {"team": "Athletic Bilbao", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true},
                                 {"team": "Real Sociedad", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": -1}, "density":true},
                                 {"team": "Osasuna", "filter": "VS_TAW", "season": "2024-2025", "params": {"thresh": 0}, "density":true},

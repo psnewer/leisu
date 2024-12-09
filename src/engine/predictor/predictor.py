@@ -66,7 +66,9 @@ class Predictor():
 		other_team = home_team if home_team != team else away_team
 		match_t = df_density[(df_density['date'] == date) & (df_density['team'] == other_team)]
 		match_r = df_density[(df_density['date'] == date) & (df_density['team'] == team)]
-		if not match_t.empty and match_r.empty:
+		if not match_t.empty and match_r.empty and 'TAW' in row['filter'] :
+			return True
+		elif match_t.empty and not match_r.empty and 'RAW' in row['filter'] :
 			return True
 		return False  # 不删除
 

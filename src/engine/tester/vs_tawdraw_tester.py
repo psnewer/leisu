@@ -15,8 +15,8 @@ class VS_TAWDRAW_TESTER(ABSTRACT_TESTER):
 			data_file = filter_dir + '/' + season + '.xlsx'
 			df = pd.read_excel(data_file)
 			if (self.params['density']):
-				_ext_dir = ext_dir + '_DENSITY'
-				mkdir(_ext_dir)
+				ext_dir = ext_dir + '_DENSITY'
+				mkdir(ext_dir)
 				df_density = pd.read_excel(data_file.replace(self.name,'VS_DENSITY'))
 				if not df.empty:
 					df['selected'] = df.apply(lambda row: self.filter_selected(row, df_density), axis=1)
@@ -25,7 +25,7 @@ class VS_TAWDRAW_TESTER(ABSTRACT_TESTER):
 			df['fruit'] = df['selected'].apply(self.extract_raw_values)
 			df['odds'] = df['selected'].apply(self.extract_odds_values)
 			df = df.drop(columns=['selected'])
-			ext_file = _ext_dir + '/' + season + '.xlsx'
+			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
 
 	def extract_raw_values(self,selected_list):
