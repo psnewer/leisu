@@ -47,7 +47,7 @@ class Predictor():
 					'filter': filter,
 					'thresh': thresh
 					})
-		return filtered_dicts
+				return filtered_dicts
 
 	def filter_selected(self, row, df_density):
 		filtered_selected = []
