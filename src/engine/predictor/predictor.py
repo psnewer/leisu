@@ -37,7 +37,7 @@ class Predictor():
 	def extract_rows(self, row, today, league, filter, thresh, team):
 		filtered_dicts = []
 		for record in json.loads(row['selected']):
-			if record['date'] >= today:
+			if record['date'] >= 202412081200:
 				filtered_dicts.append({
 					'league': league,
 					'date': record['date'],
@@ -47,7 +47,8 @@ class Predictor():
 					'filter': filter,
 					'thresh': thresh
 					})
-				return filtered_dicts
+				break
+		return filtered_dicts
 
 	def filter_selected(self, row, df_density):
 		filtered_selected = []

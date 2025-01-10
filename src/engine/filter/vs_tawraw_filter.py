@@ -8,7 +8,7 @@ class VS_TAWRAW_FILTER(ABSTRACT_FILTER):
 		self.name = 'VS_TAWRAW'
 		self.params = {}
 		self.params['thresh_min'] = -8
-		self.params['thresh_max'] = 4
+		self.params['thresh_max'] = 12
 
 	def process(self,cond_str,seasons,ext_dir):
 		for season in seasons:
