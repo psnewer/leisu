@@ -35,7 +35,7 @@
                                 {"team": "TSG Hoffenheim", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Union Berlin", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "VfB Stuttgart", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
-                                {"team": "VfL Bochum", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
+                                {"team": "VfL Bochum", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "VfL Wolfsburg", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Werder Bremen", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false}
                             ],
@@ -54,7 +54,7 @@
                                 {"team": "Monza", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Napoli", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Parma", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
-                                {"team": "Venezia", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
+                                {"team": "Venezia", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Torino", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Udinese", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Verona", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false}
@@ -84,7 +84,7 @@
     "France Ligue 1": [
                                 {"team": "AJ Auxerre", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Angers", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
-                                {"team": "Le Havre", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
+                                {"team": "Le Havre", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Lens", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Lille", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Lyon", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
