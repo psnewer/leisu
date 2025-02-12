@@ -98,3 +98,53 @@ class SQLitePipeline:
         # 关闭数据库连接
         self.connection.close()
 
+class ATPPipeline:
+    def open_spider(self, spider):
+        """爬虫启动时，连接 SQLite 数据库并创建表"""
+        self.conn = sqlite3.connect("./src/db/tennis.db")  # 连接数据库
+        self.cursor = self.conn.cursor()
+
+        # 创建 tennis 表（如果不存在）
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS tennis (
+                match_id TEXT PRIMARY KEY,  -- 确保 match_id 唯一
+                tour TEXT,
+                field TEXT,
+                season TEXT,
+                date TEXT,
+                home TEXT,
+                away TEXT,
+                home_score TEXT,   
+                away_score TEXT,        
+                sets TEXT  -- 存储 JSON 格式的 sets 数据
+            )
+        """)
+        self.conn.commit()
+
+    def process_item(self, item, spider):
+        """处理爬取到的数据并存入数据库"""
+        self.cursor.execute("""
+            INSERT INTO tennis (match_id, tour, field, season, date, home, away, home_score, away_score, sets)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(match_id) DO NOTHING  -- 避免重复插入
+        """, (
+            item["match_id"], 
+            item["tour"], 
+            item["field"], 
+            item["season"], 
+            item["date"], 
+            item["home"], 
+            item["away"], 
+            item["home_score"], 
+            item["away_score"], 
+            json.dumps(item["sets"], ensure_ascii=False)  # 转换 sets 为 JSON 字符串存储
+        ))
+        self.conn.commit()
+
+        return item
+
+    def close_spider(self, spider):
+        """爬虫结束时，关闭数据库连接"""
+        self.conn.close()
+
+
