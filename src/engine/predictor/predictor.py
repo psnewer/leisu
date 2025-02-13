@@ -24,13 +24,14 @@ class Predictor():
     				(df['team'] == team) &                   
     				(df[list(cand['params'])] == pd.Series(cand['params'])).all(axis=1)  # 和params的键值对对应
 					].copy()
-				df_team['filtered_selected'] = df_team.apply(lambda row: self.extract_rows(row, today, league, cand['filter'], cand['params']['thresh'], team), axis=1)
-				df_filtered = pd.DataFrame([item for sublist in df_team['filtered_selected'] for item in sublist])
-				if cand['density']:
-					f_density = gflags.FLAGS.filter_path + league + '/' + 'VS_DENSITY' + '/' + cand['season'] + '.xlsx'
-					df_density = pd.read_excel(f_density)
-					df_filtered = df_filtered[~df_filtered.apply(lambda row: self.should_delete_row(row, df_density), axis=1)]
-				combined_df = pd.concat([combined_df, df_filtered], ignore_index=True)
+				if not df_team.empty:
+					df_team['filtered_selected'] = df_team.apply(lambda row: self.extract_rows(row, today, league, cand['filter'], cand['params']['thresh'], team), axis=1)
+					df_filtered = pd.DataFrame([item for sublist in df_team['filtered_selected'] for item in sublist])
+					if cand['density']:
+						f_density = gflags.FLAGS.filter_path + league + '/' + 'VS_DENSITY' + '/' + cand['season'] + '.xlsx'
+						df_density = pd.read_excel(f_density)
+						df_filtered = df_filtered[~df_filtered.apply(lambda row: self.should_delete_row(row, df_density), axis=1)]
+					combined_df = pd.concat([combined_df, df_filtered], ignore_index=True)
 		ext_file = gflags.FLAGS.predict_path + 'predict.json'
 		self.pack(combined_df,ext_file)
 

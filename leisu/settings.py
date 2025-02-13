@@ -14,7 +14,7 @@ BOT_NAME = 'leisu'
 SPIDER_MODULES = ['leisu.spiders']
 NEWSPIDER_MODULE = 'leisu.spiders'
 
-HTTPERROR_ALLOWED_CODES = [443]
+# HTTPERROR_ALLOWED_CODES = [443]
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENTS = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Mobile Safari/537.36' 
