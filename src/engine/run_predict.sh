@@ -18,5 +18,5 @@ scrapy crawl sl -a category=predict
 scrapy crawl gj -a category=predict
 
 cd ./src/engine/
-python main.py --extract --feature --filter --predict
+python main.py --extract --feature --filter --predict --soccer
 
