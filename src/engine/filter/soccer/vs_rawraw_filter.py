@@ -7,8 +7,8 @@ class VS_RAWRAW_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
 		self.name = 'VS_RAWRAW'
 		self.params = {}
-		self.params['thresh_min'] = 0
-		self.params['thresh_max'] = 0
+		self.params['thresh_min'] = 1
+		self.params['thresh_max'] = 1
 
 	def process(self,cond_str,seasons,ext_dir):
 		for season in seasons:

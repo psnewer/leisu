@@ -68,8 +68,8 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 		tawtaw_feature = tawtaw_feature.rename(columns={'tawtaw': 'man'})
 		tawtaw_feature['filter'] = 'VS_TAWTAW'
 		merged_df = pd.concat([filtered_rawraw, rawraw_feature, tawtaw_feature], ignore_index=True)
-		# if (not gflags.FLAGS.predict):
-		# 	merged_df = merged_df.groupby(['home_team', 'away_team', 'date']).apply(self.get_first_non_zero)
+		if (not gflags.FLAGS.predict):
+			merged_df = merged_df.groupby(['home_team', 'away_team', 'date']).apply(self.get_first_non_zero)
 		merged_df = merged_df.dropna(how='all').reset_index(drop=True).sort_values(['team','date'])
 		return merged_df
 	
