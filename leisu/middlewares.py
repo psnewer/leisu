@@ -5,6 +5,7 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import random
 from scrapy import signals
 
 
@@ -54,3 +55,35 @@ class LeisuSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+PROXY_LIST = [
+    "socks5://127.0.0.1:1080",
+    "socks5://127.0.0.1:1081",  # 你可以配置多个 Trojan 端口
+    "socks5://127.0.0.1:1082",
+    "socks5://127.0.0.1:1083",
+    "socks5://127.0.0.1:1084",
+    "socks5://127.0.0.1:1085"
+]
+
+def get_random_proxy():
+    return random.choice(PROXY_LIST)
+
+class RandomProxyMiddleware:
+    def __init__(self, settings):
+        self.proxies = PROXY_LIST
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
+
+    def process_request(self, request, spider):
+        proxy = random.choice(self.proxies)
+        request.meta["proxy"] = proxy
+        spider.logger.info(f"Using proxy: {proxy}")
+
+    def process_exception(self, request, exception, spider):
+        """如果代理失效，换一个代理"""
+        spider.logger.warning(f"Proxy {request.meta['proxy']} failed, retrying...")
+        request.meta["proxy"] = get_random_proxy()
+        return request
+

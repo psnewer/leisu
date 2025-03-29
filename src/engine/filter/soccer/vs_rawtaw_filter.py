@@ -3,11 +3,11 @@
 from conf import *
 from abstract_filter import ABSTRACT_FILTER
 
-class VS_RAWRAW_FILTER(ABSTRACT_FILTER):
+class VS_RAWTAW_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
-		self.name = 'VS_RAWRAW'
+		self.name = 'VS_RAWTAW'
 		self.params = {}
-		self.params['thresh_min'] = -8
+		self.params['thresh_min'] = 12
 		self.params['thresh_max'] = 12
 
 	def process(self,cond_str,seasons,ext_dir):
@@ -26,7 +26,7 @@ class VS_RAWRAW_FILTER(ABSTRACT_FILTER):
 			team_matches = df[df['team'] == team]
 			for thresh in range(self.params['thresh_min'], self.params['thresh_max'] + 1):
 				selected_matches = team_matches[team_matches['hard'] < thresh]
-				selected = selected_matches[['date', 'home_team', 'away_team', 'rawraw', 'raw_win', 'raw_draw']].to_dict('records')
+				selected = selected_matches[['date', 'home_team', 'away_team', 'rawtaw', 'raw_win', 'taw_draw']].to_dict('records')
 				results.append({
 					'team': team,
 					'thresh': thresh,

@@ -19,9 +19,12 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
 
-	def analyze_procedure(self, procedure, team, is_home):
+	def analyze_procedure(self, procedure, score, is_home):
     	# 将 JSON 字符串解析为 Python 对象
 		procedure = json.loads(procedure)
+		scores = score.strip("'").split('-')
+		home_score = int(scores[0]) if len(scores) > 1 else None
+		away_score = int(scores[1]) if len(scores) > 1 else None
     
     	# 初始化标志位
 		raw_win = None
@@ -39,6 +42,8 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		team_draw = False
 		team_won = False
 		team_lose = False
+		pre_score_home = 0
+		pre_score_away = 0
 
 		if (not procedure):
 			return [None,None,None,None,None,None,None]
@@ -47,6 +52,11 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		for event in procedure:
 			score_home = int(event['score_home'])
 			score_away = int(event['score_away'])
+
+			if score_home > pre_score_home and score_away > pre_score_away:
+				return [0,0,0,0,0,0,0]
+			pre_score_home = score_home
+			pre_score_away = score_away
         
         	# 根据是否是主场，确定 team 是 home 还是 away
 			if is_home:
@@ -84,12 +94,19 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
             
             	# 判断最后 team 的胜负情况
 				if event == procedure[-1]:  # 检查最后一个事件
+					if home_score != score_home or away_score != score_away:
+						if is_home:
+							team_score = home_score
+							opponent_score = away_score
+						else:
+							team_score = away_score
+							opponent_score = home_score
 					if team_score > opponent_score:
 						team_won = True
 					elif team_score < opponent_score:
 						team_lose = True
 					elif team_score == opponent_score:
-						team_draw = True
+						draw_at_some_point = True
 
     	# 应用规则：raw 列根据不同情况设定
 		if no_goals or draw_at_some_point:
@@ -119,10 +136,11 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 			home_team = row['home_team']
 			away_team = row['away_team']
 			procedure = row['procedure']
+			score = row['score']
         
         	# 分别生成 home_team 和 away_team 的行
-			home_raw,home_taw,home_raw_win,home_taw_win,home_raw_draw,home_taw_draw,home_tawtaw = self.analyze_procedure(procedure, home_team, is_home=True)
-			away_raw,away_taw,away_raw_win,away_taw_win,away_raw_draw,away_taw_draw,away_tawtaw = self.analyze_procedure(procedure, away_team, is_home=False)
+			home_raw,home_taw,home_raw_win,home_taw_win,home_raw_draw,home_taw_draw,home_tawtaw = self.analyze_procedure(procedure, score, is_home=True)
+			away_raw,away_taw,away_raw_win,away_taw_win,away_raw_draw,away_taw_draw,away_tawtaw = self.analyze_procedure(procedure, score, is_home=False)
 
 			if (home_raw is not None and away_raw is not None):
         

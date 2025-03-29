@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
-from extractor import *
+from feature import *
 
-class Extractor_Creator(object):
+class Feature_Creator(object):
 	def __init__(self):
-		self.extractors = {}
-		self.extractor_cand = []
-		f_exp = codecs.open(gflags.FLAGS.extract_conf, 'r', encoding='utf-8')
+		self.featurer_cand = []
+		f_exp = codecs.open(gflags.FLAGS.feature_conf, 'r', encoding='utf-8')
 		data_cands = json.load(f_exp)
 		cands = data_cands['cands']
 		for cand in cands:
 			candstr = cand['name'] + '()'
-			extractor_ins = eval(candstr)
-			extractor_ins.setParams(cand['params'])
-			self.extractor_cand.append(extractor_ins)
+			featurer_ins = eval(candstr)
+			featurer_ins.setParams(cand['params'])
+			self.featurer_cand.append(featurer_ins)
 
 	def execute(self,condition):
 		# condition = json.loads(condition)
 		league_str = condition['league']
 		league_cond = "league='%s'"%league_str
-		league_dir = os.path.abspath(gflags.FLAGS.extract_path + league_str)
+		league_dir = os.path.abspath(gflags.FLAGS.res_path + 'soccer/feature/' + league_str)
 		mkdir(league_dir)
 		if 'serryname' not in condition:
 			cond = [league_cond]
@@ -27,10 +26,10 @@ class Extractor_Creator(object):
 			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
 			if (gflags.FLAGS.predict):
 				seasons = [max(seasons, key=str)]
-			for extractor in self.extractor_cand:
-				extractor_dir = league_dir + '/' + extractor.name
-				mkdir(extractor_dir)
-				extractor.process(cond_str,seasons,extractor_dir)
+			for featurer in self.featurer_cand:
+				featurer_dir = league_dir + '/' + featurer.name
+				mkdir(featurer_dir)
+				featurer.process(cond_str,seasons,featurer_dir)
 		else:
 			for serryname in condition['serryname']:
 				serry_dir = league_dir+'/'+serryname
@@ -42,8 +41,7 @@ class Extractor_Creator(object):
 				seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
 				if (gflags.FLAGS.predict):
 					seasons = [max(seasons, key=str)]
-				for extractor in self.extractor_cand:
-					extractor_dir = serry_dir + '/' + extractor.name
-					mkdir(extractor_dir)
-					extractor.process(cond_str,seasons,extractor_dir)
-		
+				for featurer in self.featurer_cand:
+					featurer_dir = serry_dir + '/' + featurer.name
+					mkdir(featurer_dir)
+					featurer.process(cond_str,seasons,featurer_dir)

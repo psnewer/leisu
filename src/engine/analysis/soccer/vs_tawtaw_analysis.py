@@ -51,11 +51,11 @@ class VS_TAWTAW_ANALYSIS(ABSTRACT_ANALYSIS):
     def calculate_profit(self, fruit, odds):
         profit = 0
         for f, o in zip(fruit, odds):
-            if (f == -1 and o[0] > 3.0):
+            if (f == -1):
                 profit += f
             elif (f == 0):
                 profit += 0
-            elif (f == 1 and o[0] > 3.0):
+            elif (f == 1):
                 profit += (o[0] - o[1])
         return profit
         

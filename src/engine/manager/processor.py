@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 import codecs
 from conf import *
-from feature_creator import Feature_Creator
-from filter_creator import Filter_Creator
-from tester_creator import Tester_Creator
-from extractor_creator import Extractor_Creator
-from analysis_creator import Analysis_Creator
+from extractor.soccer.extractor_creator import Extractor_Creator
+from extractor.tennis.ten_extractor_creator import Ten_Extractor_Creator
+from feature.soccer.feature_creator import Feature_Creator
+from feature.tennis.ten_feature_creator import Ten_Feature_Creator
+from filter.soccer.filter_creator import Filter_Creator
+from filter.tennis.ten_filter_creator import Ten_Filter_Creator
+from tester.soccer.tester_creator import Tester_Creator
+from tester.tennis.ten_tester_creator import Ten_Tester_Creator
+from analysis.soccer.analysis_creator import Analysis_Creator
+from analysis.tennis.ten_analysis_creator import Ten_Analysis_Creator
 from predictor import Predictor
 
 class Processor(object):
@@ -45,54 +50,74 @@ class Processor(object):
 		pass
 	
 	def extract(self):
-		extractor = Extractor_Creator()
-		if 'league_cond' not in gflags.FLAGS:
-			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
-			league_conds = json.load(f_exp)
-			for league_cond in league_conds:
-				extractor.execute(league_cond)
+		if gflags.FLAGS.soccer:
+			extractor = Extractor_Creator()
+			if 'league_cond' not in gflags.FLAGS:
+				f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+				league_conds = json.load(f_exp)
+				for league_cond in league_conds:
+					extractor.execute(league_cond)
+			else:
+				extractor.execute(json.loads(gflags.FLAGS.league_cond))
 		else:
-			extractor.execute(json.loads(gflags.FLAGS.league_cond))
+			extractor = Ten_Extractor_Creator()
+			extractor.execute()
 
 	def feature(self):
-		featurer = Feature_Creator()
-		if 'league_cond' not in gflags.FLAGS:
-			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
-			league_conds = json.load(f_exp)
-			for league_cond in league_conds:
-				featurer.execute(league_cond)
+		if gflags.FLAGS.soccer:
+			featurer = Feature_Creator()
+			if 'league_cond' not in gflags.FLAGS:
+				f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+				league_conds = json.load(f_exp)
+				for league_cond in league_conds:
+					featurer.execute(league_cond)
+			else:
+				featurer.execute(json.loads(gflags.FLAGS.league_cond))
 		else:
-			featurer.execute(json.loads(gflags.FLAGS.league_cond))
+			featurer = Ten_Feature_Creator()
+			featurer.execute()
 
 	def filter(self):
-		filter = Filter_Creator()
-		if 'league_cond' not in gflags.FLAGS:
-			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
-			league_conds = json.load(f_exp)
-			for league_cond in league_conds:
-				filter.execute(league_cond)
+		if gflags.FLAGS.soccer:
+			filter = Filter_Creator()
+			if 'league_cond' not in gflags.FLAGS:
+				f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+				league_conds = json.load(f_exp)
+				for league_cond in league_conds:
+					filter.execute(league_cond)
+			else:
+				filter.execute(json.loads(gflags.FLAGS.league_cond))
 		else:
-			filter.execute(json.loads(gflags.FLAGS.league_cond))
+			filter = Ten_Filter_Creator()
+			filter.execute()
 
 	def test(self):
-		tester = Tester_Creator()
-		if 'league_cond' not in gflags.FLAGS:
-			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
-			league_conds = json.load(f_exp)
-			for league_cond in league_conds:
-				tester.execute(league_cond)
+		if gflags.FLAGS.soccer:
+			tester = Tester_Creator()
+			if 'league_cond' not in gflags.FLAGS:
+				f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+				league_conds = json.load(f_exp)
+				for league_cond in league_conds:
+					tester.execute(league_cond)
+			else:
+				tester.execute(json.loads(gflags.FLAGS.league_cond))
 		else:
-			tester.execute(json.loads(gflags.FLAGS.league_cond))
+			tester = Ten_Tester_Creator()
+			tester.execute()
 	
 	def analysis(self):
-		analysis = Analysis_Creator()
-		if 'league_cond' not in gflags.FLAGS:
-			f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
-			league_conds = json.load(f_exp)
-			for league_cond in league_conds:
-				analysis.execute(league_cond)
+		if gflags.FLAGS.soccer:
+			analysis = Analysis_Creator()
+			if 'league_cond' not in gflags.FLAGS:
+				f_exp = codecs.open('../db/league_conds.json', 'r', encoding='utf-8')
+				league_conds = json.load(f_exp)
+				for league_cond in league_conds:
+					analysis.execute(league_cond)
+			else:
+				analysis.execute(json.loads(gflags.FLAGS.league_cond))
 		else:
-			analysis.execute(json.loads(gflags.FLAGS.league_cond))
+			analysis = Ten_Analysis_Creator()
+			analysis.execute()
 	
 	def predict(self):
 		predictor = Predictor()	

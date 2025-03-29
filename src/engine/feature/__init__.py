@@ -16,13 +16,18 @@ if current_dir not in sys.path:
     sys.path.append(current_dir)
 
 # 动态加载 feature 目录下所有 *_feature.py 文件
-modules = glob.glob(os.path.join(current_dir, "*_feature.py"))
+modules = []
+for root, dirs, files in os.walk(current_dir):
+    for file in files:
+        if file.endswith('_feature.py'):
+            modules.append(os.path.join(root, file))
 
 # 创建一个字典来存储所有的 *_FEATURE 类
 feature_classes = {}
 # 动态导入所有 *_feature.py 文件
 for module_path in modules:
-    module_name = os.path.basename(module_path)[:-3]  # 去掉 .py 扩展名
+    module_name = os.path.relpath(module_path, current_dir)[:-3]  # 去掉 .py 扩展名
+    module_name = module_name.replace(os.sep, ".")
     imported_module = importlib.import_module(f'feature.{module_name}')
     # 查找模块中的所有类，并找到 *_FEATURE 类
     for attribute_name in dir(imported_module):

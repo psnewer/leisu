@@ -126,7 +126,16 @@ class ATPPipeline:
         self.cursor.execute("""
             INSERT INTO tennis (match_id, tour, field, season, date, home, away, home_score, away_score, sets)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(match_id) DO NOTHING  -- 避免重复插入
+            ON CONFLICT(match_id) DO UPDATE SET
+                tour = excluded.tour,
+                field = excluded.field,
+                season = excluded.season,
+                date = excluded.date,
+                home = excluded.home,
+                away = excluded.away,
+                home_score = excluded.home_score,
+                away_score = excluded.away_score,
+                sets = excluded.sets
         """, (
             item["match_id"], 
             item["tour"], 

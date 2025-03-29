@@ -1,14 +1,14 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
 from conf import *
-from abstract_analysis import ABSTRACT_ANALYSIS
 
-class VS_RAWRAW_ANALYSIS(ABSTRACT_ANALYSIS):
+class TEN_RAWRAW_ANALYSIS(object):
     def __init__(self):
-        self.name = 'VS_RAWRAW'
+        self.name = 'TEN_RAWRAW'
         self.params = {}
+        self.params['density'] = False
         
-    def process(self,cond_str,seasons,ext_dir):
+    def process(self,seasons,ext_dir):
         analysis_dir = ext_dir.replace('analysis','test')
         if self.params['density']:
             analysis_dir += '_DENSITY'
@@ -21,11 +21,14 @@ class VS_RAWRAW_ANALYSIS(ABSTRACT_ANALYSIS):
             df['season'] = season
             df['fruit'] = df['fruit'].apply(lambda x: json.loads(x))
             df['odds'] = df['odds'].apply(lambda x: json.loads(x))
-            df['posi'] = df['fruit'].apply(lambda x: x.count(1))
-            df['neg'] = df['fruit'].apply(lambda x: x.count(-1))
+            df['seal'] = df['seal'].apply(lambda x: json.loads(x))
+            # df['posi'] = df['fruit'].apply(lambda x: sum(i > 0 for i in x))
+            # df['neg'] = df['fruit'].apply(lambda x: sum(i < 0 for i in x))
+            df['posi'] = df['seal'].apply(lambda x: sum(i > 0 for i in x))
+            df['neg'] = df['seal'].apply(lambda x: sum(i == 0 for i in x))
             df['dash'] = df['fruit'].apply(self.max_consecutive_minus_ones)
             if not df.empty:
-                df['profit'] = df.apply(lambda row: self.calculate_profit(row['fruit'], row['odds']), axis=1)
+                df['profit'] = df['odds'].apply(lambda x: sum(x))
             else:
                 df['profit'] = []
             all_data.append(df)
@@ -40,24 +43,13 @@ class VS_RAWRAW_ANALYSIS(ABSTRACT_ANALYSIS):
         for elem in arr:
             if elem == -1:
                 current_count += 1
-            elif elem == 0:
-                continue
+            # elif elem == 0:
+            #     continue
             else:
                 max_count = max(max_count, current_count)
                 current_count = 0  # 重置计数器
         max_count = max(max_count, current_count)
         return max_count
-
-    def calculate_profit(self, fruit, odds):
-        profit = 0
-        for f, o in zip(fruit, odds):
-            if (f == -1 and o[0] > 3.0):
-                profit += f
-            elif (f == 0):
-                profit += 0
-            elif (f == 1 and o[0] > 3.0):
-                profit += (o[0] - o[1])
-        return profit
         
     def pack(self,df,ext_file):
         df.to_excel(ext_file, index=False)

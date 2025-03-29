@@ -3,30 +3,30 @@
 from conf import *
 from abstract_filter import ABSTRACT_FILTER
 
-class VS_TAWTAW_FILTER(ABSTRACT_FILTER):
+class VS_RAWRAW_FILTER(ABSTRACT_FILTER):
 	def __init__(self):
-		self.name = 'VS_TAWTAW'
+		self.name = 'VS_RAWRAW'
 		self.params = {}
-		self.params['thresh_min'] = -8
-		self.params['thresh_max'] = 12
+		self.params['thresh_min'] = 0
+		self.params['thresh_max'] = 0
 
 	def process(self,cond_str,seasons,ext_dir):
 		for season in seasons:
 			feature_dir = ext_dir.replace('filter','feature')
 			data_file = feature_dir + '/' + season + '.xlsx'
 			df = pd.read_excel(data_file)
-			df = self.analyze_hard(df)
+			df = self.analyze_soft(df)
 			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
 
-	def analyze_hard(self,df):
+	def analyze_soft(self,df):
 		teams = df['team'].unique()
 		results = []
 		for team in teams:
 			team_matches = df[df['team'] == team]
 			for thresh in range(self.params['thresh_min'], self.params['thresh_max'] + 1):
 				selected_matches = team_matches[team_matches['soft'] < thresh]
-				selected = selected_matches[['date', 'home_team', 'away_team', 'tawtaw', 'taw_win', 'taw_draw']].to_dict('records')
+				selected = selected_matches[['date', 'home_team', 'away_team', 'rawraw', 'raw_win', 'raw_draw']].to_dict('records')
 				results.append({
 					'team': team,
 					'thresh': thresh,

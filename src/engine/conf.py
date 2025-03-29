@@ -26,6 +26,7 @@ sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/predictor/')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0] + '/manager/')
 
 conn = sqlite3.connect(os.path.split(os.path.realpath(__file__))[0]+'/../db/matches.db')
+cont = sqlite3.connect(os.path.split(os.path.realpath(__file__))[0]+'/../db/tennis.db')
 cur = conn.cursor()
 
 conf = {
@@ -49,13 +50,11 @@ gflags.DEFINE_bool('feature', False, 'feature')
 gflags.DEFINE_bool('filter', False, 'filter')
 gflags.DEFINE_bool('analysis', False, 'analysis')
 gflags.DEFINE_bool('predict', False, 'predict')
-gflags.DEFINE_string('extract_path', '../../res/extract/', 'extract path')
-gflags.DEFINE_string('feature_path', '../../res/feature/', 'feature path')
-gflags.DEFINE_string('filter_path', '../../res/filter/', 'filter path')
-gflags.DEFINE_string('test_path', '../../res/test/', 'test path')
-gflags.DEFINE_string('analysis_path', '../../res/analysis/', 'analysis path')
+gflags.DEFINE_bool('soccer', False, 'predict')
+gflags.DEFINE_bool('tennis', False, 'predict')
+gflags.DEFINE_string('res_path', '../../res/', 'res path')
 gflags.DEFINE_string('predict_path', '../../res/predict/', 'predict path')
-gflags.DEFINE_string('predict_summary', '../../res/predict/predict_summary.csv', 'predict summary')
+gflags.DEFINE_string('predict_cand', '../db/predict_cand.json', 'predict cand')
 
 Flags = gflags.FLAGS
 

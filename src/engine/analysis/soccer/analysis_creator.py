@@ -17,7 +17,7 @@ class Analysis_Creator(object):
 		# condition = json.loads(condition)
 		league_str = condition['league']
 		league_cond = "league='%s'"%league_str
-		league_dir = os.path.abspath(gflags.FLAGS.analysis_path + league_str)
+		league_dir = os.path.abspath(gflags.FLAGS.res_path + 'soccer/analysis/' + league_str)
 		mkdir(league_dir)
 		if 'serryname' not in condition:
 			cond = [league_cond]
