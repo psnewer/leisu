@@ -18,7 +18,7 @@ class Ten_Analysis_Creator(object):
 		if (gflags.FLAGS.predict):
 			seasons = [max(seasons, key=str)]
 		for analysis in self.analysis_cand:
-			analysis_dir = os.path.abspath(gflags.FLAGS.analysis_path + 'tennis') + '/' + analysis.name
+			analysis_dir = os.path.abspath(gflags.FLAGS.res_path + 'tennis/analysis') + '/' + analysis.name
 			mkdir(analysis_dir)
 			analysis.process(seasons,analysis_dir)
 						

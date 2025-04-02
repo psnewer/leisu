@@ -30,7 +30,7 @@ class TEN_RAWRAW_FEATURE(object):
 			j = i - 1  # 从当前行的上一行开始向上查找
 			soft_sum = 0
 			# while j >= 0 and team_data.iloc[j, team_data.columns.get_loc('profit')] == -1:
-			while j >= 0 and team_data.iloc[j, team_data.columns.get_loc('seal')] == 0:
+			while j >= 0 and team_data.iloc[j, team_data.columns.get_loc('seal')] == 0 and team_data.iloc[j, team_data.columns.get_loc('profit')] < 0:
 				soft_sum += -1
 				j -= 1  # 继续向上查找
 			

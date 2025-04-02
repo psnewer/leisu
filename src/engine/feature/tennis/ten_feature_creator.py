@@ -18,6 +18,6 @@ class Ten_Feature_Creator(object):
 		if (gflags.FLAGS.predict):
 			seasons = [max(seasons, key=str)]
 		for feature in self.featurer_cand:
-			feature_dir = os.path.abspath(gflags.FLAGS.feature_path + 'tennis') + '/' + feature.name
+			feature_dir = os.path.abspath(gflags.FLAGS.res_path + 'tennis/feature') + '/' + feature.name
 			mkdir(feature_dir)
 			feature.process(seasons,feature_dir)

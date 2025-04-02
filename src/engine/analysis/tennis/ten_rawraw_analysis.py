@@ -24,8 +24,8 @@ class TEN_RAWRAW_ANALYSIS(object):
             df['seal'] = df['seal'].apply(lambda x: json.loads(x))
             # df['posi'] = df['fruit'].apply(lambda x: sum(i > 0 for i in x))
             # df['neg'] = df['fruit'].apply(lambda x: sum(i < 0 for i in x))
-            df['posi'] = df['seal'].apply(lambda x: sum(i > 0 for i in x))
-            df['neg'] = df['seal'].apply(lambda x: sum(i == 0 for i in x))
+            df['posi'] = df['odds'].apply(lambda x: sum(i > 0 for i in x))
+            df['neg'] = df['odds'].apply(lambda x: sum(i < 0 for i in x))
             df['dash'] = df['fruit'].apply(self.max_consecutive_minus_ones)
             if not df.empty:
                 df['profit'] = df['odds'].apply(lambda x: sum(x))

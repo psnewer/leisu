@@ -161,6 +161,5 @@ class TEN_RAWRAW_EXTRACTOR(object):
 		return score,profit
 	
 	def pack(self,df,ext_file):
-		print (ext_file)
 		df.to_excel(ext_file, index=False)
 		

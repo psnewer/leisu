@@ -6,7 +6,7 @@ class TEN_RAWRAW_FILTER(object):
 	def __init__(self):
 		self.name = 'TEN_RAWRAW'
 		self.params = {}
-		self.params['thresh_min'] = -2
+		self.params['thresh_min'] = 0
 		self.params['thresh_max'] = 1
 
 	def process(self,seasons,ext_dir):
@@ -25,15 +25,15 @@ class TEN_RAWRAW_FILTER(object):
 			team_matches = df[df['team'] == team]
 			for thresh in range(self.params['thresh_min'], self.params['thresh_max'] + 1):
 				selected_matches = team_matches[team_matches['soft'] < thresh].copy()
-				for index, row in selected_matches.iterrows():
-					home_team = row['home_team']
-					away_team = row['away_team']
-					date = row['date']
-					match = df.query("team != @team and home_team == @home_team and away_team == @away_team and date == @date")
-					if not match.empty:
-						soft_value = match.iloc[0]['soft']
-						if soft_value > -2:
-							selected_matches.drop(index, inplace=True) 
+				# for index, row in selected_matches.iterrows():
+				# 	home_team = row['home_team']
+				# 	away_team = row['away_team']
+				# 	date = row['date']
+				# 	match = df.query("team != @team and home_team == @home_team and away_team == @away_team and date == @date")
+				# 	if not match.empty:
+				# 		soft_value = match.iloc[0]['soft']
+				# 		if soft_value > -2:
+				# 			selected_matches.drop(index, inplace=True) 
 				selected = selected_matches[['date', 'home_team', 'away_team', 'score', 'profit', 'seal']].to_dict('records')
 				results.append({
 					'team': team,

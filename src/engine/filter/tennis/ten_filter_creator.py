@@ -18,7 +18,7 @@ class Ten_Filter_Creator(object):
 		if (gflags.FLAGS.predict):
 			seasons = [max(seasons, key=str)]
 		for filter in self.filter_cand:
-			filter_dir = os.path.abspath(gflags.FLAGS.filter_path + 'tennis') + '/' + filter.name
+			filter_dir = os.path.abspath(gflags.FLAGS.res_path + 'tennis/filter') + '/' + filter.name
 			mkdir(filter_dir)
 			filter.process(seasons,filter_dir)
 

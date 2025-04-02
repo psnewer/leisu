@@ -18,7 +18,7 @@ class Ten_Tester_Creator(object):
 		if (gflags.FLAGS.predict):
 			seasons = [max(seasons, key=str)]
 		for tester in self.tester_cand:
-			tester_dir = os.path.abspath(gflags.FLAGS.test_path + 'tennis') + '/' + tester.name
+			tester_dir = os.path.abspath(gflags.FLAGS.res_path + 'tennis/test') + '/' + tester.name
 			mkdir(tester_dir)
 			tester.process(seasons,tester_dir)
 						

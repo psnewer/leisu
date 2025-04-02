@@ -26,7 +26,7 @@ class Ten_Extractor_Creator(object):
 		if (gflags.FLAGS.predict):
 			seasons = [max(seasons, key=str)]
 		for extractor in self.extractor_cand:
-			extractor_dir = os.path.abspath(gflags.FLAGS.extract_path + 'tennis') + '/' + extractor.name
+			extractor_dir = os.path.abspath(gflags.FLAGS.res_path + 'tennis/extract') + '/' + extractor.name
 			mkdir(extractor_dir)
 			extractor.process(seasons,extractor_dir)
 
