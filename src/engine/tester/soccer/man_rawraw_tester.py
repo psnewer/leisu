@@ -31,8 +31,8 @@ class MAN_RAWRAW_TESTER(ABSTRACT_TESTER):
 		return man
 
 	def extract_odds_values(self,row):
-		return np.nan_to_num([float(row['raw_win']),float(row['raw_draw'])], nan=0).tolist() if row['filter'] == 'VS_RAWRAW' else np.nan_to_num([float(row['taw_win']),float(row['taw_draw'])], nan=0).tolist()
-
+		return np.nan_to_num([float(row['draw_0']),float(row['home']),,float(row['draw']),,float(row['away'])], nan=0).tolist()
+	
 	def filter_selected(self, row, df_density):
 		filtered_selected = []
 		for match in json.loads(row['selected']):

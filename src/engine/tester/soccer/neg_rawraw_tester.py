@@ -24,6 +24,13 @@ class NEG_RAWRAW_TESTER(ABSTRACT_TESTER):
 					df['selected'] = []
 			df['fruit'] = df['rawraw'].apply(self.extract_raw_values)
 			df['odds'] = df.apply(lambda row: self.extract_odds_values(row), axis=1)
+			# if not df.empty:
+			# 	with open(gflags.FLAGS.predict_cand, 'r', encoding='utf-8') as file:
+			# 		cands = json.load(file)
+			# 		league = ext_dir.split('/')[-2]
+			# 		league_cand = cands[league]
+			# 		fishes = [item["team"] for item in league_cand if item.get("fish", False)]
+			# 		df = df[(df['home_team'].isin(fishes) & df['away_team'].isin(fishes)) | (~df['home_team'].isin(fishes) & df['away_team'].isin(fishes))]
 			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
 
@@ -31,7 +38,7 @@ class NEG_RAWRAW_TESTER(ABSTRACT_TESTER):
 		return man
 
 	def extract_odds_values(self,row):
-		return np.nan_to_num([float(row['raw_win']),float(row['raw_draw'])], nan=0).tolist()
+		return np.nan_to_num([float(row['draw_0']),float(row['home']),float(row['draw']),float(row['away'])], nan=0).tolist()
 
 	def filter_selected(self, row, df_density):
 		filtered_selected = []

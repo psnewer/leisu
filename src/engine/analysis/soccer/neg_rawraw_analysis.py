@@ -65,6 +65,15 @@ def calculate_profit(row):
         return -1  # 亏损为 -1
     elif row['fruit'] == 1:
         odds = json.loads(row['odds'])
-        return (odds[0] - odds[1])  # 假设盈利为 odds - 1
+        if row['filter'] == 'draw':
+            return (odds[0] - odds[2])
+        else:
+            scores = row['score'].strip("'").split('-')
+            home_score = int(scores[0])
+            away_score = int(scores[1])
+            if home_score > away_score:
+                return  (0.5*(odds[0]-1)*(odds[1]-1)-1)
+            else:
+                return  (0.5*(odds[0]-1)*(odds[3]-1)-1)
     else:
         return 0  # 其他情况返回 0

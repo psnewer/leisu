@@ -44,6 +44,13 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		team_lose = False
 		pre_score_home = 0
 		pre_score_away = 0
+		draw_time = 0
+		home = None
+		draw = None
+		away = None
+		draw_0 = None
+		man = -1
+		filter = None
 
 		if (not procedure):
 			return [None,None,None,None,None,None,None]
@@ -52,6 +59,7 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		for event in procedure:
 			score_home = int(event['score_home'])
 			score_away = int(event['score_away'])
+			time = int (event('time'))
 
 			if score_home > pre_score_home and score_away > pre_score_away:
 				return [0,0,0,0,0,0,0]
@@ -76,10 +84,17 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 
 				if score_home == 0 and not is_home:
 					bought = True
+					draw_0 = event('draw')
 				elif score_away == 0 and is_home:
 					bought = True
+					draw_0 = event('draw')
             	# 检查是否在某时打平
 				if score_home == score_away:
+					if not draw_at_some_point:
+						draw_time = time
+						home = float(event('home'))
+						draw = float(event('draw'))
+						away = float(event('away'))
 					draw_at_some_point = True
 					team_always_behind = False
 					team_always_ahead = False
@@ -107,6 +122,11 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 						team_lose = True
 					elif team_score == opponent_score:
 						draw_at_some_point = True
+						if not draw_at_some_point:
+							draw_time = time
+							home = float(event('home'))
+							draw = float(event('draw'))
+							away = float(event('away'))
 
     	# 应用规则：raw 列根据不同情况设定
 		if no_goals or draw_at_some_point:
@@ -127,7 +147,23 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		if bought and not team_won:
 			tawtaw = 1
 
-		return raw,taw,raw_win,taw_win,raw_draw,taw_draw,tawtaw
+		if no_goals or not bought:
+			man = 0
+		elif draw_at_some_point:
+			if draw_time <= 45 and 0.5*(draw_0-1)*(home-1)-1 > (draw_0-draw) and 0.5*(draw_0-1)*(away-1)-1 > (draw_0-draw):
+				filter = 'o3'
+				if team_won or team_lose:
+					man = 1
+				else:
+					man = 0
+			else:
+				filter = 'draw'
+				if not team_won and not team_lose:
+					man = 1
+				else:
+					man = 0
+
+		return raw,taw,draw_0,home,draw,away,filter,man,tawtaw
 
 		# 应用解析和规则生成到整个 DataFrame
 	def generate_rows(self, df):
@@ -139,8 +175,8 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 			score = row['score']
         
         	# 分别生成 home_team 和 away_team 的行
-			home_raw,home_taw,home_raw_win,home_taw_win,home_raw_draw,home_taw_draw,home_tawtaw = self.analyze_procedure(procedure, score, is_home=True)
-			away_raw,away_taw,away_raw_win,away_taw_win,away_raw_draw,away_taw_draw,away_tawtaw = self.analyze_procedure(procedure, score, is_home=False)
+			home_raw,home_taw,home_draw_0,home_home,home_draw,home_away,home_filter,home_man,home_tawtaw = self.analyze_procedure(procedure, score, is_home=True)
+			away_raw,away_taw,away_draw_0,away_home,away_draw,away_away,away_filter,away_man,away_tawtaw = self.analyze_procedure(procedure, score, is_home=False)
 
 			if (home_raw is not None and away_raw is not None):
         
@@ -150,10 +186,12 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					'raw': home_raw,
 					'taw': home_taw,
 					'tawtaw': home_tawtaw,
-					'raw_win': home_raw_win,
-					'taw_win': home_taw_win,
-					'raw_draw': home_raw_draw,
-					'taw_draw': home_taw_draw,
+					'draw_0': home_draw_0,
+					'home': home_home,
+					'draw': home_draw,
+					'away': home_away,
+					'filter': home_filter,
+					'man': home_man,
 					'league': row['league'],
 					'season': row['season'],
 					'serryid': row['serryid'],
@@ -172,10 +210,12 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					'raw': away_raw,
 					'taw': away_taw,
 					'tawtaw': away_tawtaw,
-					'raw_win': away_raw_win,
-					'taw_win': away_taw_win,
-					'raw_draw': away_raw_draw,
-					'taw_draw': away_taw_draw,
+					'draw_0': away_draw_0,
+					'home': away_home,
+					'draw': away_draw,
+					'away': away_away,
+					'filter': away_filter,
+					'man': away_man,
 					'league': row['league'],
 					'season': row['season'],
 					'serryid': row['serryid'],
@@ -188,7 +228,7 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					'procedure': row['procedure']
 				})
 
-		return pd.DataFrame(rows, columns = ['team','raw','taw','tawtaw','raw_win','taw_win','raw_draw','taw_draw','league','season','serryid','serryname','stage','date','home_team','away_team','score','procedure'])
+		return pd.DataFrame(rows, columns = ['team','raw','taw','tawtaw','draw_0','home','draw','away','filter','man','league','season','serryid','serryname','stage','date','home_team','away_team','score','procedure'])
 
 	def pack(self,df,ext_file):
 		df.to_excel(ext_file, index=False)

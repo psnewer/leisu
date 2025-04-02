@@ -68,12 +68,6 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 				rawraw_feature = rawraw_feature[~(rawraw_feature['home_team'].isin(ignore) | rawraw_feature['away_team'].isin(ignore))]
 			if not tawtaw_feature.empty:
 				tawtaw_feature = tawtaw_feature[~(tawtaw_feature['home_team'].isin(ignore) | tawtaw_feature['away_team'].isin(ignore))]
-		filtered_rawraw = filtered_rawraw.rename(columns={'rawraw': 'man'})
-		filtered_rawraw['filter'] = 'VS_RAWRAW'
-		rawraw_feature = rawraw_feature.rename(columns={'rawraw': 'man'})
-		rawraw_feature['filter'] = 'VS_RAWRAW'
-		tawtaw_feature = tawtaw_feature.rename(columns={'tawtaw': 'man'})
-		tawtaw_feature['filter'] = 'VS_TAWTAW'
 		merged_df = pd.concat([filtered_rawraw, rawraw_feature, tawtaw_feature], ignore_index=True)
 		if (not gflags.FLAGS.predict):
 			merged_df = merged_df.groupby(['home_team', 'away_team', 'date']).apply(self.get_first_non_zero)
