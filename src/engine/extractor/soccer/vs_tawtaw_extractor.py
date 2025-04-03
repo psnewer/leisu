@@ -184,8 +184,8 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 
 			if (home_raw is not None and away_raw is not None):
 				if int(row['date']) >= int(datetime.today().strftime('%Y%m%d%H%M')):
-					home_filter = 'VS_RAWRAW'
-					away_filter = 'VS_RAWRAW'
+					home_filter = 'VS_TAWTAW'
+					away_filter = 'VS_TAWTAW'
         
 				# 添加 home_team 的数据
 				rows.append({
