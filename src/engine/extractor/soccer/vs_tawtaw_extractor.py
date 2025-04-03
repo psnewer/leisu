@@ -53,16 +53,17 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		filter = None
 
 		if (not procedure):
-			return [None,None,None,None,None,None,None]
+			return [None,None,None,None,None,None,None,None,None]
     
     	# 遍历 procedure 列表中的每个记录，查找进球和平局信息
 		for event in procedure:
 			score_home = int(event['score_home'])
 			score_away = int(event['score_away'])
-			time = int (event('time'))
+			time = event['time'].strip("'")
+			time = int (time) if time.isdigit() else 45
 
 			if score_home > pre_score_home and score_away > pre_score_away:
-				return [0,0,0,0,0,0,0]
+				return [0,0,0,0,0,0,0,0,0]
 			pre_score_home = score_home
 			pre_score_away = score_away
         
@@ -82,19 +83,21 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 				if raw_win is None:
 					raw_win,taw_win = (1.0 + 1.0/(float(event['away']) - 1.0) if event['away'] else math.nan,1.0 + 1.0/(float(event['home']) - 1.0) if event['home'] else math.nan) if is_home else (1.0 + 1.0/(float(event['home']) - 1.0) if event['home'] else math.nan,1.0 + 1.0/(float(event['away']) - 1.0) if event['away'] else math.nan)
 
-				if score_home == 0 and not is_home:
+				if score_home == 0 and score_away == 1 and not is_home:
 					bought = True
-					draw_0 = event('draw')
-				elif score_away == 0 and is_home:
+					if not draw_0:
+						draw_0 = float(event['draw']) if event['draw'] else math.nan
+				elif score_away == 0 and score_home == 1 and is_home:
 					bought = True
-					draw_0 = event('draw')
+					if not draw_0:
+						draw_0 = float(event['draw']) if event['draw'] else math.nan
             	# 检查是否在某时打平
 				if score_home == score_away:
 					if not draw_at_some_point:
 						draw_time = time
-						home = float(event('home'))
-						draw = float(event('draw'))
-						away = float(event('away'))
+						home = float(event['home']) if event['home'] else math.nan
+						draw = float(event['draw']) if event['draw'] else math.nan
+						away = float(event['away']) if event['away'] else math.nan
 					draw_at_some_point = True
 					team_always_behind = False
 					team_always_ahead = False
@@ -124,9 +127,9 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 						draw_at_some_point = True
 						if not draw_at_some_point:
 							draw_time = time
-							home = float(event('home'))
-							draw = float(event('draw'))
-							away = float(event('away'))
+							home = float(event['home']) if event['home'] else math.nan
+							draw = float(event['draw']) if event['draw'] else math.nan
+							away = float(event['away']) if event['away'] else math.nan
 
     	# 应用规则：raw 列根据不同情况设定
 		if no_goals or draw_at_some_point:
@@ -150,11 +153,11 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		if no_goals or not bought:
 			man = 0
 		elif draw_at_some_point:
-			if draw_time <= 45 and 0.5*(draw_0-1)*(home-1)-1 > (draw_0-draw) and 0.5*(draw_0-1)*(away-1)-1 > (draw_0-draw):
+			if draw_0 and home and draw and away and draw_time <= 45:
 				filter = 'o3'
-				if team_won or team_lose:
+				if score_home + score_away > 3:
 					man = 1
-				else:
+				elif score_home + score_away != 3:
 					man = 0
 			else:
 				filter = 'draw'
