@@ -182,9 +182,10 @@ class VS_RAWRAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 			away_raw,away_taw,away_draw_0,away_home,away_draw,away_away,away_filter,away_man,away_rawraw = self.analyze_procedure(procedure, score, is_home=False)
 
 			if (home_raw is not None and away_raw is not None):
-				if row['date'] >= int(datetime.today().strftime('%Y%m%d%H%M')):
+				if int(row['date']) >= int(datetime.today().strftime('%Y%m%d%H%M')):
 					home_filter = 'VS_RAWRAW'
 					away_filter = 'VS_RAWRAW'
+
 				# 添加 home_team 的数据
 				rows.append({
 					'team': home_team,
