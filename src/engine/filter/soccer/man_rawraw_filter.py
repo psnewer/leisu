@@ -54,10 +54,10 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 				filtered_rawraw = filter_rawraw[~filter_rawraw['home_team'].isin(cand_teams) & ~filter_rawraw['away_team'].isin(cand_teams)]
 		if fishes:
 			if not filter_rawraw.empty:
-				filtered_rawraw = pd.concat([filtered_rawraw,filter_rawraw[filter_rawraw['home_team'].isin(fishes) & filter_rawraw['away_team'].isin(fishes)]], ignore_index=True)
-				# filtered_rawraw = pd.concat([filtered_rawraw,filter_rawraw[filter_rawraw['team'].isin(fishes) & (~filter_rawraw['home_team'].isin(fishes) | ~filter_rawraw['away_team'].isin(fishes))]], ignore_index=True)
+				# filtered_rawraw = pd.concat([filtered_rawraw,filter_rawraw[filter_rawraw['home_team'].isin(fishes) & filter_rawraw['away_team'].isin(fishes)]], ignore_index=True)
+				filtered_rawraw = pd.concat([filtered_rawraw,filter_rawraw[filter_rawraw['team'].isin(fishes) & (~filter_rawraw['home_team'].isin(fishes) | ~filter_rawraw['away_team'].isin(fishes))]], ignore_index=True)
 			if not tawtaw_feature.empty:
-				tawtaw_feature = tawtaw_feature[~(~tawtaw_feature['team'].isin(fishes) & (tawtaw_feature['home_team'].isin(fishes) | tawtaw_feature['away_team'].isin(fishes)))]
+				tawtaw_feature = tawtaw_feature[(tawtaw_feature['home_team'].isin(fishes) | tawtaw_feature['away_team'].isin(fishes))]
 			if not tawtaw_feature.empty:
 				tawtaw_feature = tawtaw_feature[~(tawtaw_feature['home_team'].isin(fishes) & tawtaw_feature['away_team'].isin(fishes))]
 		if ignore:
