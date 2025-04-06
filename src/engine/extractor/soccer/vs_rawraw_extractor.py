@@ -154,13 +154,13 @@ class VS_RAWRAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		if no_goals or not bought:
 			man = 0
 		elif draw_at_some_point:
-			if draw_0 and home and draw and away and draw_time <= 45:
-				filter = 'o3'
-				if score_home + score_away > 3:
-					man = 1
-				elif score_home + score_away != 3:
-					man = 0
-			else:
+			# if draw_0 and home and draw and away and draw_time <= 45:
+			# 	filter = 'o3'
+			# 	if score_home + score_away > 3:
+			# 		man = 1
+			# 	elif score_home + score_away != 3:
+			# 		man = 0
+			# else:
 				filter = 'draw'
 				if not team_won and not team_lose:
 					man = 1

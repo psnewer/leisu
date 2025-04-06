@@ -67,13 +67,13 @@ def calculate_profit(row):
         odds = json.loads(row['odds'])
         if row['filter'] == 'draw':
             return (odds[0] - odds[2])
-        else:
-            scores = row['score'].strip("'").split('-')
-            home_score = int(scores[0])
-            away_score = int(scores[1])
-            if home_score == away_score:
-                return (odds[0] - 1) * 1.5
-            else : 
-                return (odds[0] - 1) * 0.5 - 1
+        # else:
+        #     scores = row['score'].strip("'").split('-')
+        #     home_score = int(scores[0])
+        #     away_score = int(scores[1])
+        #     if home_score == away_score:
+        #         return (odds[0] - 1) * 1.5
+        #     else : 
+        #         return (odds[0] - 1) * 0.5 - 1
     else:
         return 0  # 其他情况返回 0
