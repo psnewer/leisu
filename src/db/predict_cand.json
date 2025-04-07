@@ -59,6 +59,7 @@
                                 {"team": "Villarreal", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false}
                             ],
     "France Ligue 1": [
+                                {"team": "Montpellier", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore": true},
                                 {"team": "Monaco", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Lille", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Paris Saint Germain (PSG)", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
@@ -68,6 +69,7 @@
                                 {"team": "Nice", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Stade Brestois", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Rennes", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore": true},
+                                {"team": "Marseille", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Marseille", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Lens", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false}
                             ]
