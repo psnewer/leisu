@@ -70,7 +70,6 @@
                                 {"team": "Stade Brestois", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Rennes", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore": true},
                                 {"team": "Marseille", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
-                                {"team": "Marseille", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Lens", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false}
                             ]
 }

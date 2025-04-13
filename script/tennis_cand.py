@@ -42,8 +42,11 @@ def calculate_team_strength(df, prefix):
         sum_lapse = group['lapse'].sum()
         
         # 判断强弱
-        strong_condition = (n_pos >= n_neg) and (sum_pos >= sum_neg * 2)
-        weak_condition = (n_pos <= n_neg) and (sum_pos < sum_neg * 2)
+        strength = None
+        if (n_pos >= n_neg) and (sum_pos >= sum_neg * 2):
+            strength = True
+        elif (n_pos <= n_neg) and (sum_pos < sum_neg):
+            strength = False
         
         results.append({
             'team': team,
@@ -52,8 +55,7 @@ def calculate_team_strength(df, prefix):
             f'{prefix}_sum_pos': sum_pos,
             f'{prefix}_sum_neg': sum_neg,
             f'{prefix}_sum_lapse': sum_lapse,
-            f'{prefix}_strong': strong_condition,
-            f'{prefix}_weak': weak_condition
+            f'{prefix}_strength': strength
         })
     
     return pd.DataFrame(results)
@@ -128,16 +130,17 @@ def generate_filter_array(final_results):
         team = row['team']
         entry = {"team": team}
         
+        entry['filter'] = 'TEN_RAWRAW'
         # 条件1: raw_strong为true且taw_weak为true
-        if row['raw_strong'] and row['taw_weak']:
-            entry["filter"] = "TEN_RAWRAW"
-        
-        # 条件2: taw_strong为true且raw_weak为true
-        elif row['taw_strong'] and row['raw_weak']:
-            entry["filter"] = "TEN_TAWTAW"
-            # 检查fish条件 (sum_pos/sum_neg < 0.5)
-            if (row['raw_sum_pos'] < row['raw_sum_neg']):
-                entry["fish"] = True
+        if row['raw_strength'] is True and row['taw_strength'] is False:
+            entry["king"] = True
+        if row['taw_strength'] is True and row['raw_strength'] is False:
+            entry["fish"] = True
+            entry['filter'] = 'TEN_TAWTAW'
+        if (row['raw_strength'] is True and row['taw_strength'] is True) or (row['raw_strength'] is False and row['taw_strength'] is False):
+            entry['ignore'] = True
+        # if row['raw_strength'] is None and row['taw_strength'] is None:
+        #     entry['ignore'] = True
         
         # 条件3: taw_strong和raw_strong都为true 或 taw_weak和raw_weak都为true
         # elif (row['taw_strong'] and row['raw_strong']) or (row['taw_weak'] and row['raw_weak']):

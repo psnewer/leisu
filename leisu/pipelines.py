@@ -156,4 +156,34 @@ class ATPPipeline:
         """爬虫结束时，关闭数据库连接"""
         self.conn.close()
 
+class ATPRanking:
+    def open_spider(self, spider):
+        """爬虫启动时，连接 SQLite 数据库并创建表"""
+        self.conn = sqlite3.connect("./src/db/tennis.db")  # 连接数据库
+        self.cursor = self.conn.cursor()
 
+        # 创建 ranking 表（如果不存在）
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ranking (
+                player TEXT PRIMARY KEY,  -- 选手姓名作为主键
+                rank INTEGER NOT NULL,    -- 当前排名
+                last_updated DATETIME DEFAULT CURRENT_TIMESTAMP  -- 最后更新时间
+            )
+        """)
+        self.conn.commit()
+
+    def process_item(self, item, spider):
+        """处理爬取到的数据并存入数据库"""
+        self.cursor.execute("""
+            INSERT OR REPLACE INTO ranking (rank, player)
+            VALUES (?, ?)
+        """, (
+            item["rank"], 
+            item["player"]
+        ))
+        self.conn.commit()
+        return item
+
+    def close_spider(self, spider):
+        """爬虫结束时，关闭数据库连接"""
+        self.conn.close()

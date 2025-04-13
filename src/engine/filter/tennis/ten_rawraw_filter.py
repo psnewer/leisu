@@ -6,7 +6,7 @@ class TEN_RAWRAW_FILTER(object):
 	def __init__(self):
 		self.name = 'TEN_RAWRAW'
 		self.params = {}
-		self.params['thresh_min'] = 0
+		self.params['thresh_min'] = 1
 		self.params['thresh_max'] = 1
 
 	def process(self,seasons,ext_dir):
