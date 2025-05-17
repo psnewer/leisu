@@ -66,13 +66,17 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 		if ignore:
 			if not filtered_rawraw.empty:
 				filtered_rawraw = filtered_rawraw[~(filtered_rawraw['home_team'].isin(ignore) | filtered_rawraw['away_team'].isin(ignore))]
-				filtered_rawraw = filtered_rawraw[~(filtered_rawraw['team'].isin(laizy) & ~(filtered_rawraw['home_team'].isin(laizy) & filtered_rawraw['away_team'].isin(laizy)))]
 				# filtered_rawraw = pd.concat([filtered_rawraw,filter_rawraw[filter_rawraw['team'].isin(fishes) & (~filter_rawraw['home_team'].isin(fishes) | ~filter_rawraw['away_team'].isin(fishes))]], ignore_index=True)
 			if not rawraw_feature.empty:
 				rawraw_feature = rawraw_feature[~(rawraw_feature['home_team'].isin(ignore) | rawraw_feature['away_team'].isin(ignore))]
-				rawraw_feature = rawraw_feature[~(rawraw_feature['team'].isin(laizy) & ~(rawraw_feature['home_team'].isin(laizy) & rawraw_feature['away_team'].isin(laizy)))]
 			if not tawtaw_feature.empty:
 				tawtaw_feature = tawtaw_feature[~(tawtaw_feature['home_team'].isin(ignore) | tawtaw_feature['away_team'].isin(ignore))]
+		if laizy:
+			if not filtered_rawraw.empty:
+				filtered_rawraw = filtered_rawraw[~(filtered_rawraw['team'].isin(laizy) & ~(filtered_rawraw['home_team'].isin(laizy) & filtered_rawraw['away_team'].isin(laizy)))]
+			if not rawraw_feature.empty:
+				rawraw_feature = rawraw_feature[~(rawraw_feature['team'].isin(laizy) & ~(rawraw_feature['home_team'].isin(laizy) & rawraw_feature['away_team'].isin(laizy)))]
+			if not tawtaw_feature.empty:
 				tawtaw_feature = tawtaw_feature[~(~tawtaw_feature['team'].isin(laizy) & (tawtaw_feature['home_team'].isin(laizy) | tawtaw_feature['away_team'].isin(laizy)))]
 		merged_df = pd.concat([filtered_rawraw, rawraw_feature, tawtaw_feature], ignore_index=True)
 		if (not gflags.FLAGS.predict):
