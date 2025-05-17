@@ -24,6 +24,7 @@ class MAN_RAWRAW_TESTER(ABSTRACT_TESTER):
 					df['selected'] = []
 			df['fruit'] = df['man'].apply(self.extract_raw_values)
 			df['odds'] = df.apply(lambda row: self.extract_odds_values(row), axis=1)
+			df = df[df['date'] <= 202505150000]
 			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
 
