@@ -73,11 +73,11 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 				tawtaw_feature = tawtaw_feature[~(tawtaw_feature['home_team'].isin(ignore) | tawtaw_feature['away_team'].isin(ignore))]
 		if laizy:
 			if not filtered_rawraw.empty:
-				filtered_rawraw = filtered_rawraw[~(filtered_rawraw['team'].isin(laizy) & ~(filtered_rawraw['home_team'].isin(laizy) & filtered_rawraw['away_team'].isin(laizy)))]
+				filtered_rawraw = filtered_rawraw[~filtered_rawraw['team'].isin(laizy) ]
 			if not rawraw_feature.empty:
-				rawraw_feature = rawraw_feature[~(rawraw_feature['team'].isin(laizy) & ~(rawraw_feature['home_team'].isin(laizy) & rawraw_feature['away_team'].isin(laizy)))]
+				rawraw_feature = rawraw_feature[~rawraw_feature['team'].isin(laizy)]
 			if not tawtaw_feature.empty:
-				tawtaw_feature = tawtaw_feature[~(~tawtaw_feature['team'].isin(laizy) & (tawtaw_feature['home_team'].isin(laizy) | tawtaw_feature['away_team'].isin(laizy)))]
+				tawtaw_feature = tawtaw_feature[~((~tawtaw_feature['team'].isin(laizy) & (tawtaw_feature['home_team'].isin(laizy) | tawtaw_feature['away_team'].isin(laizy))) | (tawtaw_feature['home_team'].isin(laizy) & tawtaw_feature['away_team'].isin(laizy)))]
 		merged_df = pd.concat([filtered_rawraw, rawraw_feature, tawtaw_feature], ignore_index=True)
 		if (not gflags.FLAGS.predict):
 			merged_df = merged_df.groupby(['home_team', 'away_team', 'date']).apply(self.get_first_non_zero)
