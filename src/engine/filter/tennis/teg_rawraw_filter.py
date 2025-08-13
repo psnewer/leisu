@@ -6,7 +6,7 @@ class TEG_RAWRAW_FILTER(object):
 	def __init__(self):
 		self.name = 'TEG_RAWRAW'
 		self.params = {}
-		self.params['thresh'] = -2
+		self.params['thresh'] = -1
 		with open('../db/tennis_cand.json', 'r', encoding='utf-8') as file:
 			self.cand = json.load(file)
 		with open('../db/top_200.json', 'r', encoding='utf-8') as file:

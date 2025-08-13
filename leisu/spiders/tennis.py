@@ -285,6 +285,8 @@ class AtpSpider(scrapy.Spider):
                                 break
                         score_divs = row.css("div[class*='matchHistoryRow__scoreBox']")
                         score_values = score_divs.xpath("./div[contains(@class, 'matchHistoryRow__score')]")
+                        if not score_values:
+                            score_values = score_divs.xpath("span")
                         if len(score_values) >= 2:
                             score_home = score_values[0].css("::text").get()
                             score_away = score_values[1].css("::text").get()

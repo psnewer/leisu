@@ -6,7 +6,9 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 import random
+from scrapy.http import Response
 from scrapy import signals
+from collections import defaultdict
 
 
 class LeisuSpiderMiddleware(object):
@@ -71,6 +73,8 @@ def get_random_proxy():
 class RandomProxyMiddleware:
     def __init__(self, settings):
         self.proxies = PROXY_LIST
+        self.max_retries = 6
+        self.url_retry_count = defaultdict(int)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -81,7 +85,14 @@ class RandomProxyMiddleware:
         request.meta["proxy"] = proxy
         spider.logger.info(f"Using proxy: {proxy}")
 
+
     def process_exception(self, request, exception, spider):
+        url = request.url
+        self.url_retry_count[url] += 1
+        if self.url_retry_count[url] >= self.max_retries:
+            spider.logger.error(f"达到最大代理重试次数({self.max_retries}): {url}")
+            spider.crawler.stats.inc_value('proxy/failed_urls')
+            return None  # 彻底放弃
         """如果代理失效，换一个代理"""
         spider.logger.warning(f"Proxy {request.meta['proxy']} failed, retrying...")
         request.meta["proxy"] = get_random_proxy()

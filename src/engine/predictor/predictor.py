@@ -13,7 +13,6 @@ class Predictor():
 		combined_df = pd.DataFrame()
 		today = int(datetime.today().strftime('%Y%m%d%H%M'))
 		for league in leagues:
-			print (league)
 			sql_str = "select distinct season from matches where league='%s' order by date desc"%(league)
 			seasons = pd.read_sql_query(sql_str,conn)['season'].to_numpy()
 			season = max(seasons, key=str)
