@@ -61,8 +61,8 @@
                                 {"team": "Nantes", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Marseille", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Lens", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
-                                {"team": "Lorient", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
+                                {"team": "Le Havre", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
                                 {"team": "Metz", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
-                                {"team": "Lorient", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true}
+                                {"team": "Angers", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true}
                             ]
 }
