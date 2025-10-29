@@ -6,12 +6,13 @@
                                 {"team": "Manchester City", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Tottenham Hotspur", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Chelsea", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
-                                {"team": "Brentford", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "fish": true},
+                                {"team": "West Ham United", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "fish": true},
                                 {"team": "Brighton Hove Albion", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Newcastle United", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Nottingham Forest", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Wolves", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
-                                {"team": "Burnley", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true}
+                                {"team": "Burnley", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
+                                {"team": "Everton", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false}
                             ],
     "German Bundesliga": [
                                 {"team": "Eintracht Frankfurt", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
@@ -25,8 +26,10 @@
                                 {"team": "VfL Wolfsburg", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false}
                             ],
     "Italian Serie A": [
+                                {"team": "Inter Milan", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Cagliari", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "AC Milan", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
+                                {"team": "Atalanta", "filter": "VS_RAWRAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Bologna", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Como", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false},
                                 {"team": "Verona", "filter": "VS_TAWTAW", "season": "2024-2025", "params": {"thresh": 12}, "density":false, "fish": true},
@@ -50,18 +53,16 @@
                                 {"team": "Real Oviedo", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true}
                             ],
     "France Ligue 1": [
-                                {"team": "AJ Auxerre", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
+                                {"team": "AJ Auxerre", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
                                 {"team": "Monaco", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Lille", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
-                                {"team": "Paris Saint Germain (PSG)", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
-                                {"team": "Reims", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
+                                {"team": "Paris Saint Germain (PSG)", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Strasbourg", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Toulouse", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
-                                {"team": "Rennes", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore": true},
+                                {"team": "Rennes", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Nantes", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Marseille", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Lens", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
-                                {"team": "Le Havre", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
                                 {"team": "Metz", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
                                 {"team": "Angers", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true}
                             ]
