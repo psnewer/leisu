@@ -180,6 +180,9 @@ class SlSpider(scrapy.Spider):
 					'home': strs[33].strip(),
 					'draw': strs[34].strip(),
 					'away': strs[35].strip(),
+					'home_l': strs[36].strip(),
+					'draw_l': strs[37].strip(),
+					'away_l': strs[38].strip(),
 					}
 				data['time'] = '-1' if data['time'] == "'早餐'" else data['time']
 				data['time'] = '0' if data['time'] == "'未开场'" else data['time']
