@@ -54,7 +54,7 @@
                                 {"team": "AJ Auxerre", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "fish": true},
                                 {"team": "Monaco", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Lille", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
-                                {"team": "Paris Saint Germain (PSG)", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
+                                {"team": "Paris Saint Germain (PSG)", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Strasbourg", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false},
                                 {"team": "Toulouse", "filter": "VS_RAWRAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
                                 {"team": "Rennes", "filter": "VS_TAWTAW", "season": "2025-2026", "params": {"thresh": 12}, "density":false, "ignore":true},
