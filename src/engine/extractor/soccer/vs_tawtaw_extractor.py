@@ -8,6 +8,7 @@ import math
 class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 	def __init__(self):
 		self.name = 'VS_TAWTAW'
+		self.thresh = 5
 		self.params = {}
 
 	def process(self,cond_str,seasons,ext_dir):
@@ -50,6 +51,7 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 		draw = None
 		away = None
 		draw_0 = None
+		draw_1 = None
 		man = -1
 		filter = None
 
@@ -88,10 +90,18 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					bought = True
 					if not draw_0:
 						draw_0 = float(event['draw']) if event['draw'] else math.nan
+				elif score_home == 0 and score_away == 2 and time <= 45 and not is_home:
+					bought = True
+					if not draw_1:
+						draw_1 = float(event['draw']) if event['draw'] else math.nan
 				elif score_away == 0 and score_home == 1 and is_home:
 					bought = True
 					if not draw_0:
 						draw_0 = float(event['draw']) if event['draw'] else math.nan
+				elif score_away == 0 and score_home == 2 and time <= 45 and is_home:
+					bought = True
+					if not draw_1:
+						draw_1 = float(event['draw']) if event['draw'] else math.nan
             	# 检查是否在某时打平
 				if score_home == score_away:
 					if not draw_at_some_point:
@@ -110,7 +120,16 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					team_always_behind = False
 				elif team_score < opponent_score:
 					team_always_ahead = False
-            
+
+				if not draw_at_some_point:
+					if len(event['draw_l']) and float(event['draw_l']) > self.thresh:
+						if (bought and score_away + score_home == 1):
+							if (draw_0 and draw_0 < self.thresh):
+								draw_0 = self.thresh
+						elif (bought and score_away + score_home == 2):
+							if (draw_1 and draw_1 < self.thresh):
+								draw_1 = self.thresh
+
             	# 判断最后 team 的胜负情况
 				if event == procedure[-1]:  # 检查最后一个事件
 					if home_score != score_home or away_score != score_away:
@@ -153,6 +172,8 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 
 		if no_goals or not bought:
 			man = 0
+		elif (draw_0 is None  or draw_0 < self.thresh) and (draw_1 is None or draw_1 < self.thresh):
+			man = 0
 		elif draw_at_some_point:
 			# if draw_0 and home and draw and away and draw_time <= 45:
 			# 	filter = 'o3'
@@ -166,6 +187,10 @@ class VS_TAWTAW_EXTRACTOR(ABSTRACT_EXTRACTOR):
 					man = 1
 				else:
 					man = 0
+
+		if draw_0 is not None and draw_0 < self.thresh:
+			if draw_1 is not None and draw_1 >= self.thresh:
+				draw_0 = draw_1
 
 		return raw,taw,draw_0,home,draw,away,filter,man,tawtaw
 

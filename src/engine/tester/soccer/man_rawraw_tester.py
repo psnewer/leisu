@@ -24,7 +24,7 @@ class MAN_RAWRAW_TESTER(ABSTRACT_TESTER):
 					df['selected'] = []
 			df['fruit'] = df['man'].apply(self.extract_raw_values)
 			df['odds'] = df.apply(lambda row: self.extract_odds_values(row), axis=1)
-			df = df[df['date'] <= 202510230000]
+			df = df[df['date'] <= 202511130000]
 			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
 
@@ -32,7 +32,7 @@ class MAN_RAWRAW_TESTER(ABSTRACT_TESTER):
 		return man
 
 	def extract_odds_values(self,row):
-		return np.nan_to_num([float(row['draw_0']),float(row['home']),float(row['draw']),float(row['away'])], nan=0).tolist()
+		return np.nan_to_num([float(row['draw_0']),float(row['home']),float(row['draw']),float(row['away'])], nan=1).tolist()
 	
 	def filter_selected(self, row, df_density):
 		filtered_selected = []
