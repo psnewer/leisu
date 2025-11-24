@@ -34,7 +34,7 @@ class VS_RAWRAW_TESTER(ABSTRACT_TESTER):
 
 	def extract_odds_values(self,selected_list):
 		selected_list = json.loads(selected_list)
-		return [np.nan_to_num([item['raw_win'],item['raw_draw']], nan=0).tolist() for item in selected_list]
+		return [np.nan_to_num([item['raw_win'],item['raw_draw']], nan=1).tolist() for item in selected_list]
 
 	def filter_selected(self, row, df_density):
 		filtered_selected = []

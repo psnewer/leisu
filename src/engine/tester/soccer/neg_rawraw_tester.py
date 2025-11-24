@@ -38,7 +38,7 @@ class NEG_RAWRAW_TESTER(ABSTRACT_TESTER):
 		return man
 
 	def extract_odds_values(self,row):
-		return np.nan_to_num([float(row['draw_0']),float(row['home']),float(row['draw']),float(row['away'])], nan=0).tolist()
+		return np.nan_to_num([float(row['draw_0']),float(row['home']),float(row['draw']),float(row['away'])], nan=1).tolist()
 
 	def filter_selected(self, row, df_density):
 		filtered_selected = []
