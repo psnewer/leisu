@@ -21,9 +21,11 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 			feature_tawtaw = pd.read_excel(feature_tawtaw)
 			filter_rawraw = pd.read_excel(filter_rawraw)
 			league = ext_dir.split('/')[-2]
-			df = self.analyze_soft(feature_rawraw, feature_tawtaw, filter_rawraw, league)
+			df, diff = self.analyze_soft(feature_rawraw, feature_tawtaw, filter_rawraw, league)
 			ext_file = ext_dir + '/' + season + '.xlsx'
 			self.pack(df,ext_file)
+			ext_file = ext_file.replace('MAN_RAWRAW','DIFF_RAWRAW')
+			self.pack(diff,ext_file)
 
 	def analyze_soft(self,feature_rawraw, feature_tawtaw, filter_rawraw, league):
 		teams = feature_rawraw['team'].unique()
@@ -82,7 +84,10 @@ class MAN_RAWRAW_FILTER(ABSTRACT_FILTER):
 		if (not gflags.FLAGS.predict):
 			merged_df = merged_df.groupby(['home_team', 'away_team', 'date']).apply(self.get_first_non_zero)
 		merged_df = merged_df.dropna(how='all').reset_index(drop=True).sort_values(['team','date'])
-		return merged_df
+		diff = feature_rawraw.merge(merged_df, on=['home_team','away_team'], how='left', indicator=True)
+		diff = diff[['_merge'] == 'left_only'].drop('_merge', axis=1).drop_duplicates(subset=['home_team', 'away_team'], keep='first')
+		diff = diff[~diff['home_team'].isin(ignore) & ~diff['away_team'].isin(ignore)]
+		return merged_df,diff
 	
 	def get_first_non_zero(self, group):
 		non_zero = group[group['man'] != 0]  # 筛选 man 不等于 0 的行
